@@ -38,6 +38,7 @@ public class LoginController {
 
             String loggedUser = authService.getLoggedUsername(sessionCookie);
             session.setAttribute("loggedUser", loggedUser);
+            EnvoyeInformation.afficherName(session, modelAndView);
             EnvoyeInformation.setInfo(modelAndView, "Page d'accueil - Gestion Employe", "");
 
             return modelAndView;

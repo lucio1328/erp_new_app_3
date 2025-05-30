@@ -10,15 +10,15 @@
 
   <aside class="sidebar">
     <h1>ERPNext</h1>
-    <a th:href="#"><i class="fas fa-home"></i> Ajouter devis</a>
-    <a th:href="#"><i class="fas fa-truck"></i> Fournisseur</a>
+    <a href="#"><i class="fas fa-home"></i> Ajouter devis</a>
+    <a href="#"><i class="fas fa-truck"></i> Fournisseur</a>
     <div class="menu-group">
       <div class="menu-toggle">
         <i class="fas fa-file-invoice"></i> Factures <i class="fas fa-chevron-down arrow"></i>
       </div>
       <div class="submenu">
-        <a th:href="#"><i class="fas fa-user"></i> Facture client</a><br/>
-        <a th:href="#"><i class="fas fa-truck-loading"></i> Facture fournisseur</a>
+        <a href="#"><i class="fas fa-user"></i> Facture client</a><br/>
+        <a href="#"><i class="fas fa-truck-loading"></i> Facture fournisseur</a>
       </div>
     </div>
 
@@ -45,7 +45,7 @@
     </div>
 
     <div class="content">
-      <div th:include="${view}"></div>
+      <div th:include="${page}"></div>
     </div>
   </div>
 

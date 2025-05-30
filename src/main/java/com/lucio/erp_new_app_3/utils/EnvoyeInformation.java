@@ -5,7 +5,6 @@ import org.springframework.web.servlet.ModelAndView;
 import jakarta.servlet.http.HttpSession;
 
 public class EnvoyeInformation {
-
     public static void setInfo(ModelAndView modelAndView, String titre, String page) {
         if (modelAndView != null) {
             modelAndView.addObject("title", titre);
@@ -18,7 +17,7 @@ public class EnvoyeInformation {
         return;
     }
 
-    public void afficherName(HttpSession session, ModelAndView modelAndView) {
+    public static void afficherName(HttpSession session, ModelAndView modelAndView) {
         String loggedUser = (String) session.getAttribute("loggedUser");
         if (loggedUser == null) {
             loggedUser = "Utilisateur inconnu";
