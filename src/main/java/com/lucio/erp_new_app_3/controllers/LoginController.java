@@ -10,7 +10,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.lucio.erp_new_app_3.dtos.auth.LoginForm;
 import com.lucio.erp_new_app_3.response.LoginResult;
-import com.lucio.erp_new_app_3.services.AuthService;
+import com.lucio.erp_new_app_3.services.auth.AuthService;
 import com.lucio.erp_new_app_3.utils.EnvoyeInformation;
 
 import jakarta.servlet.http.HttpSession;

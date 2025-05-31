@@ -1,4 +1,4 @@
-package com.lucio.erp_new_app_3.services;
+package com.lucio.erp_new_app_3.services.auth;
 
 import com.lucio.erp_new_app_3.configs.ErpnextProperties;
 import com.lucio.erp_new_app_3.dtos.auth.LoginForm;
