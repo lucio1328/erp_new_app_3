@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <style>
+        .salary-slip-container {
+            font-family: Arial, sans-serif;
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 30px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            background-color: #fff;
+            line-height: 1.6;
+        }
+
+        .slip-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 15px;
+        }
+
+        .slip-header h1 {
+            margin: 0;
+            font-size: 28px;
+            letter-spacing: 1px;
+        }
+
+        .slip-reference {
+            font-weight: bold;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+
+        .employee-section,
+        .days-section,
+        .amounts-section,
+        .totals-section {
+            margin-bottom: 30px;
+        }
+
+        .employee-info table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 15px;
+        }
+
+        .employee-info th,
+        .employee-info td {
+            padding: 8px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .employee-details {
+            display: flex;
+            justify-content: space-between;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+
+        .detail-column {
+            flex: 1;
+            padding: 0 10px;
+            font-size: 14px;
+        }
+
+        .detail-column p {
+            margin: 8px 0;
+        }
+
+        .days-section table,
+        .totals-section table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 15px;
+            margin-bottom: 15px;
+        }
+
+        .days-section th,
+        .days-section td,
+        .totals-section th,
+        .totals-section td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .amounts-section {
+            display: flex;
+            justify-content: space-between;
+            gap: 40px;
+        }
+
+        .amounts-column {
+            flex: 1;
+            padding: 0 10px;
+        }
+
+        .amounts-column table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 15px;
+        }
+
+        .amounts-column th,
+        .amounts-column td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .annual-taxable {
+            text-align: right;
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .page-number {
+            text-align: right;
+            font-style: italic;
+            margin-top: 30px;
+            font-size: 13px;
+        }
+
+        .actions {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 0 12px;
+            font-size: 14px;
+            text-decoration: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+            border: none;
+        }
+
+        /* Impression */
+        @media print {
+            .actions {
+                display: none;
+            }
+
+            body {
+                padding: 0;
+                margin: 0;
+            }
+
+            .salary-slip-container {
+                box-shadow: none;
+                border: none;
+            }
+        }
+    </style>
+</head>
+<body>
+<div th:fragment="contenu">
+    <div class="salary-slip-container">
+
+        <!-- En-tête -->
+        <div class="slip-header">
+            <h1>Slip de salaire</h1>
+            <div class="slip-reference">
+                <span th:text="${fiche.name}"></span>
+            </div>
+        </div>
+
+        <!-- Section supérieure avec info employé -->
+        <div class="employee-section">
+            <div class="employee-info">
+                <table>
+                    <tr>
+                        <th>Employé:</th>
+                        <td th:text="${fiche.employee}"></td>
+                        <th>Date de Comptabilisation:</th>
+                        <td th:text="${fiche.postingDate}"></td>
+                        <th>Statut:</th>
+                        <td th:text="${fiche.status}"></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="employee-details">
+                <div class="detail-column">
+                    <p><strong>Nom de l'Employé:</strong></p>
+                    <p th:text="${fiche.employeeName}"></p>
+
+                    <p><strong>Société:</strong></p>
+                    <p th:text="${fiche.company}"></p>
+
+                    <p><strong>Département:</strong></p>
+                    <p th:text="${fiche.department}"></p>
+                </div>
+
+                <div class="detail-column">
+                    <p><strong>Désignation:</strong></p>
+                    <p th:text="${fiche.designation}"></p>
+
+                    <p><strong>Fréquence de la Paie:</strong></p>
+                    <p th:text="${fiche.payrollFrequency}"></p>
+
+                    <p><strong>Grille des Salaires:</strong></p>
+                    <p th:text="${fiche.salaryStructure}"></p>
+                </div>
+
+                <div class="detail-column">
+                    <p><strong>Date de Début:</strong></p>
+                    <p th:text="${fiche.startDate}"></p>
+
+                    <p><strong>Mode de Paiement:</strong></p>
+                    <p th:text="${fiche.modeOfPayment}"></p>
+
+                    <p><strong>Date de Fin:</strong></p>
+                    <p th:text="${fiche.endDate}"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section jours travaillés -->
+        <div class="days-section">
+            <table>
+                <tr>
+                    <th>Jours Ouvrables</th>
+                    <th>Jours d'absence</th>
+                    <th>Jours non marqués</th>
+                    <th>Jours de paiement</th>
+                    <th>Congé Sans Solde</th>
+                </tr>
+                <tr>
+                    <td th:text="${fiche.totalWorkingDays}"></td>
+                    <td th:text="${fiche.absentDays}"></td>
+                    <td th:text="${fiche.unmarkedDays}"></td>
+                    <td th:text="${fiche.paymentDays}"></td>
+                    <td th:text="${fiche.leaveWithoutPay}"></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Section montants -->
+        <div class="amounts-section">
+            <div class="amounts-column">
+                <table>
+                    <tr>
+                        <th>Salaire brut</th>
+                        <td th:text="${#numbers.formatDecimal(fiche.grossPay, 1, 'POINT', 2, 'COMMA')} + ' ' + ${fiche.currency}"></td>
+                    </tr>
+                    <tr>
+                        <th>Déduction totale</th>
+                        <td th:text="${#numbers.formatDecimal(fiche.totalDeduction, 1, 'POINT', 2, 'COMMA')} + ' ' + ${fiche.currency}"></td>
+                    </tr>
+                    <tr>
+                        <th>Salaire net</th>
+                        <td th:text="${#numbers.formatDecimal(fiche.netPay, 1, 'POINT', 2, 'COMMA')} + ' ' + ${fiche.currency}"></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="amounts-column">
+                <table>
+                    <tr>
+                        <th>Année à ce jour</th>
+                        <td th:text="${#numbers.formatDecimal(fiche.yearToDate, 1, 'POINT', 2, 'COMMA')} + ' ' + ${fiche.currency}"></td>
+                    </tr>
+                    <tr>
+                        <th>Mois à ce jour</th>
+                        <td th:text="${#numbers.formatDecimal(fiche.monthToDate, 1, 'POINT', 2, 'COMMA')} + ' ' + ${fiche.currency}"></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Section basse avec les totaux -->
+        <div class="totals-section">
+            <table>
+                <tr>
+                    <th>Total en toutes lettres:</th>
+                    <td th:text="${fiche.totalInWords}"></td>
+                    <th>Gains non imposables:</th>
+                    <td th:text="${#numbers.formatDecimal(fiche.nonTaxableEarnings, 1, 'POINT', 2, 'COMMA')}"></td>
+                </tr>
+                <tr>
+                    <th>CTC:</th>
+                    <td th:text="${#numbers.formatDecimal(fiche.ctc, 1, 'POINT', 2, 'COMMA')}"></td>
+                    <th>Déclaration d'exemption fiscale:</th>
+                    <td th:text="${#numbers.formatDecimal(fiche.taxExemptionDeclaration, 1, 'POINT', 2, 'COMMA')}"></td>
+                </tr>
+                <tr>
+                    <th>Revenus provenant d'autres sources:</th>
+                    <td th:text="${#numbers.formatDecimal(fiche.incomeFromOtherSources, 1, 'POINT', 2, 'COMMA')}"></td>
+                    <th>Impôts futurs sur le revenu:</th>
+                    <td th:text="${#numbers.formatDecimal(fiche.futureIncomeTaxDeductions, 1, 'POINT', 2, 'COMMA')}"></td>
+                </tr>
+                <tr>
+                    <th>Montant annuel imposable:</th>
+                    <td th:text="${#numbers.formatDecimal(fiche.annualTaxableAmount, 1, 'POINT', 2, 'COMMA')}"></td>
+                    <th>Impôt total sur le revenu:</th>
+                    <td th:text="${#numbers.formatDecimal(fiche.totalIncomeTax, 1, 'POINT', 2, 'COMMA')}"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

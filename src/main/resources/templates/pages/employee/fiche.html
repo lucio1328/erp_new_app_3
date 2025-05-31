@@ -27,28 +27,33 @@
                 </div>
             </div>
 
-            <!-- Section salaires mensuels -->
-            <!-- <div class="salary-history" th:if="${employee.salaries != null and !employee.salaries.isEmpty()}">
-                <h4>Historique des salaires</h4>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Mois</th>
-                            <th>Salaire de base</th>
-                            <th>Bonus</th>
-                            <th>Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="salary : ${employee.salaries}">
-                            <td th:text="${salary.monthYear}"></td>
-                            <td th:text="${salary.baseSalary}"></td>
-                            <td th:text="${salary.bonus}"></td>
-                            <td th:text="${salary.baseSalary + salary.bonus}"></td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div> -->
+            <div class="salary-history" th:if="${salarySlips != null and !salarySlips.isEmpty()}">
+            <h4>Salaires</h4>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Période</th>
+                        <th>Date de versement</th>
+                        <th>Salaire brut</th>
+                        <th>Déductions</th>
+                        <th>Salaire net</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="salary : ${salarySlips}">
+                        <td><a th:href="@{/salary/fiche-paie/} + ${salary.name}"
+                            th:text="${salary.name}"></a>
+                        </td>
+                        <td th:text="${salary.startDate} + ' au ' + ${salary.endDate}"></td>
+                        <td th:text="${salary.postingDate}"></td>
+                        <td th:text="${#numbers.formatDecimal(salary.grossPay, 1, 'POINT', 2, 'COMMA')} + ' ' + ${salary.currency}"></td>
+                        <td th:text="${#numbers.formatDecimal(salary.totalDeduction, 1, 'POINT', 2, 'COMMA')} + ' ' + ${salary.currency}"></td>
+                        <td th:text="${#numbers.formatDecimal(salary.netPay, 1, 'POINT', 2, 'COMMA')} + ' ' + ${salary.currency}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
         </div>
     </div>
 

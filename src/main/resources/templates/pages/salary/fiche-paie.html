@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link rel="stylesheet" th:href="@{/css/fiche-paie.css}">
+</head>
+<body>
+    <div class="actions">
+        <a th:href="@{'/salary/fiche-paie/' + ${fiche.name} + '/pdf'}"
+        class="btn btn-primary">Télécharger PDF</a>
+        <button class="btn btn-secondary" onclick="window.print()">Imprimer</button>
+    </div>
+<div th:fragment="contenu">
+    <div class="salary-slip-container">
+
+        <!-- En-tête -->
+        <div class="slip-header">
+            <h1>Slip de salaire</h1>
+            <div class="slip-reference">
+                <span th:text="${fiche.name}"></span>
+            </div>
+        </div>
+
+        <!-- Section supérieure avec info employé -->
+        <div class="employee-section">
+            <div class="employee-info">
+                <table>
+                    <tr>
+                        <th>Employé:</th>
+                        <td th:text="${fiche.employee}"></td>
+                        <th>Date de Comptabilisation:</th>
+                        <td th:text="${fiche.postingDate}"></td>
+                        <th>Statut:</th>
+                        <td th:text="${fiche.status}"></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="employee-details">
+                <div class="detail-column">
+                    <p><strong>Nom de l'Employé:</strong></p>
+                    <p th:text="${fiche.employeeName}"></p>
+
+                    <p><strong>Société:</strong></p>
+                    <p th:text="${fiche.company}"></p>
+
+                    <p><strong>Département:</strong></p>
+                    <p th:text="${fiche.department}"></p>
+                </div>
+
+                <div class="detail-column">
+                    <p><strong>Désignation:</strong></p>
+                    <p th:text="${fiche.designation}"></p>
+
+                    <p><strong>Fréquence de la Paie:</strong></p>
+                    <p th:text="${fiche.payrollFrequency}"></p>
+
+                    <p><strong>Grille des Salaires:</strong></p>
+                    <p th:text="${fiche.salaryStructure}"></p>
+                </div>
+
+                <div class="detail-column">
+                    <p><strong>Date de Début:</strong></p>
+                    <p th:text="${fiche.startDate}"></p>
+
+                    <p><strong>Mode de Paiement:</strong></p>
+                    <p th:text="${fiche.modeOfPayment}"></p>
+
+                    <p><strong>Date de Fin:</strong></p>
+                    <p th:text="${fiche.endDate}"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section jours travaillés -->
+        <div class="days-section">
+            <table>
+                <tr>
+                    <th>Jours Ouvrables</th>
+                    <th>Jours d'absence</th>
+                    <th>Jours non marqués</th>
+                    <th>Jours de paiement</th>
+                    <th>Congé Sans Solde</th>
+                </tr>
+                <tr>
+                    <td th:text="${fiche.totalWorkingDays}"></td>
+                    <td th:text="${fiche.absentDays}"></td>
+                    <td th:text="${fiche.unmarkedDays}"></td>
+                    <td th:text="${fiche.paymentDays}"></td>
+                    <td th:text="${fiche.leaveWithoutPay}"></td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- Section montants -->
+        <div class="amounts-section">
+            <div class="amounts-column">
+                <table>
+                    <tr>
+                        <th>Salaire brut</th>
+                        <td th:text="${#numbers.formatDecimal(fiche.grossPay, 1, 'POINT', 2, 'COMMA')} + ' ' + ${fiche.currency}"></td>
+                    </tr>
+                    <tr>
+                        <th>Déduction totale</th>
+                        <td th:text="${#numbers.formatDecimal(fiche.totalDeduction, 1, 'POINT', 2, 'COMMA')} + ' ' + ${fiche.currency}"></td>
+                    </tr>
+                    <tr>
+                        <th>Salaire net</th>
+                        <td th:text="${#numbers.formatDecimal(fiche.netPay, 1, 'POINT', 2, 'COMMA')} + ' ' + ${fiche.currency}"></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="amounts-column">
+                <table>
+                    <tr>
+                        <th>Année à ce jour</th>
+                        <td th:text="${#numbers.formatDecimal(fiche.yearToDate, 1, 'POINT', 2, 'COMMA')} + ' ' + ${fiche.currency}"></td>
+                    </tr>
+                    <tr>
+                        <th>Mois à ce jour</th>
+                        <td th:text="${#numbers.formatDecimal(fiche.monthToDate, 1, 'POINT', 2, 'COMMA')} + ' ' + ${fiche.currency}"></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Section basse avec les totaux -->
+        <div class="totals-section">
+            <table>
+                <tr>
+                    <th>Total en toutes lettres:</th>
+                    <td th:text="${fiche.totalInWords}"></td>
+                    <th>Gains non imposables:</th>
+                    <td th:text="${#numbers.formatDecimal(fiche.nonTaxableEarnings, 1, 'POINT', 2, 'COMMA')}"></td>
+                </tr>
+                <tr>
+                    <th>CTC:</th>
+                    <td th:text="${#numbers.formatDecimal(fiche.ctc, 1, 'POINT', 2, 'COMMA')}"></td>
+                    <th>Déclaration d'exemption fiscale:</th>
+                    <td th:text="${#numbers.formatDecimal(fiche.taxExemptionDeclaration, 1, 'POINT', 2, 'COMMA')}"></td>
+                </tr>
+                <tr>
+                    <th>Revenus provenant d'autres sources:</th>
+                    <td th:text="${#numbers.formatDecimal(fiche.incomeFromOtherSources, 1, 'POINT', 2, 'COMMA')}"></td>
+                    <th>Impôts futurs sur le revenu:</th>
+                    <td th:text="${#numbers.formatDecimal(fiche.futureIncomeTaxDeductions, 1, 'POINT', 2, 'COMMA')}"></td>
+                </tr>
+                <tr>
+                    <th>Montant annuel imposable:</th>
+                    <td th:text="${#numbers.formatDecimal(fiche.annualTaxableAmount, 1, 'POINT', 2, 'COMMA')}"></td>
+                    <th>Impôt total sur le revenu:</th>
+                    <td th:text="${#numbers.formatDecimal(fiche.totalIncomeTax, 1, 'POINT', 2, 'COMMA')}"></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

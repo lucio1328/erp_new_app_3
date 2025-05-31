@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.lucio.erp_new_app_3.dtos.employee.Employee;
+import com.lucio.erp_new_app_3.dtos.salary.SalarySlip;
 import com.lucio.erp_new_app_3.services.employee.EmployeeService;
+import com.lucio.erp_new_app_3.services.salary.SalarySlipService;
 import com.lucio.erp_new_app_3.utils.EnvoyeInformation;
 import com.lucio.erp_new_app_3.utils.PaginationUtils;
 
@@ -23,6 +25,9 @@ public class EmployeeController {
 
     @Autowired
     private EmployeeService employeeService;
+
+    @Autowired
+    private SalarySlipService salarySlipService;
 
 
     @GetMapping
@@ -74,8 +79,10 @@ public class EmployeeController {
         }
 
         Employee employee = employeeService.getEmployee(employeeId);
+        List<SalarySlip> salarySlips = salarySlipService.getSalarySlipsByEmployee(employeeId, sessionCookie);
 
         modelAndView.addObject("employee", employee);
+        modelAndView.addObject("salarySlips", salarySlips);
         EnvoyeInformation.afficherName(session, modelAndView);
         EnvoyeInformation.setInfo(modelAndView, "Fiche employé", "pages/employee/fiche");
 
