@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="contenu">
+    <h2>Liste des employés</h2>
+    <table>
+        <thead>
+        <tr>
+            <th>Nom et Prenom</th>
+            <th>Genre</th>
+            <th>Date de naissance</th>
+            <th>Email</th>
+            <th>Département</th>
+            <th>Poste</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="employee : ${employees}">
+            <td>
+                <span th:text="${employee.lastName}"></span>
+                <span th:text="${employee.middleName}"></span>
+                <span th:text="${employee.firstName}"></span>
+            </td>
+            <td th:text="${employee.gender}"></td>
+            <td th:text="${employee.dateOfBirth}"></td>
+            <td th:text="${employee.companyEmail}"></td>
+            <td th:text="${employee.department}"></td>
+            <td th:text="${employee.designation}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="pagination">
+        <span th:text="'Page ' + (${currentPage} + 1) + ' / ' + ${totalPages}"></span>
+
+        <a th:if="${currentPage > 0}"
+        th:href="@{/employes(page=${currentPage - 1}, size=10)}">Précédent</a>
+
+        <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+            <a th:href="@{/employes(page=${i}, size=10)}"
+            th:text="${i + 1}"
+            th:classappend="${i == currentPage} ? 'active' : ''"></a>
+        </span>
+
+        <a th:if="${currentPage + 1 < totalPages}"
+        th:href="@{/employes(page=${currentPage + 1}, size=10)}">Suivant</a>
+    </div>
+</div>
+</body>
+</html>

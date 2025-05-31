@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="contenu">
+    <h2 th:text="${titre}">Erreur</h2>
+    <p><strong>Date :</strong> <span th:text="${timestamp}">[timestamp]</span></p>
+    <p><strong>Code :</strong> <span th:text="${status}">[code]</span></p>
+    <p><strong>Message :</strong> <span th:text="${message}">[message d'erreur]</span></p>
+</div>
+</body>
+</html>
