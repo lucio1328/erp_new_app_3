@@ -1,39 +1,109 @@
+/* Carte employé */
 .employee-card {
     border: 1px solid #ddd;
     border-radius: 8px;
     padding: 20px;
     margin-bottom: 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
+/* En-tête employé */
 .employee-header {
     border-bottom: 1px solid #eee;
-    padding-bottom: 15px;
-    margin-bottom: 15px;
+    padding-bottom: 10px;
+    margin-bottom: 20px;
 }
 
+.employee-header h3 {
+    margin: 0;
+    font-size: 1.5em;
+    color: #333;
+}
+
+.employee-header span {
+    color: #777;
+    font-size: 1em;
+}
+
+/* Détails employé */
 .employee-details .row {
     display: flex;
     flex-wrap: wrap;
-    margin-bottom: 20px;
+    gap: 20px;
 }
 
 .employee-details .col {
     flex: 1;
-    min-width: 300px;
-    padding: 0 15px;
+    min-width: 280px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 6px;
 }
 
+.employee-details h4 {
+    margin-bottom: 10px;
+    font-size: 1.2em;
+    color: #444;
+}
+
+.employee-details p {
+    margin: 6px 0;
+    color: #333;
+}
+
+.employee-details strong {
+    color: #000;
+}
+
+/* Historique des salaires */
 .salary-history {
-    margin-top: 20px;
+    margin-top: 30px;
+}
+
+.salary-history h4 {
+    margin-bottom: 10px;
+    font-size: 1.2em;
+    color: #444;
 }
 
 .salary-history table {
     width: 100%;
     border-collapse: collapse;
+    background-color: #fff;
+    border-radius: 6px;
+    overflow: hidden;
 }
 
-.salary-history th, .salary-history td {
+.salary-history th,
+.salary-history td {
     border: 1px solid #ddd;
-    padding: 8px;
+    padding: 10px;
     text-align: left;
+    font-size: 0.95em;
+}
+
+.salary-history th {
+    background-color: #f0f0f0;
+    font-weight: bold;
+}
+
+.salary-history tr:nth-child(even) {
+    background-color: #fafafa;
+}
+
+/* Bouton retour */
+.btn.btn-secondary {
+    display: inline-block;
+    padding: 10px 15px;
+    margin-top: 20px;
+    background-color: #6c757d;
+    color: #fff;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.btn.btn-secondary:hover {
+    background-color: #5a6268;
 }

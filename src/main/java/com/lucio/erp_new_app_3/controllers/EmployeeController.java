@@ -41,7 +41,6 @@ public class EmployeeController {
 
         if (!recherche.equals("recherche")) {
             List<Employee> allEmployees = employeeService.getAllEmployees(sessionCookie);
-            employeeService.setListEmployees(allEmployees);
             employeeService.addEmployes(allEmployees);
 
             List<Employee> paginatedEmployees = PaginationUtils.paginate(allEmployees, page, size);
@@ -60,6 +59,7 @@ public class EmployeeController {
 
         return modelAndView;
     }
+
 
     @GetMapping("/fiche/{employeeId}")
     public ModelAndView ficheEmploye(HttpSession session,

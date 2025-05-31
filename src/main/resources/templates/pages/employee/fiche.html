@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<link rel="stylesheet" th:href="@{/css/fiche.css}">
 <body>
 <div th:fragment="contenu">
     <h2>Fiche employé</h2>
@@ -20,8 +21,8 @@
 
                 <div class="col">
                     <h4>Informations professionnelles</h4>
-                    <p><strong>Date d'embauche:</strong> <span th:text="${employee.hireDate}"></span></p>
-                    <p><strong>Salaire:</strong> <span th:text="${employee.salary}"></span></p>
+                    <p><strong>Date d'embauche:</strong> <span th:text="${employee.dateOfJoining}"></span></p>
+                    <p><strong>Salaire:</strong> <span th:text="${#numbers.formatDecimal(employee.ctc, 1, 'POINT', 2, 'COMMA')} + ' ' + ${employee.salaryCurrency}"></span></p>
                     <p><strong>Statut:</strong> <span th:text="${employee.status}"></span></p>
                 </div>
             </div>

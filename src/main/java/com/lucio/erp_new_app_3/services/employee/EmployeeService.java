@@ -40,10 +40,6 @@ public class EmployeeService {
         }
     }
 
-    public void setListEmployees(List<Employee> employees) {
-        employeeCache.setListEmployees(employees);
-    }
-
     public void addEmployes(List<Employee> employees) {
         if (employees.size() > 0) {
             for (Employee employee : employees) {
