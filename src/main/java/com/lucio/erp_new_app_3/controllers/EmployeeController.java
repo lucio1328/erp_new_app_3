@@ -15,7 +15,7 @@ import com.lucio.erp_new_app_3.utils.EnvoyeInformation;
 import jakarta.servlet.http.HttpSession;
 
 @Controller
-@RequestMapping("/employees")
+@RequestMapping("/employes")
 public class EmployeeController {
 
     @Autowired

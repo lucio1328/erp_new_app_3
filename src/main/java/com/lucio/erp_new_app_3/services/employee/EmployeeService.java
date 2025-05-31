@@ -3,9 +3,11 @@ package com.lucio.erp_new_app_3.services.employee;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lucio.erp_new_app_3.dtos.employee.Employee;
+import com.lucio.erp_new_app_3.exceptions.ErpApiException;
 import com.lucio.erp_new_app_3.utils.PreparationApi;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,7 +32,7 @@ public class EmployeeService {
             return objectMapper.readerForListOf(Employee.class).readValue(data);
         }
         catch (Exception e) {
-            throw new RuntimeException("Erreur de parsing des employés", e);
+            throw new ErpApiException("Erreur de parsing des employés", HttpStatus.INTERNAL_SERVER_ERROR.value(), e);
         }
     }
 }
