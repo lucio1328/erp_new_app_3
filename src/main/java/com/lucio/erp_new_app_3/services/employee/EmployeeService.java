@@ -15,6 +15,8 @@ public class EmployeeService {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
     private PreparationApi preparationApi;
 
     public EmployeeService(PreparationApi preparationApi) {
