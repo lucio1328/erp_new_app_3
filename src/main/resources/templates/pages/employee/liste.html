@@ -6,7 +6,7 @@
     <table>
         <thead>
         <tr>
-            <th>Nom</th>
+            <th>Nom et Prenom</th>
             <th>Genre</th>
             <th>Date de naissance</th>
             <th>Email</th>
@@ -16,15 +16,35 @@
         </thead>
         <tbody>
         <tr th:each="employee : ${employees}">
-            <td th:text="${employee.employee_name}">Nom</td>
-            <td th:text="${employee.gender}">Genre</td>
-            <td th:text="${employee.date_of_birth}">Date</td>
-            <td th:text="${employee.company_email}">Email</td>
-            <td th:text="${employee.department}">Département</td>
-            <td th:text="${employee.designation}">Poste</td>
+            <td>
+                <span th:text="${employee.lastName}"></span>
+                <span th:text="${employee.middleName}"></span>
+                <span th:text="${employee.firstName}"></span>
+            </td>
+            <td th:text="${employee.gender}"></td>
+            <td th:text="${employee.dateOfBirth}"></td>
+            <td th:text="${employee.companyEmail}"></td>
+            <td th:text="${employee.department}"></td>
+            <td th:text="${employee.designation}"></td>
         </tr>
         </tbody>
     </table>
+
+    <div class="pagination">
+        <span th:text="'Page ' + (${currentPage} + 1) + ' / ' + ${totalPages}"></span>
+
+        <a th:if="${currentPage > 0}"
+        th:href="@{/employes(page=${currentPage - 1}, size=10)}">Précédent</a>
+
+        <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+            <a th:href="@{/employes(page=${i}, size=10)}"
+            th:text="${i + 1}"
+            th:classappend="${i == currentPage} ? 'active' : ''"></a>
+        </span>
+
+        <a th:if="${currentPage + 1 < totalPages}"
+        th:href="@{/employes(page=${currentPage + 1}, size=10)}">Suivant</a>
+    </div>
 </div>
 </body>
 </html>
