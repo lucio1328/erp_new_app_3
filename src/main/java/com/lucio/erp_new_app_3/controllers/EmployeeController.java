@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
@@ -27,7 +28,9 @@ public class EmployeeController {
     @GetMapping
     public ModelAndView listeEmployes(HttpSession session,
                                     @RequestParam(defaultValue = "0") int page,
-                                    @RequestParam(defaultValue = "10") int size) {
+                                    @RequestParam(defaultValue = "10") int size,
+                                    @RequestParam(defaultValue = "liste") String recherche) {
+
         String sessionCookie = (String) session.getAttribute("sid");
         ModelAndView modelAndView = new ModelAndView("layout/modele");
 
@@ -36,16 +39,45 @@ public class EmployeeController {
             return modelAndView;
         }
 
-        List<Employee> allEmployees = employeeService.getAllEmployees(sessionCookie);
-        List<Employee> paginatedEmployees = PaginationUtils.paginate(allEmployees, page, size);
-        int totalPages = PaginationUtils.getTotalPages(allEmployees.size(), size);
+        if (!recherche.equals("recherche")) {
+            List<Employee> allEmployees = employeeService.getAllEmployees(sessionCookie);
+            employeeService.setListEmployees(allEmployees);
+            employeeService.addEmployes(allEmployees);
 
-        modelAndView.addObject("employees", paginatedEmployees);
-        modelAndView.addObject("currentPage", page);
-        modelAndView.addObject("totalPages", totalPages);
+            List<Employee> paginatedEmployees = PaginationUtils.paginate(allEmployees, page, size);
+            int totalPages = PaginationUtils.getTotalPages(allEmployees.size(), size);
+
+            modelAndView.addObject("employees", paginatedEmployees);
+            modelAndView.addObject("currentPage", page);
+            modelAndView.addObject("totalPages", totalPages);
+        }
+        else {
+
+        }
 
         EnvoyeInformation.afficherName(session, modelAndView);
         EnvoyeInformation.setInfo(modelAndView, "Liste des employés", "pages/employee/liste");
+
+        return modelAndView;
+    }
+
+    @GetMapping("/fiche/{employeeId}")
+    public ModelAndView ficheEmploye(HttpSession session,
+                                @PathVariable String employeeId) {
+
+        String sessionCookie = (String) session.getAttribute("sid");
+        ModelAndView modelAndView = new ModelAndView("layout/modele");
+
+        if (sessionCookie == null) {
+            modelAndView.setViewName("redirect:/");
+            return modelAndView;
+        }
+
+        Employee employee = employeeService.getEmployee(employeeId);
+
+        modelAndView.addObject("employee", employee);
+        EnvoyeInformation.afficherName(session, modelAndView);
+        EnvoyeInformation.setInfo(modelAndView, "Fiche employé", "pages/employee/fiche");
 
         return modelAndView;
     }

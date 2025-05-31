@@ -1,0 +1,39 @@
+.employee-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.employee-header {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+
+.employee-details .row {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.employee-details .col {
+    flex: 1;
+    min-width: 300px;
+    padding: 0 15px;
+}
+
+.salary-history {
+    margin-top: 20px;
+}
+
+.salary-history table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.salary-history th, .salary-history td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}

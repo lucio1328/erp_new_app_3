@@ -3,10 +3,34 @@
 <body>
 <div th:fragment="contenu">
     <h2>Liste des employés</h2>
+
+    <!-- 🔍 Formulaire de filtre -->
+    <!-- <form method="get" th:action="@{/employes}">
+        <input type="text" name="employeeName" placeholder="Nom" th:value="${employeeName}"/>
+
+        <select name="gender">
+            <option th:value="" th:selected="${gender == null or gender == ''}">Tous genres</option>
+            <option th:value="'Male'" th:selected="${gender == 'Male'}">Homme</option>
+            <option th:value="'Female'" th:selected="${gender == 'Female'}">Femme</option>
+        </select>
+
+        <select name="department">
+            <option th:value="" th:selected="${department == null or department == ''}">Tous départements</option>
+            <option th:each="d : ${departments}" th:value="${d}" th:text="${d}" th:selected="${d == department}"></option>
+        </select>
+
+        <select name="designation">
+            <option th:value="" th:selected="${designation == null or designation == ''}">Tous postes</option>
+            <option th:each="p : ${designations}" th:value="${p}" th:text="${p}" th:selected="${p == designation}"></option>
+        </select>
+
+        <button type="submit">Filtrer</button>
+    </form> -->
+
     <table>
         <thead>
         <tr>
-            <th>Nom et Prenom</th>
+            <th>Nom et Prénom</th>
             <th>Genre</th>
             <th>Date de naissance</th>
             <th>Email</th>
@@ -16,11 +40,9 @@
         </thead>
         <tbody>
         <tr th:each="employee : ${employees}">
-            <td>
-                <span th:text="${employee.lastName}"></span>
-                <span th:text="${employee.middleName}"></span>
-                <span th:text="${employee.firstName}"></span>
-            </td>
+            <td><a th:href="@{/employes/fiche/} + ${employee.name}"
+                th:text="${employee.employeeName}"></a>
+        </td>
             <td th:text="${employee.gender}"></td>
             <td th:text="${employee.dateOfBirth}"></td>
             <td th:text="${employee.companyEmail}"></td>
@@ -34,16 +56,28 @@
         <span th:text="'Page ' + (${currentPage} + 1) + ' / ' + ${totalPages}"></span>
 
         <a th:if="${currentPage > 0}"
-        th:href="@{/employes(page=${currentPage - 1}, size=10)}">Précédent</a>
+            th:href="@{/employes(page=${currentPage - 1}, size=10,
+                        employeeName=${employeeName},
+                        gender=${gender},
+                        department=${department},
+                        designation=${designation})}">Précédent</a>
 
         <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
-            <a th:href="@{/employes(page=${i}, size=10)}"
+            <a th:href="@{/employes(page=${i}, size=10,
+                            employeeName=${employeeName},
+                            gender=${gender},
+                            department=${department},
+                            designation=${designation})}"
             th:text="${i + 1}"
             th:classappend="${i == currentPage} ? 'active' : ''"></a>
         </span>
 
         <a th:if="${currentPage + 1 < totalPages}"
-        th:href="@{/employes(page=${currentPage + 1}, size=10)}">Suivant</a>
+            th:href="@{/employes(page=${currentPage + 1}, size=10,
+                        employeeName=${employeeName},
+                        gender=${gender},
+                        department=${department},
+                        designation=${designation})}">Suivant</a>
     </div>
 </div>
 </body>

@@ -3,6 +3,7 @@ package com.lucio.erp_new_app_3.services.employee;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lucio.erp_new_app_3.dtos.employee.Employee;
+import com.lucio.erp_new_app_3.dtos.employee.EmployeeCache;
 import com.lucio.erp_new_app_3.exceptions.ErpApiException;
 import com.lucio.erp_new_app_3.utils.PreparationApi;
 
@@ -21,6 +22,9 @@ public class EmployeeService {
     @Autowired
     private PreparationApi preparationApi;
 
+    @Autowired
+    private EmployeeCache employeeCache;
+
     public EmployeeService(PreparationApi preparationApi) {
         this.preparationApi = preparationApi;
     }
@@ -34,6 +38,26 @@ public class EmployeeService {
         catch (Exception e) {
             throw new ErpApiException("Erreur de parsing des employés", HttpStatus.INTERNAL_SERVER_ERROR.value(), e);
         }
+    }
+
+    public void setListEmployees(List<Employee> employees) {
+        employeeCache.setListEmployees(employees);
+    }
+
+    public void addEmployes(List<Employee> employees) {
+        if (employees.size() > 0) {
+            for (Employee employee : employees) {
+                employeeCache.addEmployee(employee);
+            }
+        }
+        return;
+    }
+
+    public Employee getEmployee(String id) {
+        if (id != null) {
+            return employeeCache.getEmployeeById(id);
+        }
+        return null;
     }
 }
 
