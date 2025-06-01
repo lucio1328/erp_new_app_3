@@ -62,22 +62,22 @@
         <!-- 🚻 Genre -->
         <select name="gender">
             <option value="" th:selected="${gender == null or gender == ''}">Tous genres</option>
-            <option th:each="g : ${genres}" th:value="${g}" th:text="${g}" th:selected="${g == gender}"></option>
+            <option th:each="g : ${genres}" th:value="${g.name}" th:text="${g.name}" th:selected="${g.name == gender}"></option>
         </select>
 
         <!-- 🏢 Département -->
         <select name="department">
             <option value="" th:selected="${department == null or department == ''}">Tous départements</option>
-            <option th:each="d : ${departments}" th:value="${d}" th:text="${d}" th:selected="${d == department}"></option>
+            <option th:each="d : ${departments}" th:value="${d.name}" th:text="${d.name}" th:selected="${d.name == department}"></option>
         </select>
 
         <!-- 🧑‍💼 Poste -->
         <select name="designation" th:with="selectedDesignation=${designation != null ? designation : ''}">
             <option value="" th:selected="${selectedDesignation == ''}">Tous postes</option>
             <option th:each="p : ${designations ?: {}}"
-                th:value="${p}"
-                th:text="${p}"
-                th:selected="${p != null and p.equals(designation)}"></option>
+                th:value="${p.name}"
+                th:text="${p.name}"
+                th:selected="${p != null and p.name.equals(designation)}"></option>
         </select>
 
         <button type="submit">Filtrer</button>

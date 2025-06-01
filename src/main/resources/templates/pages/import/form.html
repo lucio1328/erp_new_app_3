@@ -9,7 +9,7 @@
                 <input type="file" id="fichierEmploye" name="fichierEmploye" accept=".csv" required>
             </div>
 
-            <div class="form-group">
+            <!-- <div class="form-group">
                 <label for="fichierStructure">Fichier Structure de Salaire (CSV)</label>
                 <input type="file" id="fichierStructure" name="fichierStructure" accept=".csv" required>
             </div>
@@ -17,9 +17,37 @@
             <div class="form-group">
                 <label for="fichierSalaire">Fichier Salaire (CSV)</label>
                 <input type="file" id="fichierSalaire" name="fichierSalaire" accept=".csv" required>
-            </div>
+            </div> -->
 
             <button type="submit">Importer</button>
         </form>
     </div>
 </div>
+
+<div th:if="${message}" class="alert alert-success">
+    <p th:text="${message}"></p>
+</div>
+
+<div th:if="${erreurs}" class="alert alert-danger">
+    <ul>
+        <li th:each="err : ${erreurs}" th:text="${err}"></li>
+    </ul>
+</div>
+
+<div th:if="${lignesErronees}" class="alert alert-warning">
+    <h3>Lignes avec erreurs :</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Numéro de ligne</th>
+                <th>Contenu</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="ligne : ${lignesErronees}">
+                <td th:text="${ligne}"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
