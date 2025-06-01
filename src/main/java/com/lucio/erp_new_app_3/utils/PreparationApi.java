@@ -56,4 +56,34 @@ public class PreparationApi {
         headers.setContentType(MediaType.APPLICATION_JSON);
         return headers;
     }
+
+    public JsonNode postJsonDataToApi(String endpoint, String jsonBody, String sessionCookie) {
+        String url = erpnextProperties.getUrl() + endpoint;
+        HttpHeaders headers = createHeaders(sessionCookie);
+        HttpEntity<String> request = new HttpEntity<>(jsonBody, headers);
+
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(
+                url,
+                HttpMethod.POST,
+                request,
+                String.class
+            );
+
+            if (response.getStatusCode() == HttpStatus.OK || response.getStatusCode() == HttpStatus.CREATED) {
+                JsonNode root = objectMapper.readTree(response.getBody());
+                return root.get("data");
+            }
+            else {
+                throw new ErpApiException("Erreur HTTP reçue : " + response.getStatusCode().value(), response.getStatusCode().value());
+            }
+        }
+        catch (ErpApiException e) {
+            throw e;
+        }
+        catch (Exception e) {
+            throw new ErpApiException("Erreur lors de l'envoi POST vers l'API ERPNext", HttpStatus.INTERNAL_SERVER_ERROR.value(), e);
+        }
+    }
+
 }

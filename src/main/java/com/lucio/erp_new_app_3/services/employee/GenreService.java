@@ -34,4 +34,35 @@ public class GenreService {
             throw new ErpApiException("Erreur de parsing des genres", HttpStatus.INTERNAL_SERVER_ERROR.value(), e);
         }
     }
+
+    public Genre getByName(String name, String sessionCookie) {
+        String endpoint = "/api/resource/Gender/" + name;
+
+        JsonNode data = preparationApi.getJsonDataFromApi(endpoint, sessionCookie);
+
+        try {
+            return objectMapper.treeToValue(data, Genre.class);
+        }
+        catch (Exception e) {
+            throw new ErpApiException("Erreur de parsing du genre " + name, HttpStatus.INTERNAL_SERVER_ERROR.value(), e);
+        }
+    }
+
+    public Genre create(Genre genre, String sessionCookie) {
+        String endpoint = "/api/resource/Gender";
+        try {
+            String jsonBody = objectMapper.writeValueAsString(genre);
+            JsonNode response = preparationApi.postJsonDataToApi(endpoint, jsonBody, sessionCookie);
+            JsonNode dataNode = response.get("data");
+
+            if (dataNode == null || dataNode.isNull()) {
+                throw new ErpApiException("Erreur lors de la création du genre", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            }
+            return objectMapper.treeToValue(dataNode, Genre.class);
+        }
+        catch (Exception e) {
+            throw new ErpApiException("Erreur lors de la création du genre", HttpStatus.INTERNAL_SERVER_ERROR.value(), e);
+        }
+    }
+
 }

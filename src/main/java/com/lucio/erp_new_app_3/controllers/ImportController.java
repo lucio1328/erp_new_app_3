@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.lucio.erp_new_app_3.services.csv.CsvEmployeImporter;
 import com.lucio.erp_new_app_3.utils.EnvoyeInformation;
 
 import jakarta.servlet.http.HttpSession;
@@ -33,21 +34,17 @@ public class ImportController {
 
     @PostMapping("/upload")
     public ModelAndView handleImport(@RequestParam("fichierEmploye") MultipartFile fichierEmploye,
-                                    // @RequestParam("fichierStructure") MultipartFile fichierStructure,
-                                    // @RequestParam("fichierSalaire") MultipartFile fichierSalaire,
-                                    HttpSession session
-                                ) {
+                                    HttpSession session) {
         ModelAndView modelAndView = new ModelAndView("layout/modele");
 
-        if (fichierEmploye.isEmpty()/* || fichierStructure.isEmpty() || fichierSalaire.isEmpty() */) {
-            modelAndView.addObject("message", "Tous les fichiers doivent être sélectionnés.");
-            EnvoyeInformation.setInfo(modelAndView, "Erreur import", "pages/import/resultat");
-            return modelAndView;
-        }
+        CsvEmployeImporter.ResultatImport resultat = CsvEmployeImporter.traiterCsvEmployes(fichierEmploye);
 
-        modelAndView.addObject("message", "Import réussi !");
+        modelAndView.addObject("message", resultat.message());
+        modelAndView.addObject("erreurs", resultat.erreurs());
+        modelAndView.addObject("lignesErronees", resultat.lignesErronees());
+
         EnvoyeInformation.setInfo(modelAndView, "Résultat import", "pages/import/resultat");
-
         return modelAndView;
     }
+
 }
