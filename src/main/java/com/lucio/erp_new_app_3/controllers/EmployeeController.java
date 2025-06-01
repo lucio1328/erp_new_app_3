@@ -14,6 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.lucio.erp_new_app_3.dtos.employee.Employee;
 import com.lucio.erp_new_app_3.dtos.salary.SalarySlip;
+import com.lucio.erp_new_app_3.services.department.DepartmentService;
 import com.lucio.erp_new_app_3.services.employee.EmployeeService;
 import com.lucio.erp_new_app_3.services.employee.GenreService;
 import com.lucio.erp_new_app_3.services.poste.DesignationService;
@@ -38,6 +39,9 @@ public class EmployeeController {
 
     @Autowired
     private DesignationService designationService;
+
+    @Autowired
+    private DepartmentService departmentService;
 
 
     @GetMapping
@@ -77,7 +81,7 @@ public class EmployeeController {
         modelAndView.addObject("startDate", startDate);
         modelAndView.addObject("endDate", endDate);
 
-        modelAndView.addObject("departments", employeeService.getDepartments(allEmployees));
+        modelAndView.addObject("departments", departmentService.getAllDepartments(sessionCookie));
         modelAndView.addObject("designations", designationService.getAllPostes(sessionCookie));
         modelAndView.addObject("genres", genreService.getAllGenres(sessionCookie));
 

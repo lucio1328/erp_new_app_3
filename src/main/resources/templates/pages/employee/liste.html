@@ -68,7 +68,7 @@
         <!-- 🏢 Département -->
         <select name="department">
             <option value="" th:selected="${department == null or department == ''}">Tous départements</option>
-            <option th:each="d : ${departments}" th:value="${d}" th:text="${d}" th:selected="${d == department}"></option>
+            <option th:each="d : ${departments}" th:value="${d.name}" th:text="${d.name}" th:selected="${d.name == department}"></option>
         </select>
 
         <!-- 🧑‍💼 Poste -->
