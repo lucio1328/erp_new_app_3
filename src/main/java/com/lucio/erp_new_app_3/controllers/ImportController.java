@@ -33,13 +33,13 @@ public class ImportController {
 
     @PostMapping("/upload")
     public ModelAndView handleImport(@RequestParam("fichierEmploye") MultipartFile fichierEmploye,
-                                    @RequestParam("fichierStructure") MultipartFile fichierStructure,
-                                    @RequestParam("fichierSalaire") MultipartFile fichierSalaire,
+                                    // @RequestParam("fichierStructure") MultipartFile fichierStructure,
+                                    // @RequestParam("fichierSalaire") MultipartFile fichierSalaire,
                                     HttpSession session
                                 ) {
         ModelAndView modelAndView = new ModelAndView("layout/modele");
 
-        if (fichierEmploye.isEmpty() || fichierStructure.isEmpty() || fichierSalaire.isEmpty()) {
+        if (fichierEmploye.isEmpty()/* || fichierStructure.isEmpty() || fichierSalaire.isEmpty() */) {
             modelAndView.addObject("message", "Tous les fichiers doivent être sélectionnés.");
             EnvoyeInformation.setInfo(modelAndView, "Erreur import", "pages/import/resultat");
             return modelAndView;
