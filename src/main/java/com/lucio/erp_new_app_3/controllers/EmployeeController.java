@@ -68,7 +68,9 @@ public class EmployeeController {
 
     @GetMapping("/fiche/{employeeId}")
     public ModelAndView ficheEmploye(HttpSession session,
-                                @PathVariable String employeeId) {
+                                @PathVariable String employeeId,
+                                @RequestParam(required = false, defaultValue = "Tous") String month,
+                                @RequestParam(required = false, defaultValue = "Toutes") String year) {
 
         String sessionCookie = (String) session.getAttribute("sid");
         ModelAndView modelAndView = new ModelAndView("layout/modele");
@@ -79,10 +81,17 @@ public class EmployeeController {
         }
 
         Employee employee = employeeService.getEmployee(employeeId);
-        List<SalarySlip> salarySlips = salarySlipService.getSalarySlipsByEmployee(employeeId, sessionCookie);
+
+        List<SalarySlip> salarySlips = salarySlipService.getSalarySlipsByEmployeeWithFilters(employeeId, month, year, sessionCookie);
 
         modelAndView.addObject("employee", employee);
         modelAndView.addObject("salarySlips", salarySlips);
+
+        modelAndView.addObject("months", List.of("Tous", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"));
+        modelAndView.addObject("years", List.of("Toutes", "2023", "2024", "2025"));
+        modelAndView.addObject("selectedMonth", month);
+        modelAndView.addObject("selectedYear", year);
+
         EnvoyeInformation.afficherName(session, modelAndView);
         EnvoyeInformation.setInfo(modelAndView, "Fiche employé", "pages/employee/fiche");
 

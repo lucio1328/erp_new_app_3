@@ -81,33 +81,6 @@ public class SalarySlipController {
         return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
     }
 
-    // @GetMapping("/fiche-paie/{abbrev}/{empName}/{numero}/pdf")
-    // public ResponseEntity<byte[]> exportFichePaiePdf(
-    //         @PathVariable String abbrev,
-    //         @PathVariable String empName,
-    //         @PathVariable String numero,
-    //         HttpSession session) {
-
-    //     String sessionCookie = (String) session.getAttribute("sid");
-    //     if (sessionCookie == null) {
-    //         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-    //     }
-
-    //     String id = abbrev + "/" + empName + "/" + numero;
-    //     SalarySlip fiche = salarySlipService.getSalarySlip(id, sessionCookie);
-
-    //     Map<String, Object> data = new HashMap<>();
-    //     data.put("fiche", fiche);
-
-    //     byte[] pdfBytes = pdfGeneratorService.generatePdfFromThymeleaf("pages/export/fiche-paie-pdf", data);
-
-    //     HttpHeaders headers = new HttpHeaders();
-    //     headers.setContentType(MediaType.APPLICATION_PDF);
-    //     headers.setContentDispositionFormData("attachment", "fiche-paie-" + empName + ".pdf");
-
-    //     return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
-    // }
-
     @GetMapping("/summary")
     public ModelAndView getSalarySummary(@RequestParam(required = false) Integer month,
                                     @RequestParam(required = false) Integer year,

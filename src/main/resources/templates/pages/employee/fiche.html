@@ -25,35 +25,60 @@
                     <p><strong>Salaire:</strong> <span th:text="${#numbers.formatDecimal(employee.ctc, 1, 'POINT', 2, 'COMMA')} + ' ' + ${employee.salaryCurrency}"></span></p>
                     <p><strong>Statut:</strong> <span th:text="${employee.status}"></span></p>
                 </div>
-            </div>
+            </div><br/>
+            <!-- Filtres -->
+            <div class="filters">
+                <form method="get" th:action="@{/employes/fiche/} + ${employee.name}">
+                    <div class="filter-group">
+                        <label for="month">Mois:</label>
+                        <select id="month" name="month">
+                            <option th:each="m : ${months}"
+                                    th:value="${m}"
+                                    th:text="${m != 'Tous'} ? ${T(java.time.Month).of(m).toString()} : 'Tous'"
+                                    th:selected="${m == selectedMonth}"></option>
+                        </select>
+                    </div>
 
+                    <div class="filter-group">
+                        <label for="year">Année:</label>
+                        <select id="year" name="year">
+                            <option th:each="y : ${years}"
+                                    th:value="${y}"
+                                    th:text="${y}"
+                                    th:selected="${y == selectedYear}"></option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Filtrer</button>
+                </form>
+            </div>
             <div class="salary-history" th:if="${salarySlips != null and !salarySlips.isEmpty()}">
-            <h4>Salaires</h4>
-            <table>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Période</th>
-                        <th>Date de versement</th>
-                        <th>Salaire brut</th>
-                        <th>Déductions</th>
-                        <th>Salaire net</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="salary : ${salarySlips}">
-                        <td><a th:href="@{/salary/fiche-paie/} + ${salary.name}"
-                            th:text="${salary.name}"></a>
-                        </td>
-                        <td th:text="${salary.startDate} + ' au ' + ${salary.endDate}"></td>
-                        <td th:text="${salary.postingDate}"></td>
-                        <td th:text="${#numbers.formatDecimal(salary.grossPay, 1, 'POINT', 2, 'COMMA')} + ' ' + ${salary.currency}"></td>
-                        <td th:text="${#numbers.formatDecimal(salary.totalDeduction, 1, 'POINT', 2, 'COMMA')} + ' ' + ${salary.currency}"></td>
-                        <td th:text="${#numbers.formatDecimal(salary.netPay, 1, 'POINT', 2, 'COMMA')} + ' ' + ${salary.currency}"></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+                <h4>Salaires</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Période</th>
+                            <th>Date de versement</th>
+                            <th>Salaire brut</th>
+                            <th>Déductions</th>
+                            <th>Salaire net</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="salary : ${salarySlips}">
+                            <td><a th:href="@{/salary/fiche-paie/} + ${salary.name}"
+                                th:text="${salary.name}"></a>
+                            </td>
+                            <td th:text="${salary.startDate} + ' au ' + ${salary.endDate}"></td>
+                            <td th:text="${salary.postingDate}"></td>
+                            <td th:text="${#numbers.formatDecimal(salary.grossPay, 1, 'POINT', 2, 'COMMA')} + ' ' + ${salary.currency}"></td>
+                            <td th:text="${#numbers.formatDecimal(salary.totalDeduction, 1, 'POINT', 2, 'COMMA')} + ' ' + ${salary.currency}"></td>
+                            <td th:text="${#numbers.formatDecimal(salary.netPay, 1, 'POINT', 2, 'COMMA')} + ' ' + ${salary.currency}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
