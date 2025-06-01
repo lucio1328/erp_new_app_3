@@ -1,12 +1,92 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<style>
+    form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: flex-end;
+        margin-bottom: 2rem;
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid #ddd;
+    }
+
+    form input[type="text"],
+    form input[type="date"],
+    form select {
+        padding: 0.5rem;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        font-size: 1rem;
+        min-width: 180px;
+    }
+
+    form label {
+        font-weight: bold;
+        margin-right: 0.5rem;
+        font-size: 0.95rem;
+    }
+
+    form button[type="submit"] {
+        padding: 0.6rem 1.2rem;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background-color 0.2s ease-in-out;
+    }
+
+    form button[type="submit"]:hover {
+        background-color: #0056b3;
+    }
+</style>
 <body>
 <div th:fragment="contenu">
     <h2>Liste des employés</h2>
+
+    <!-- 🔍 Formulaire de filtre -->
+    <form method="get" th:action="@{/employes}">
+        <!-- 🔤 Nom et prénom -->
+        <input type="text" name="employeeName" placeholder="Nom ou prénom" th:value="${employeeName}"/>
+
+        <!-- 📅 Date d'embauche - entre deux dates -->
+        <label for="">Date d'embauche entre</label>
+        <input type="date" name="startDate" th:value="${startDate}"/>
+        <label for="">Et</label>
+        <input type="date" name="endDate" th:value="${endDate}"/>
+
+        <!-- 🚻 Genre -->
+        <select name="gender">
+            <option value="" th:selected="${gender == null or gender == ''}">Tous genres</option>
+            <option th:each="g : ${genres}" th:value="${g}" th:text="${g}" th:selected="${g == gender}"></option>
+        </select>
+
+        <!-- 🏢 Département -->
+        <select name="department">
+            <option value="" th:selected="${department == null or department == ''}">Tous départements</option>
+            <option th:each="d : ${departments}" th:value="${d}" th:text="${d}" th:selected="${d == department}"></option>
+        </select>
+
+        <!-- 🧑‍💼 Poste -->
+        <select name="designation" th:with="selectedDesignation=${designation != null ? designation : ''}">
+            <option value="" th:selected="${selectedDesignation == ''}">Tous postes</option>
+            <option th:each="p : ${designations ?: {}}"
+                th:value="${p}"
+                th:text="${p}"
+                th:selected="${p != null and p.equals(designation)}"></option>
+        </select>
+
+        <button type="submit">Filtrer</button>
+    </form>
+
     <table>
         <thead>
         <tr>
-            <th>Nom et Prenom</th>
+            <th>Nom et Prénom</th>
             <th>Genre</th>
             <th>Date de naissance</th>
             <th>Email</th>
@@ -16,11 +96,9 @@
         </thead>
         <tbody>
         <tr th:each="employee : ${employees}">
-            <td>
-                <span th:text="${employee.lastName}"></span>
-                <span th:text="${employee.middleName}"></span>
-                <span th:text="${employee.firstName}"></span>
-            </td>
+            <td><a th:href="@{/employes/fiche/} + ${employee.name}"
+                th:text="${employee.employeeName}"></a>
+        </td>
             <td th:text="${employee.gender}"></td>
             <td th:text="${employee.dateOfBirth}"></td>
             <td th:text="${employee.companyEmail}"></td>
@@ -34,16 +112,28 @@
         <span th:text="'Page ' + (${currentPage} + 1) + ' / ' + ${totalPages}"></span>
 
         <a th:if="${currentPage > 0}"
-        th:href="@{/employes(page=${currentPage - 1}, size=10)}">Précédent</a>
+            th:href="@{/employes(page=${currentPage - 1}, size=10,
+                        employeeName=${employeeName},
+                        gender=${gender},
+                        department=${department},
+                        designation=${designation})}">Précédent</a>
 
         <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
-            <a th:href="@{/employes(page=${i}, size=10)}"
+            <a th:href="@{/employes(page=${i}, size=10,
+                            employeeName=${employeeName},
+                            gender=${gender},
+                            department=${department},
+                            designation=${designation})}"
             th:text="${i + 1}"
             th:classappend="${i == currentPage} ? 'active' : ''"></a>
         </span>
 
         <a th:if="${currentPage + 1 < totalPages}"
-        th:href="@{/employes(page=${currentPage + 1}, size=10)}">Suivant</a>
+            th:href="@{/employes(page=${currentPage + 1}, size=10,
+                        employeeName=${employeeName},
+                        gender=${gender},
+                        department=${department},
+                        designation=${designation})}">Suivant</a>
     </div>
 </div>
 </body>

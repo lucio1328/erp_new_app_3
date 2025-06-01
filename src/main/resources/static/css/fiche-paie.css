@@ -1,0 +1,165 @@
+.salary-slip-container {
+    font-family: Arial, sans-serif;
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 30px;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    background-color: #fff;
+    line-height: 1.6;
+}
+
+.slip-header {
+    text-align: center;
+    margin-bottom: 30px;
+    border-bottom: 2px solid #333;
+    padding-bottom: 15px;
+}
+
+.slip-header h1 {
+    margin: 0;
+    font-size: 28px;
+    letter-spacing: 1px;
+}
+
+.slip-reference {
+    font-weight: bold;
+    margin-top: 10px;
+    font-size: 16px;
+}
+
+.employee-section,
+.days-section,
+.amounts-section,
+.totals-section {
+    margin-bottom: 30px;
+}
+
+.employee-info table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+    font-size: 15px;
+}
+
+.employee-info th,
+.employee-info td {
+    padding: 8px;
+    text-align: left;
+    vertical-align: top;
+}
+
+.employee-details {
+    display: flex;
+    justify-content: space-between;
+    gap: 30px;
+    margin-bottom: 20px;
+}
+
+.detail-column {
+    flex: 1;
+    padding: 0 10px;
+    font-size: 14px;
+}
+
+.detail-column p {
+    margin: 8px 0;
+}
+
+.days-section table,
+.totals-section table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+    margin-bottom: 15px;
+}
+
+.days-section th,
+.days-section td,
+.totals-section th,
+.totals-section td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+.amounts-section {
+    display: flex;
+    justify-content: space-between;
+    gap: 40px;
+}
+
+.amounts-column {
+    flex: 1;
+    padding: 0 10px;
+}
+
+.amounts-column table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 15px;
+}
+
+.amounts-column th,
+.amounts-column td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.annual-taxable {
+    text-align: right;
+    margin-top: 20px;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.page-number {
+    text-align: right;
+    font-style: italic;
+    margin-top: 30px;
+    font-size: 13px;
+}
+
+.actions {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 0 12px;
+    font-size: 14px;
+    text-decoration: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    color: white;
+}
+
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+    border: none;
+}
+
+/* Impression */
+@media print {
+    .actions {
+        display: none;
+    }
+
+    body {
+        padding: 0;
+        margin: 0;
+    }
+
+    .salary-slip-container {
+        box-shadow: none;
+        border: none;
+    }
+}
