@@ -151,6 +151,10 @@
             border: none;
         }
 
+        .avoid-page-break {
+            page-break-inside: avoid;
+        }
+
         /* Impression */
         @media print {
             .actions {
@@ -196,40 +200,26 @@
                 </table>
             </div>
 
-            <div class="employee-details">
-                <div class="detail-column">
-                    <p><strong>Nom de l'Employé:</strong></p>
-                    <p th:text="${fiche.employeeName}"></p>
-
-                    <p><strong>Société:</strong></p>
-                    <p th:text="${fiche.company}"></p>
-
-                    <p><strong>Département:</strong></p>
-                    <p th:text="${fiche.department}"></p>
-                </div>
-
-                <div class="detail-column">
-                    <p><strong>Désignation:</strong></p>
-                    <p th:text="${fiche.designation}"></p>
-
-                    <p><strong>Fréquence de la Paie:</strong></p>
-                    <p th:text="${fiche.payrollFrequency}"></p>
-
-                    <p><strong>Grille des Salaires:</strong></p>
-                    <p th:text="${fiche.salaryStructure}"></p>
-                </div>
-
-                <div class="detail-column">
-                    <p><strong>Date de Début:</strong></p>
-                    <p th:text="${fiche.startDate}"></p>
-
-                    <p><strong>Mode de Paiement:</strong></p>
-                    <p th:text="${fiche.modeOfPayment}"></p>
-
-                    <p><strong>Date de Fin:</strong></p>
-                    <p th:text="${fiche.endDate}"></p>
-                </div>
-            </div>
+            <!-- Remplacement de display:flex par un tableau -->
+            <table style="width: 100%; font-size: 14px; border-collapse: collapse; margin-bottom: 20px;">
+                <tr>
+                    <td style="vertical-align: top; padding: 5px;">
+                        <p><strong>Nom de l'Employé:</strong><br/><span th:text="${fiche.employeeName}"></span></p>
+                        <p><strong>Société:</strong><br/><span th:text="${fiche.company}"></span></p>
+                        <p><strong>Département:</strong><br/><span th:text="${fiche.department}"></span></p>
+                    </td>
+                    <td style="vertical-align: top; padding: 5px;">
+                        <p><strong>Désignation:</strong><br/><span th:text="${fiche.designation}"></span></p>
+                        <p><strong>Fréquence de la Paie:</strong><br/><span th:text="${fiche.payrollFrequency}"></span></p>
+                        <p><strong>Grille des Salaires:</strong><br/><span th:text="${fiche.salaryStructure}"></span></p>
+                    </td>
+                    <td style="vertical-align: top; padding: 5px;">
+                        <p><strong>Date de Début:</strong><br/><span th:text="${fiche.startDate}"></span></p>
+                        <p><strong>Mode de Paiement:</strong><br/><span th:text="${fiche.modeOfPayment}"></span></p>
+                        <p><strong>Date de Fin:</strong><br/><span th:text="${fiche.endDate}"></span></p>
+                    </td>
+                </tr>
+            </table>
         </div>
 
         <!-- Section jours travaillés -->
@@ -286,7 +276,7 @@
         </div>
 
         <!-- Section basse avec les totaux -->
-        <div class="totals-section">
+        <div class="totals-section avoid-page-break">
             <table>
                 <tr>
                     <th>Total en toutes lettres:</th>
