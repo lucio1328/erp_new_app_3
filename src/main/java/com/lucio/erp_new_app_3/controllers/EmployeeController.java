@@ -15,6 +15,8 @@ import org.springframework.web.servlet.ModelAndView;
 import com.lucio.erp_new_app_3.dtos.employee.Employee;
 import com.lucio.erp_new_app_3.dtos.salary.SalarySlip;
 import com.lucio.erp_new_app_3.services.employee.EmployeeService;
+import com.lucio.erp_new_app_3.services.employee.GenreService;
+import com.lucio.erp_new_app_3.services.poste.DesignationService;
 import com.lucio.erp_new_app_3.services.salary.SalarySlipService;
 import com.lucio.erp_new_app_3.utils.EnvoyeInformation;
 import com.lucio.erp_new_app_3.utils.PaginationUtils;
@@ -30,6 +32,12 @@ public class EmployeeController {
 
     @Autowired
     private SalarySlipService salarySlipService;
+
+    @Autowired
+    private GenreService genreService;
+
+    @Autowired
+    private DesignationService designationService;
 
 
     @GetMapping
@@ -70,8 +78,8 @@ public class EmployeeController {
         modelAndView.addObject("endDate", endDate);
 
         modelAndView.addObject("departments", employeeService.getDepartments(allEmployees));
-        modelAndView.addObject("designations", employeeService.getDesignations(allEmployees));
-        modelAndView.addObject("genres", employeeService.getGenres(allEmployees));
+        modelAndView.addObject("designations", designationService.getAllPostes(sessionCookie));
+        modelAndView.addObject("genres", genreService.getAllGenres(sessionCookie));
 
         employeeService.addEmployes(paginatedEmployees);
 
