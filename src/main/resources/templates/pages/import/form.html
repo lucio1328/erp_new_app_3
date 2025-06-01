@@ -1,0 +1,25 @@
+<link rel="stylesheet" th:href="@{/css/import.css}">
+<div th:fragment="content">
+    <div class="form-card">
+        <h2 class="form-title">Importer des fichiers CSV</h2>
+
+        <form th:action="@{/import/upload}" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="fichierEmploye">Fichier Employé (CSV)</label>
+                <input type="file" id="fichierEmploye" name="fichierEmploye" accept=".csv" required>
+            </div>
+
+            <div class="form-group">
+                <label for="fichierStructure">Fichier Structure de Salaire (CSV)</label>
+                <input type="file" id="fichierStructure" name="fichierStructure" accept=".csv" required>
+            </div>
+
+            <div class="form-group">
+                <label for="fichierSalaire">Fichier Salaire (CSV)</label>
+                <input type="file" id="fichierSalaire" name="fichierSalaire" accept=".csv" required>
+            </div>
+
+            <button type="submit">Importer</button>
+        </form>
+    </div>
+</div>

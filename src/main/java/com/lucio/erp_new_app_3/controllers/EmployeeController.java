@@ -1,8 +1,10 @@
 package com.lucio.erp_new_app_3.controllers;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,7 +36,12 @@ public class EmployeeController {
     public ModelAndView listeEmployes(HttpSession session,
                                     @RequestParam(defaultValue = "0") int page,
                                     @RequestParam(defaultValue = "10") int size,
-                                    @RequestParam(defaultValue = "liste") String recherche) {
+                                    @RequestParam(required = false) String employeeName,
+                                    @RequestParam(required = false) String gender,
+                                    @RequestParam(required = false) String designation,
+                                    @RequestParam(required = false) String department,
+                                    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+                                    @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
 
         String sessionCookie = (String) session.getAttribute("sid");
         ModelAndView modelAndView = new ModelAndView("layout/modele");
@@ -44,20 +51,29 @@ public class EmployeeController {
             return modelAndView;
         }
 
-        if (!recherche.equals("recherche")) {
-            List<Employee> allEmployees = employeeService.getAllEmployees(sessionCookie);
-            employeeService.addEmployes(allEmployees);
+        List<Employee> allEmployees = employeeService.getAllEmployees(sessionCookie);
 
-            List<Employee> paginatedEmployees = PaginationUtils.paginate(allEmployees, page, size);
-            int totalPages = PaginationUtils.getTotalPages(allEmployees.size(), size);
+        List<Employee> filteredEmployees = employeeService.filtreEmployees(allEmployees, employeeName, gender, designation, department, startDate, endDate);
 
-            modelAndView.addObject("employees", paginatedEmployees);
-            modelAndView.addObject("currentPage", page);
-            modelAndView.addObject("totalPages", totalPages);
-        }
-        else {
+        List<Employee> paginatedEmployees = PaginationUtils.paginate(filteredEmployees, page, size);
+        int totalPages = PaginationUtils.getTotalPages(filteredEmployees.size(), size);
 
-        }
+        modelAndView.addObject("employees", paginatedEmployees);
+        modelAndView.addObject("currentPage", page);
+        modelAndView.addObject("totalPages", totalPages);
+
+        modelAndView.addObject("employeeName", employeeName);
+        modelAndView.addObject("gender", gender);
+        modelAndView.addObject("designation", designation);
+        modelAndView.addObject("department", department);
+        modelAndView.addObject("startDate", startDate);
+        modelAndView.addObject("endDate", endDate);
+
+        modelAndView.addObject("departments", employeeService.getDepartments(allEmployees));
+        modelAndView.addObject("designations", employeeService.getDesignations(allEmployees));
+        modelAndView.addObject("genres", employeeService.getGenres(allEmployees));
+
+        employeeService.addEmployes(paginatedEmployees);
 
         EnvoyeInformation.afficherName(session, modelAndView);
         EnvoyeInformation.setInfo(modelAndView, "Liste des employés", "pages/employee/liste");
@@ -81,6 +97,8 @@ public class EmployeeController {
         }
 
         Employee employee = employeeService.getEmployee(employeeId);
+
+        System.out.println("Employe: "+ employee);
 
         List<SalarySlip> salarySlips = salarySlipService.getSalarySlipsByEmployeeWithFilters(employeeId, month, year, sessionCookie);
 

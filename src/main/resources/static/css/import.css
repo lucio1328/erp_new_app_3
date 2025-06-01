@@ -1,0 +1,45 @@
+.form-card {
+    background-color: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 2rem 2.5rem;
+}
+
+.form-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: var(--text);
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: var(--text);
+}
+
+.form-group input[type="file"] {
+    padding: 0.5rem;
+    font-size: 0.9375rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background-color: #f7fafc;
+    transition: border-color 0.2s ease;
+}
+
+.form-group input[type="file"]:focus {
+    border-color: var(--primary);
+    outline: none;
+    background-color: white;
+}

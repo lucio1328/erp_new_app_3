@@ -1,31 +1,87 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+<style>
+    form {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: flex-end;
+        margin-bottom: 2rem;
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid #ddd;
+    }
+
+    form input[type="text"],
+    form input[type="date"],
+    form select {
+        padding: 0.5rem;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        font-size: 1rem;
+        min-width: 180px;
+    }
+
+    form label {
+        font-weight: bold;
+        margin-right: 0.5rem;
+        font-size: 0.95rem;
+    }
+
+    form button[type="submit"] {
+        padding: 0.6rem 1.2rem;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background-color 0.2s ease-in-out;
+    }
+
+    form button[type="submit"]:hover {
+        background-color: #0056b3;
+    }
+</style>
 <body>
 <div th:fragment="contenu">
     <h2>Liste des employés</h2>
 
     <!-- 🔍 Formulaire de filtre -->
-    <!-- <form method="get" th:action="@{/employes}">
-        <input type="text" name="employeeName" placeholder="Nom" th:value="${employeeName}"/>
+    <form method="get" th:action="@{/employes}">
+        <!-- 🔤 Nom et prénom -->
+        <input type="text" name="employeeName" placeholder="Nom ou prénom" th:value="${employeeName}"/>
 
+        <!-- 📅 Date d'embauche - entre deux dates -->
+        <label for="">Date d'embauche entre</label>
+        <input type="date" name="startDate" th:value="${startDate}"/>
+        <label for="">Et</label>
+        <input type="date" name="endDate" th:value="${endDate}"/>
+
+        <!-- 🚻 Genre -->
         <select name="gender">
-            <option th:value="" th:selected="${gender == null or gender == ''}">Tous genres</option>
-            <option th:value="'Male'" th:selected="${gender == 'Male'}">Homme</option>
-            <option th:value="'Female'" th:selected="${gender == 'Female'}">Femme</option>
+            <option value="" th:selected="${gender == null or gender == ''}">Tous genres</option>
+            <option th:each="g : ${genres}" th:value="${g}" th:text="${g}" th:selected="${g == gender}"></option>
         </select>
 
+        <!-- 🏢 Département -->
         <select name="department">
-            <option th:value="" th:selected="${department == null or department == ''}">Tous départements</option>
+            <option value="" th:selected="${department == null or department == ''}">Tous départements</option>
             <option th:each="d : ${departments}" th:value="${d}" th:text="${d}" th:selected="${d == department}"></option>
         </select>
 
-        <select name="designation">
-            <option th:value="" th:selected="${designation == null or designation == ''}">Tous postes</option>
-            <option th:each="p : ${designations}" th:value="${p}" th:text="${p}" th:selected="${p == designation}"></option>
+        <!-- 🧑‍💼 Poste -->
+        <select name="designation" th:with="selectedDesignation=${designation != null ? designation : ''}">
+            <option value="" th:selected="${selectedDesignation == ''}">Tous postes</option>
+            <option th:each="p : ${designations ?: {}}"
+                th:value="${p}"
+                th:text="${p}"
+                th:selected="${p != null and p.equals(designation)}"></option>
         </select>
 
         <button type="submit">Filtrer</button>
-    </form> -->
+    </form>
 
     <table>
         <thead>

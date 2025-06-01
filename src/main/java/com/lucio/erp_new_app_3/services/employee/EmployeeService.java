@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -54,6 +55,50 @@ public class EmployeeService {
             return employeeCache.getEmployeeById(id);
         }
         return null;
+    }
+
+    public List<String> getDepartments(List<Employee> employees) {
+        return employees.stream()
+                .map(Employee::getDepartment)
+                .distinct()
+                .sorted()
+                .toList();
+    }
+
+    public List<String> getDesignations(List<Employee> employees) {
+        return employees.stream()
+                .map(Employee::getDesignation)
+                .distinct()
+                .sorted()
+                .toList();
+    }
+
+    public List<String> getGenres(List<Employee> employees) {
+        return employees.stream()
+                .map(Employee::getGender)
+                .distinct()
+                .sorted()
+                .toList();
+    }
+
+    public List<Employee> filtreEmployees(List<Employee> employees, String employeeName,
+                                        String gender,
+                                        String designation,
+                                        String department,
+                                        LocalDate startDate,
+                                        LocalDate endDate) {
+
+        return employees.stream()
+                        .filter(emp -> employeeName == null || emp.getEmployeeName().toLowerCase().contains(employeeName.toLowerCase()))
+                        .filter(emp -> gender == null || gender.isEmpty() || gender.equalsIgnoreCase(emp.getGender()))
+                        .filter(emp -> department == null || department.isEmpty() || department.equalsIgnoreCase(emp.getDepartment()))
+                        .filter(emp -> designation == null || designation.isEmpty() || designation.equalsIgnoreCase(emp.getDesignation()))
+                        .filter(emp -> {
+                            LocalDate joiningDate = emp.getDateOfJoining();
+                            return (startDate == null || !joiningDate.isBefore(startDate)) &&
+                                (endDate == null || !joiningDate.isAfter(endDate));
+                        })
+                        .toList();
     }
 }
 
