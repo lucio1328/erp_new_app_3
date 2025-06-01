@@ -36,16 +36,12 @@ public class GenreService {
     }
 
     public Genre getByName(String name, String sessionCookie) {
-        String endpoint = "/api/resource/Gender/" + name;
+        List<Genre> genres = getAllGenres(sessionCookie);
 
-        JsonNode data = preparationApi.getJsonDataFromApi(endpoint, sessionCookie);
-
-        try {
-            return objectMapper.treeToValue(data, Genre.class);
-        }
-        catch (Exception e) {
-            throw new ErpApiException("Erreur de parsing du genre " + name, HttpStatus.INTERNAL_SERVER_ERROR.value(), e);
-        }
+        return genres.stream()
+            .filter(g -> g.getName() != null && g.getName().equalsIgnoreCase(name))
+            .findFirst()
+            .orElse(null);
     }
 
     public Genre create(Genre genre, String sessionCookie) {
@@ -53,12 +49,11 @@ public class GenreService {
         try {
             String jsonBody = objectMapper.writeValueAsString(genre);
             JsonNode response = preparationApi.postJsonDataToApi(endpoint, jsonBody, sessionCookie);
-            JsonNode dataNode = response.get("data");
 
-            if (dataNode == null || dataNode.isNull()) {
+            if (response == null || response.isNull()) {
                 throw new ErpApiException("Erreur lors de la création du genre", HttpStatus.INTERNAL_SERVER_ERROR.value());
             }
-            return objectMapper.treeToValue(dataNode, Genre.class);
+            return objectMapper.treeToValue(response, Genre.class);
         }
         catch (Exception e) {
             throw new ErpApiException("Erreur lors de la création du genre", HttpStatus.INTERNAL_SERVER_ERROR.value(), e);

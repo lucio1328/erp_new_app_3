@@ -53,12 +53,11 @@ public class CompanyService {
         try {
             String jsonBody = objectMapper.writeValueAsString(company);
             JsonNode response = preparationApi.postJsonDataToApi(endpoint, jsonBody, sessionCookie);
-            JsonNode dataNode = response.get("data");
 
-            if (dataNode == null || dataNode.isNull()) {
+            if (response == null || response.isNull()) {
                 throw new ErpApiException("Erreur lors de la création du company", HttpStatus.INTERNAL_SERVER_ERROR.value());
             }
-            return objectMapper.treeToValue(dataNode, Company.class);
+            return objectMapper.treeToValue(response, Company.class);
         }
         catch (Exception e) {
             throw new ErpApiException("Erreur lors de la création du company", HttpStatus.INTERNAL_SERVER_ERROR.value(), e);

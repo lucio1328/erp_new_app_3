@@ -1,5 +1,6 @@
 package com.lucio.erp_new_app_3.controllers;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +17,9 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 @RequestMapping("/import")
 public class ImportController {
+    @Autowired
+    private CsvEmployeImporter csvEmployeImporter;
+
     @GetMapping
     public ModelAndView formulaire(HttpSession session) {
         String sessionCookie = (String) session.getAttribute("sid");
@@ -35,15 +39,17 @@ public class ImportController {
     @PostMapping("/upload")
     public ModelAndView handleImport(@RequestParam("fichierEmploye") MultipartFile fichierEmploye,
                                     HttpSession session) {
+        String sessionCookie = (String) session.getAttribute("sid");
         ModelAndView modelAndView = new ModelAndView("layout/modele");
 
-        CsvEmployeImporter.ResultatImport resultat = CsvEmployeImporter.traiterCsvEmployes(fichierEmploye);
+        CsvEmployeImporter.ResultatImport resultat = csvEmployeImporter.traiterCsvEmployes(fichierEmploye, sessionCookie);
 
         modelAndView.addObject("message", resultat.message());
         modelAndView.addObject("erreurs", resultat.erreurs());
         modelAndView.addObject("lignesErronees", resultat.lignesErronees());
 
-        EnvoyeInformation.setInfo(modelAndView, "Résultat import", "pages/import/resultat");
+        EnvoyeInformation.afficherName(session, modelAndView);
+        EnvoyeInformation.setInfo(modelAndView, "Résultat import", "pages/import/form");
         return modelAndView;
     }
 

@@ -100,5 +100,24 @@ public class EmployeeService {
                         })
                         .toList();
     }
+
+    public Employee create(Employee employee, String sessionCookie) {
+        String endpoint = "/api/resource/Employee";
+        try {
+            String jsonBody = objectMapper.writeValueAsString(employee);
+            JsonNode response = preparationApi.postJsonDataToApi(endpoint, jsonBody, sessionCookie);
+
+            if (response == null || response.isNull()) {
+                throw new ErpApiException("Erreur lors de la création d'employe", HttpStatus.INTERNAL_SERVER_ERROR.value());
+            }
+
+            return objectMapper.treeToValue(response, Employee.class);
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            throw new ErpApiException("Erreur lors de la création d'employe", HttpStatus.INTERNAL_SERVER_ERROR.value(), e);
+        }
+    }
+
 }
 
