@@ -91,6 +91,52 @@
             </table>
         </div>
 
+        <!-- Section Gains -->
+        <div class="earnings-section">
+            <h3>Gains</h3>
+            <table class="earnings-table">
+                <thead>
+                    <tr>
+                        <th>Composante</th>
+                        <th>Code</th>
+                        <th>Montant</th>
+                        <th>Année à ce jour</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="earning : ${fiche.earnings}">
+                        <td th:text="${earning.salaryComponent}"></td>
+                        <td th:text="${earning.abbr}"></td>
+                        <td th:text="${#numbers.formatDecimal(earning.amount, 1, 'POINT', 2, 'COMMA')} + ' ' + ${fiche.currency}"></td>
+                        <td th:text="${#numbers.formatDecimal(earning.yearToDate, 1, 'POINT', 2, 'COMMA')} + ' ' + ${fiche.currency}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Section Déductions -->
+        <div class="deductions-section">
+            <h3>Déductions</h3>
+            <table class="deductions-table">
+                <thead>
+                    <tr>
+                        <th>Composante</th>
+                        <th>Code</th>
+                        <th>Montant</th>
+                        <th>Année à ce jour</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="deduction : ${fiche.deductions}">
+                        <td th:text="${deduction.salaryComponent}"></td>
+                        <td th:text="${deduction.abbr}"></td>
+                        <td th:text="${#numbers.formatDecimal(deduction.amount, 1, 'POINT', 2, 'COMMA')} + ' ' + ${fiche.currency}"></td>
+                        <td th:text="${#numbers.formatDecimal(deduction.yearToDate, 1, 'POINT', 2, 'COMMA')} + ' ' + ${fiche.currency}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
         <!-- Section montants -->
         <div class="amounts-section">
             <div class="amounts-column">

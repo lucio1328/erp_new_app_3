@@ -41,10 +41,10 @@ public class SalarySlipService {
 
     public SalarySlip getSalarySlip(String name, String sessionCookie) {
         try {
-            String endpoint = "/api/resource/Salary Slip?fields=[\"*\"]&filters=[[\"name\",\"=\",\"" + name + "\"]]";
+            String endpoint = "/api/resource/Salary Slip/" + name;
             JsonNode response = preparationApi.getJsonDataFromApi(endpoint, sessionCookie);
 
-            return objectMapper.treeToValue(response.get(0), SalarySlip.class);
+            return objectMapper.treeToValue(response, SalarySlip.class);
 
         }
         catch (Exception e) {

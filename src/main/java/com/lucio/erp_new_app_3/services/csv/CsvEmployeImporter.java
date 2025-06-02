@@ -128,11 +128,11 @@ public class CsvEmployeImporter {
     }
 
     public static String generateAbbreviation(String companyName) {
-    return Arrays.stream(companyName.split(" "))
-                .filter(word -> !word.isEmpty())
-                .map(word -> word.substring(0, 1).toUpperCase())
-                .collect(Collectors.joining());
-}
+        return Arrays.stream(companyName.split(" "))
+                    .filter(word -> !word.isEmpty())
+                    .map(word -> word.substring(0, 1).toUpperCase())
+                    .collect(Collectors.joining());
+    }
 
 
 }
