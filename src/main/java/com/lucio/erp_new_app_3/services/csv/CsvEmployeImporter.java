@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -44,6 +43,8 @@ public class CsvEmployeImporter {
             return new ResultatImport("Le fichier est vide.", List.of("Fichier vide"), lignesErronees);
         }
 
+        List<Employee> employeesToCreate = new ArrayList<>();
+
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(fichierEmploye.getInputStream(), StandardCharsets.UTF_8))) {
 
@@ -76,7 +77,6 @@ public class CsvEmployeImporter {
                     lignesErronees.add(ligne);
                     continue;
                 }
-
                 String genre = champs[3];
                 String company = champs[6];
 
@@ -84,7 +84,6 @@ public class CsvEmployeImporter {
                     Genre newGenre = new Genre();
                     newGenre.setName(genre);
                     newGenre.setGender(genre);
-
                     genreService.create(newGenre, sessionCookie);
                 }
 
@@ -95,27 +94,24 @@ public class CsvEmployeImporter {
                     newCompany.setAbbr(generateAbbreviation(company));
                     newCompany.setDefaultCurrency("EURO");
                     newCompany.setCountry("Madagascar");
-
                     companyService.create(newCompany, sessionCookie);
                 }
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 
                 Employee employee = new Employee();
                 employee.setLastName(champs[1]);
                 employee.setFirstName(champs[2]);
                 employee.setGender(genre);
 
-                LocalDate dateE = LocalDate.parse(dateEmbauche, formatter);
+                LocalDate dateE = DateValidator.normalizeToStandardFormat(dateEmbauche);
                 employee.setDateOfJoining(dateE);
 
-                LocalDate dateN = LocalDate.parse(dateNaissance, formatter);
+                LocalDate dateN = DateValidator.normalizeToStandardFormat(dateNaissance);
                 employee.setDateOfBirth(dateN);
 
                 employee.setCompany(company);
                 employee.setStatus("Active");
 
-                employeeService.create(employee, sessionCookie);
-
+                employeesToCreate.add(employee);
             }
 
         }
@@ -123,8 +119,15 @@ public class CsvEmployeImporter {
             return new ResultatImport("Erreur de lecture du fichier.", List.of(e.getMessage()), lignesErronees);
         }
 
-        String message = erreurs.isEmpty() ? "Import réussi !" : "Import terminé avec des erreurs.";
-        return new ResultatImport(message, erreurs, lignesErronees);
+        if (!erreurs.isEmpty()) {
+            return new ResultatImport("Import annulé : erreurs détectées.", erreurs, lignesErronees);
+        }
+
+        for (Employee e : employeesToCreate) {
+            employeeService.create(e, sessionCookie);
+        }
+
+        return new ResultatImport("Import réussi !", List.of(), List.of());
     }
 
     public static String generateAbbreviation(String companyName) {
