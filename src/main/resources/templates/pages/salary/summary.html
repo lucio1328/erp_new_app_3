@@ -106,25 +106,25 @@
                 <!-- Salaire Brut -->
                 <td class="currency"
                     th:text="${not salarySlips.empty}
-                            ? ${#numbers.formatDecimal(totals.totalGrossPay, 1, 2, 'COMMA') + ' ' + salarySlips[0].currency} 
+                            ? ${#numbers.formatDecimal(totals.totalGrossPay, 1, 2, 'COMMA') + ' ' + salarySlips[0].currency}
                             : '0,00 EURO'">
                 </td>
                 <!-- Déductions -->
                 <td class="currency"
                     th:text="${not salarySlips.empty}
-                            ? ${#numbers.formatDecimal(totals.totalDeductions, 1, 2, 'COMMA') + ' ' + salarySlips[0].currency} 
+                            ? ${#numbers.formatDecimal(totals.totalDeductions, 1, 2, 'COMMA') + ' ' + salarySlips[0].currency}
                             : '0,00 EURO'">
                 </td>
                 <!-- Net à Payer -->
                 <td class="currency"
                     th:text="${not salarySlips.empty}
-                            ? ${#numbers.formatDecimal(totals.totalNetPay, 1, 2, 'COMMA') + ' ' + salarySlips[0].currency} 
+                            ? ${#numbers.formatDecimal(totals.totalNetPay, 1, 2, 'COMMA') + ' ' + salarySlips[0].currency}
                             : '0,00 EURO'">
                 </td>
                 <!-- CTC -->
                 <td class="currency"
                     th:text="${not salarySlips.empty}
-                            ? ${#numbers.formatDecimal(totals.totalCtc, 1, 2, 'COMMA') + ' ' + salarySlips[0].currency} 
+                            ? ${#numbers.formatDecimal(totals.totalCtc, 1, 2, 'COMMA') + ' ' + salarySlips[0].currency}
                             : '0,00 EURO'">
                 </td>
             </tr>

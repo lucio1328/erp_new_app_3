@@ -6,6 +6,7 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class SalarySlip {
@@ -198,5 +199,11 @@ public class SalarySlip {
 
     @JsonProperty("bank_account_no")
     private String bankAccountNo;
+
+    @JsonProperty("earnings")
+    private List<SalaryEarning> earnings;
+
+    @JsonProperty("deductions")
+    private List<SalaryDeduction> deductions;
 }
 
