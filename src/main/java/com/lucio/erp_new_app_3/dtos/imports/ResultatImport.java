@@ -1,4 +1,4 @@
-package com.evaluation.erpnext_spring.dto.imports;
+package com.lucio.erp_new_app_3.dtos.imports;
 
 import lombok.Data;
 
@@ -15,8 +15,8 @@ public class ResultatImport {
     private List<RapportErreur> erreursEmploye;
     private List<RapportErreur> erreursGrille;
     private List<RapportErreur> erreursSalaire;
+
     public ResultatImport() {
-        
         this.employesValides=new ArrayList<>();
         this.grilleSalaireDatas=new ArrayList<>();
         this.salaireDatas=new ArrayList<>();
