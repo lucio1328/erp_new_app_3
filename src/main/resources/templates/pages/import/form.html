@@ -1,53 +1,147 @@
 <link rel="stylesheet" th:href="@{/css/import.css}">
-<div th:fragment="content">
-    <div class="form-card">
-        <h2 class="form-title">Importer des fichiers CSV</h2>
+<div class="form-container">
+<div class="form-card">
+    <h2 class="form-title">Importation de données</h2>
+    <p class="form-description">Formulaire pour importer trois fichiers avec validation des données.</p>
 
-        <form th:action="@{/import/upload}" method="post" enctype="multipart/form-data">
-            <!-- <div class="form-group">
-                <label for="fichierEmploye">Fichier Employé (CSV)</label>
-                <input type="file" id="fichierEmploye" name="fichierEmploye" accept=".csv" required>
-            </div> -->
-
-            <div class="form-group">
-                <label for="fichierStructure">Fichier Structure de Salaire (CSV)</label>
-                <input type="file" id="fichierStructure" name="fichierStructure" accept=".csv" required>
-            </div>
-
-            <!-- <div class="form-group">
-                <label for="fichierSalaire">Fichier Salaire (CSV)</label>
-                <input type="file" id="fichierSalaire" name="fichierSalaire" accept=".csv" required>
-            </div> -->
-
-            <button type="submit">Importer</button>
-        </form>
+    <!-- Message d'erreur global -->
+    <div th:if="${errorGlobal != null}" class="alert alert-danger">
+    <p th:text="${errorGlobal}"></p>
     </div>
+
+    <!-- Message de succès global -->
+    <div th:if="${successGlobal != null}" class="alert alert-success">
+    <p th:text="${successGlobal}"></p>
+    </div>
+
+    <form action="/imports" method="post" enctype="multipart/form-data" class="import-form">
+    <div class="form-group">
+        <label for="file1">
+        Fichier 1 <span class="required">*</span>
+        <span class="file-description">
+            Format attendu : Ref | Nom | Prenom | genre | Date embauche | date naissance | company
+        </span>
+        </label>
+        <input type="file" name="file1" id="file1" required accept=".csv">
+    </div>
+
+    <div class="form-group">
+        <label for="file2">
+        Fichier 2 <span class="required">*</span>
+        <span class="file-description">
+            Format attendu : salary structure | name | Abbr | type | valeur | company
+        </span>
+        </label>
+        <input type="file" name="file2" id="file2" required accept=".csv">
+    </div>
+
+    <div class="form-group">
+        <label for="file3">
+        Fichier 3 <span class="required">*</span>
+        <span class="file-description">
+            Format attendu : Mois | Ref Employe | Salaire Base | Salaire
+        </span>
+        </label>
+        <input type="file" name="file3" id="file3" required accept=".csv">
+    </div>
+
+    <div class="form-actions">
+        <button type="submit" class="submit-button">
+        Valider l'upload
+        </button>
+    </div>
+    </form>
 </div>
 
-<div th:if="${message}" class="alert alert-success">
-    <p th:text="${message}"></p>
-</div>
+<!-- Rapport d'import -->
+<div th:if="${erreur1 != null or erreur2 != null or erreur3 != null}" class="report-container">
+    <h2 class="report-title">Rapport d'import</h2>
 
-<div th:if="${erreurs}" class="alert alert-danger">
-    <ul>
-        <li th:each="err : ${erreurs}" th:text="${err}"></li>
-    </ul>
-</div>
-
-<div th:if="${lignesErronees}" class="alert alert-warning">
-    <h3>Lignes avec erreurs :</h3>
-    <table>
+    <!-- Fichier 1 -->
+    <div th:if="${erreur1 != null}" class="file-report">
+    <h3>Fichier 1</h3>
+    <div th:if="${!erreur1.isEmpty()}" class="error-table-container">
+        <table class="error-table">
         <thead>
             <tr>
-                <th>Numéro de ligne</th>
-                <th>Contenu</th>
+            <th>Ligne</th>
+            <th>Erreur</th>
+            <th>Valeur</th>
             </tr>
         </thead>
         <tbody>
-            <tr th:each="ligne : ${lignesErronees}">
-                <td th:text="${ligne}"></td>
+            <tr th:each="erreur : ${erreur1}">
+            <td th:text="${erreur.ligne}"></td>
+            <td class="error-message" th:text="${erreur.raison}"></td>
+            <td class="error-value" th:text="${erreur.valeur}"></td>
             </tr>
         </tbody>
-    </table>
-</div>
+        </table>
+        <div class="error-count">
+        <span th:text="${erreur1.size()} + ' erreur(s) trouvée(s)'"></span>
+        </div>
+    </div>
+    <div th:if="${erreur1.isEmpty()}" class="no-errors">
+        Aucune erreur détectée
+    </div>
+    </div>
 
+    <!-- Fichier 2 -->
+    <div th:if="${erreur2 != null}" class="file-report">
+    <h3>Fichier 2</h3>
+    <div th:if="${!erreur2.isEmpty()}" class="error-table-container">
+        <table class="error-table">
+        <thead>
+            <tr>
+            <th>Ligne</th>
+            <th>Erreur</th>
+            <th>Valeur</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="erreur : ${erreur2}">
+            <td th:text="${erreur.ligne}"></td>
+            <td class="error-message" th:text="${erreur.raison}"></td>
+            <td class="error-value" th:text="${erreur.valeur}"></td>
+            </tr>
+        </tbody>
+        </table>
+        <div class="error-count">
+        <span th:text="${erreur2.size()} + ' erreur(s) trouvée(s)'"></span>
+        </div>
+    </div>
+    <div th:if="${erreur2.isEmpty()}" class="no-errors">
+        Aucune erreur détectée
+    </div>
+    </div>
+
+    <!-- Fichier 3 -->
+    <div th:if="${erreur3 != null}" class="file-report">
+    <h3>Fichier 3</h3>
+    <div th:if="${!erreur3.isEmpty()}" class="error-table-container">
+        <table class="error-table">
+        <thead>
+            <tr>
+            <th>Ligne</th>
+            <th>Erreur</th>
+            <th>Valeur</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="erreur : ${erreur3}">
+            <td th:text="${erreur.ligne}"></td>
+            <td class="error-message" th:text="${erreur.raison}"></td>
+            <td class="error-value" th:text="${erreur.valeur}"></td>
+            </tr>
+        </tbody>
+        </table>
+        <div class="error-count">
+        <span th:text="${erreur3.size()} + ' erreur(s) trouvée(s)'"></span>
+        </div>
+    </div>
+    <div th:if="${erreur3.isEmpty()}" class="no-errors">
+        Aucune erreur détectée
+    </div>
+    </div>
+</div>
+</div>

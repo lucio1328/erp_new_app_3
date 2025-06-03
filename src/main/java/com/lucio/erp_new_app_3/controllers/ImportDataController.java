@@ -19,6 +19,7 @@ import com.lucio.erp_new_app_3.dtos.imports.SalaireData;
 import com.lucio.erp_new_app_3.services.imports.EmployeeImportService;
 import com.lucio.erp_new_app_3.services.imports.GrilleImportService;
 import com.lucio.erp_new_app_3.services.imports.SalaireImportService;
+import com.lucio.erp_new_app_3.utils.EnvoyeInformation;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -37,16 +38,18 @@ public class ImportDataController {
 
     @GetMapping
     public ModelAndView form(HttpSession session){
-        ModelAndView modelAndView=new ModelAndView("template");
-        modelAndView.addObject("page","imports/form");
+        ModelAndView modelAndView=new ModelAndView("layout/modele");
+
+        EnvoyeInformation.afficherName(session, modelAndView);
+        modelAndView.addObject("page","pages/import/form");
 
         return modelAndView;
     }
 
     @PostMapping
     public ModelAndView imports(HttpSession session,@RequestParam("file1") MultipartFile file1,@RequestParam("file2") MultipartFile file2,@RequestParam("file3") MultipartFile file3){
-        ModelAndView modelAndView=new ModelAndView("template");
-        modelAndView.addObject("page","imports/form");
+        ModelAndView modelAndView=new ModelAndView("layout/modele");
+        modelAndView.addObject("page","pages/import/form");
         ResultatImport resultatImport=new ResultatImport();
         try {
             importService.importEmployesFromCSV(resultatImport,file1);
@@ -64,6 +67,8 @@ public class ImportDataController {
             modelAndView.addObject("erreur1", resultatImport.getErreursEmploye());
             modelAndView.addObject("erreur2", resultatImport.getErreursGrille());
             modelAndView.addObject("erreur3", resultatImport.getErreursSalaire());
+
+            EnvoyeInformation.afficherName(session, modelAndView);
 
             if(resultatImport.getErreursEmploye().isEmpty() && resultatImport.getErreursGrille().isEmpty() && resultatImport.getErreursSalaire().isEmpty()){ 
                 modelAndView.addObject("successGlobal", "Importation réussi");
