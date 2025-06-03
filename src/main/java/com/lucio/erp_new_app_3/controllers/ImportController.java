@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.lucio.erp_new_app_3.services.csv.CsvEmployeImporter;
+import com.lucio.erp_new_app_3.services.csv.CsvStructureSalarialeImporter;
 import com.lucio.erp_new_app_3.utils.EnvoyeInformation;
 
 import jakarta.servlet.http.HttpSession;
@@ -19,6 +20,9 @@ import jakarta.servlet.http.HttpSession;
 public class ImportController {
     @Autowired
     private CsvEmployeImporter csvEmployeImporter;
+
+    @Autowired
+    private CsvStructureSalarialeImporter csvStructureSalarialeImporter;
 
     @GetMapping
     public ModelAndView formulaire(HttpSession session) {
@@ -37,12 +41,17 @@ public class ImportController {
     }
 
     @PostMapping("/upload")
-    public ModelAndView handleImport(@RequestParam("fichierEmploye") MultipartFile fichierEmploye,
+    public ModelAndView handleImport(/*@RequestParam("fichierEmploye") MultipartFile fichierEmploye,*/
+                                    @RequestParam("fichierStructure") MultipartFile fichierStructure,
                                     HttpSession session) {
         String sessionCookie = (String) session.getAttribute("sid");
         ModelAndView modelAndView = new ModelAndView("layout/modele");
 
-        CsvEmployeImporter.ResultatImport resultat = csvEmployeImporter.traiterCsvEmployes(fichierEmploye, sessionCookie);
+        // fichier 1
+        // CsvEmployeImporter.ResultatImport resultat = csvEmployeImporter.traiterCsvEmployes(fichierEmploye, sessionCookie);
+
+        // fichier 2
+        CsvEmployeImporter.ResultatImport resultat = 
 
         modelAndView.addObject("message", resultat.message());
         modelAndView.addObject("erreurs", resultat.erreurs());
