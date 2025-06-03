@@ -41,17 +41,17 @@ public class ImportController {
     }
 
     @PostMapping("/upload")
-    public ModelAndView handleImport(/*@RequestParam("fichierEmploye") MultipartFile fichierEmploye,*/
+    public ModelAndView handleImport(@RequestParam("fichierEmploye") MultipartFile fichierEmploye,
                                     @RequestParam("fichierStructure") MultipartFile fichierStructure,
                                     HttpSession session) {
         String sessionCookie = (String) session.getAttribute("sid");
         ModelAndView modelAndView = new ModelAndView("layout/modele");
 
         // fichier 1
-        // CsvEmployeImporter.ResultatImport resultat = csvEmployeImporter.traiterCsvEmployes(fichierEmploye, sessionCookie);
+        CsvEmployeImporter.ResultatImport resultat = csvEmployeImporter.traiterCsvEmployes(fichierEmploye, sessionCookie);
 
         // fichier 2
-        CsvEmployeImporter.ResultatImport resultat = 
+        // CsvEmployeImporter.ResultatImport resultat =
 
         modelAndView.addObject("message", resultat.message());
         modelAndView.addObject("erreurs", resultat.erreurs());
