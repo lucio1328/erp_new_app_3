@@ -1,4 +1,4 @@
-package com.evaluation.erpnext_spring.dto.imports;
+package com.lucio.erp_new_app_3.dtos.imports;
 
 import lombok.Data;
 
