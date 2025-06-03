@@ -1,14 +1,16 @@
-package com.evaluation.erpnext_spring.service.imports;
+package com.lucio.erp_new_app_3.services.imports;
 
-import com.evaluation.erpnext_spring.dto.imports.SalaireData;
-import com.evaluation.erpnext_spring.dto.imports.RapportErreur;
-import com.evaluation.erpnext_spring.dto.imports.ResultatImport;
-import com.evaluation.erpnext_spring.utils.DateUtils;
+import com.lucio.erp_new_app_3.configs.ErpnextProperties;
+import com.lucio.erp_new_app_3.dtos.imports.RapportErreur;
+import com.lucio.erp_new_app_3.dtos.imports.ResultatImport;
+import com.lucio.erp_new_app_3.dtos.imports.SalaireData;
+import com.lucio.erp_new_app_3.utils.DateValidator;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.bean.HeaderColumnNameMappingStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,9 +24,15 @@ import java.util.Map;
 @Service
 public class SalaireImportService {
 
+    private final RestTemplate restTemplate = new RestTemplate();
+
+    @Autowired
+    private ErpnextProperties erpnextProperties;
+
     @Autowired
     private RapportErreurService rapportErreurService;
 
+    @SuppressWarnings("null")
     public ResultatImport importSalairesFromCSV(ResultatImport resultatImport, MultipartFile file) throws IOException {
         if (!file.getContentType().equals("text/csv")) {
             throw new IllegalArgumentException("Seuls les fichiers CSV sont acceptés");
@@ -45,16 +53,17 @@ public class SalaireImportService {
 
             List<SalaireData> salaires = csvToBean.parse();
 
-            int ligne = 1; 
+            int ligne = 1;
             for (SalaireData salaire : salaires) {
                 List<RapportErreur> raison = validateSalaire(salaire, ligne);
                 if (raison.isEmpty()) {
                     validSalaires.add(salaire);
-                     
+
                     if (salaire.getMois() != null) {
-                        salaire.setMois(DateUtils.normalizeToStandardFormat(salaire.getMois()).toString());
+                        salaire.setMois(DateValidator.normalizeToStandardFormat(salaire.getMois()).toString());
                     }
-                } else {
+                }
+                else {
                     erreurs.addAll(raison);
                 }
                 ligne++;
@@ -68,7 +77,7 @@ public class SalaireImportService {
 
     private List<RapportErreur> validateSalaire(SalaireData salaire, int ligne) {
         List<RapportErreur> rapportErreurs = new ArrayList<>();
-        
+
         try {
             if (salaire.getMois() == null) {
                 rapportErreurs.add(rapportErreurService.createError(ligne, "Mois manquant ou invalide", null));
@@ -76,29 +85,29 @@ public class SalaireImportService {
         } catch (DateTimeParseException e) {
             rapportErreurs.add(rapportErreurService.createError(ligne, "Format de mois invalide", salaire.getMois() != null ? salaire.getMois().toString() : null));
         }
-        
+
         if (salaire.getRefEmploye() == null || salaire.getRefEmploye().isEmpty()) {
             rapportErreurs.add(rapportErreurService.createError(ligne, "Référence employé manquante", salaire.getRefEmploye()));
         }
-        
+
         if (salaire.getSalaireBase() == null || salaire.getSalaireBase() <= 0) {
-            rapportErreurs.add(rapportErreurService.createError(ligne, "Salaire base invalide", 
+            rapportErreurs.add(rapportErreurService.createError(ligne, "Salaire base invalide",
                 salaire.getSalaireBase() != null ? salaire.getSalaireBase().toString() : null));
         }
-        
+
         if (salaire.getSalaryStructure() == null || salaire.getSalaryStructure().isEmpty()) {
             rapportErreurs.add(rapportErreurService.createError(ligne, "Structure salariale manquante", salaire.getSalaryStructure()));
         }
-        
+
         return rapportErreurs;
     }
 
 
     public List<SalaireData> transformeEmploye(List<SalaireData> salaireDatas, Map<String, String> refEmp) {
         for (SalaireData salaireData : salaireDatas) {
-            String ref = salaireData.getRefEmploye();  
+            String ref = salaireData.getRefEmploye();
             if (ref != null && refEmp.containsKey(ref)) {
-                salaireData.setRefEmploye(refEmp.get(ref));  
+                salaireData.setRefEmploye(refEmp.get(ref));
             }
         }
         return salaireDatas;
