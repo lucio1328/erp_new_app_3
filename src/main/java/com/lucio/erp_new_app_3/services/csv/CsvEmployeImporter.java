@@ -1,141 +1,162 @@
 package com.lucio.erp_new_app_3.services.csv;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
+import com.lucio.erp_new_app_3.utils.DateValidator;
+import com.lucio.erp_new_app_3.dtos.employee.Employee;
+import com.lucio.erp_new_app_3.dtos.employee.Genre;
+import com.lucio.erp_new_app_3.dtos.company.Company;
+import com.lucio.erp_new_app_3.dtos.csv.EmployeeCsvDto;
+import com.lucio.erp_new_app_3.services.employee.EmployeeService;
+import com.lucio.erp_new_app_3.services.employee.GenreService;
+import com.lucio.erp_new_app_3.services.company.CompanyService;
+import com.opencsv.bean.CsvToBean;
+import com.opencsv.bean.CsvToBeanBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.lucio.erp_new_app_3.dtos.company.Company;
-import com.lucio.erp_new_app_3.dtos.employee.Employee;
-import com.lucio.erp_new_app_3.dtos.employee.Genre;
-import com.lucio.erp_new_app_3.services.company.CompanyService;
-import com.lucio.erp_new_app_3.services.employee.EmployeeService;
-import com.lucio.erp_new_app_3.services.employee.GenreService;
-import com.lucio.erp_new_app_3.utils.DateValidator;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class CsvEmployeImporter {
-    @Autowired
-    private EmployeeService employeeService;
 
-    @Autowired
-    private GenreService genreService;
+    @Autowired private EmployeeService employeeService;
+    @Autowired private GenreService    genreService;
+    @Autowired private CompanyService  companyService;
 
-    @Autowired
-    private CompanyService companyService;
-
-    public record ResultatImport(String message, List<String> erreurs, List<String> lignesErronees) {}
+    public record ResultatImport(String message,
+                                List<String> erreurs,
+                                List<String> lignesErronees) {}
 
     public ResultatImport traiterCsvEmployes(MultipartFile fichierEmploye, String sessionCookie) {
-        List<String> erreurs = new ArrayList<>();
-        List<String> lignesErronees = new ArrayList<>();
 
         if (fichierEmploye.isEmpty()) {
-            return new ResultatImport("Le fichier est vide.", List.of("Fichier vide"), lignesErronees);
+            return new ResultatImport(
+                    "Le fichier est vide.",
+                    List.of("Fichier vide"),
+                    Collections.emptyList());
         }
 
+        List<String> erreurs        = new ArrayList<>();
+        List<String> lignesErronees = new ArrayList<>();
         List<Employee> employeesToCreate = new ArrayList<>();
 
+        // ---------- 1. Lecture et mapping CSV -> DTO -----------------
+        List<EmployeeCsvDto> records;
         try (BufferedReader reader = new BufferedReader(
                 new InputStreamReader(fichierEmploye.getInputStream(), StandardCharsets.UTF_8))) {
 
-            String ligne;
-            int numeroLigne = 0;
+            CsvToBean<EmployeeCsvDto> csvToBean = new CsvToBeanBuilder<EmployeeCsvDto>(reader)
+                    .withType(EmployeeCsvDto.class)
+                    .withIgnoreLeadingWhiteSpace(true)
+                    .withSkipLines(1)
+                    .build();
 
-            while ((ligne = reader.readLine()) != null) {
-                numeroLigne++;
+            records = csvToBean.parse();
 
-                if (numeroLigne == 1) continue;
+        } catch (Exception ex) {
+            return new ResultatImport("Erreur de lecture du fichier.",
+                    List.of(ex.getMessage()), Collections.emptyList());
+        }
 
-                String[] champs = ligne.split(",");
-                if (champs.length < 7) {
-                    erreurs.add("Ligne " + numeroLigne + " : format invalide (colonnes manquantes)");
-                    lignesErronees.add(ligne);
-                    continue;
-                }
+        // ---------- 2. Validation & préparation ----------------------
+        int lineNumber = 1;
+        for (EmployeeCsvDto dto : records) {
+            lineNumber++;
 
-                String dateEmbauche = champs[4].trim();
-                String dateNaissance = champs[5].trim();
+            String dateEmbStr = dto.getDateEmbauche();
+            String dateNaiStr = dto.getDateNaissance();
 
-                if (!DateValidator.isValidDate(dateEmbauche)) {
-                    erreurs.add("Ligne " + numeroLigne + " : date embauche invalide (" + dateEmbauche + ")");
-                    lignesErronees.add(ligne);
-                    continue;
-                }
-
-                if (!DateValidator.isValidDate(dateNaissance)) {
-                    erreurs.add("Ligne " + numeroLigne + " : date naissance invalide (" + dateNaissance + ")");
-                    lignesErronees.add(ligne);
-                    continue;
-                }
-                String genre = champs[3];
-                String company = champs[6];
-
-                if (genreService.getByName(genre, sessionCookie) == null) {
-                    Genre newGenre = new Genre();
-                    newGenre.setName(genre);
-                    newGenre.setGender(genre);
-                    genreService.create(newGenre, sessionCookie);
-                }
-
-                if (companyService.getByName(company, sessionCookie) == null) {
-                    Company newCompany = new Company();
-                    newCompany.setName(company);
-                    newCompany.setCompanyName(company);
-                    newCompany.setAbbr(generateAbbreviation(company));
-                    newCompany.setDefaultCurrency("EURO");
-                    newCompany.setCountry("Madagascar");
-                    companyService.create(newCompany, sessionCookie);
-                }
-
-                Employee employee = new Employee();
-                employee.setLastName(champs[1]);
-                employee.setFirstName(champs[2]);
-                employee.setGender(genre);
-
-                LocalDate dateE = DateValidator.normalizeToStandardFormat(dateEmbauche);
-                employee.setDateOfJoining(dateE);
-
-                LocalDate dateN = DateValidator.normalizeToStandardFormat(dateNaissance);
-                employee.setDateOfBirth(dateN);
-
-                employee.setCompany(company);
-                employee.setStatus("Active");
-
-                employeesToCreate.add(employee);
+            if (!DateValidator.isValidDate(dateEmbStr)) {
+                erreurs.add("Ligne " + lineNumber +
+                            " : date embauche invalide (" + dateEmbStr + ")");
+                lignesErronees.add(dtoToCsvLine(dto));
+                continue;
             }
 
-        }
-        catch (IOException e) {
-            return new ResultatImport("Erreur de lecture du fichier.", List.of(e.getMessage()), lignesErronees);
+            if (!DateValidator.isValidDate(dateNaiStr)) {
+                erreurs.add("Ligne " + lineNumber +
+                            " : date naissance invalide (" + dateNaiStr + ")");
+                lignesErronees.add(dtoToCsvLine(dto));
+                continue;
+            }
+
+            manageGenre(dto.getGender(), sessionCookie);
+            manageCompany(dto.getCompany(), sessionCookie);
+
+            // Mapping DTO -> Employee
+            Employee employee = new Employee();
+            employee.setLastName(dto.getLastName());
+            employee.setFirstName(dto.getFirstName());
+            employee.setGender(dto.getGender());
+
+            LocalDate dateEmb = DateValidator.normalizeToStandardFormat(dto.getDateEmbauche());
+            LocalDate dateNai = DateValidator.normalizeToStandardFormat(dto.getDateNaissance());
+            employee.setDateOfJoining(dateEmb);
+            employee.setDateOfBirth(dateNai);
+
+            employee.setCompany(dto.getCompany());
+            employee.setStatus("Active");
+
+            employeesToCreate.add(employee);
         }
 
+        // ---------- 3. Si erreurs, on annule tout --------------------
         if (!erreurs.isEmpty()) {
-            return new ResultatImport("Import annulé : erreurs détectées.", erreurs, lignesErronees);
+            return new ResultatImport("Import annulé : erreurs détectées.",
+                    erreurs, lignesErronees);
         }
 
-        for (Employee e : employeesToCreate) {
-            employeeService.create(e, sessionCookie);
-        }
+        // ---------- 4. Insertion en base -----------------------------
+        employeesToCreate.forEach(e -> employeeService.create(e, sessionCookie));
 
-        return new ResultatImport("Import réussi !", List.of(), List.of());
+        return new ResultatImport("Import réussi !",
+                Collections.emptyList(), Collections.emptyList());
     }
 
-    public static String generateAbbreviation(String companyName) {
+    /* ----------------------------------------------------------------- */
+    /* ------------------------- Méthodes utilitaires ------------------ */
+
+    private void manageGenre(String genre, String cookie) {
+        if (genreService.getByName(genre, cookie) == null) {
+            Genre g = new Genre();
+            g.setName(genre);
+            g.setGender(genre);
+            genreService.create(g, cookie);
+        }
+    }
+
+    private void manageCompany(String company, String cookie) {
+        if (companyService.getByName(company, cookie) == null) {
+            Company c = new Company();
+            c.setName(company);
+            c.setCompanyName(company);
+            c.setAbbr(generateAbbreviation(company));
+            c.setDefaultCurrency("EURO");
+            c.setCountry("Madagascar");
+            companyService.create(c, cookie);
+        }
+    }
+
+    private static String dtoToCsvLine(EmployeeCsvDto d) {
+        return String.join(",",
+                d.getNumero(),
+                d.getLastName(),
+                d.getFirstName(),
+                d.getGender(),
+                d.getDateEmbauche(),
+                d.getDateNaissance(),
+                d.getCompany());
+    }
+
+    private static String generateAbbreviation(String companyName) {
         return Arrays.stream(companyName.split(" "))
-                    .filter(word -> !word.isEmpty())
+                    .filter(word -> !word.isBlank())
                     .map(word -> word.substring(0, 1).toUpperCase())
                     .collect(Collectors.joining());
     }
-
-
 }
