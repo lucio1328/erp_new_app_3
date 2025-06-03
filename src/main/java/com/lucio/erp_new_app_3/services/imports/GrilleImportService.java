@@ -1,10 +1,11 @@
-package com.evaluation.erpnext_spring.service.imports;
+package com.lucio.erp_new_app_3.services.imports;
 
-import com.evaluation.erpnext_spring.dto.imports.GrilleSalaireData;
-import com.evaluation.erpnext_spring.dto.imports.RapportErreur;
-import com.evaluation.erpnext_spring.dto.imports.ResultatImport;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lucio.erp_new_app_3.configs.ErpnextProperties;
+import com.lucio.erp_new_app_3.dtos.imports.GrilleSalaireData;
+import com.lucio.erp_new_app_3.dtos.imports.RapportErreur;
+import com.lucio.erp_new_app_3.dtos.imports.ResultatImport;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.bean.HeaderColumnNameMappingStrategy;
@@ -12,7 +13,6 @@ import com.opencsv.bean.HeaderColumnNameMappingStrategy;
 import jakarta.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -35,20 +35,15 @@ import java.util.Map;
 @Service
 public class GrilleImportService {
 
+    private final RestTemplate restTemplate = new RestTemplate();
+
     @Autowired
-    private RestTemplate restTemplate;
+    private ErpnextProperties erpnextProperties;
 
-    @Value("${erpnext.api.url}")
-    private String erpnextApiUrl;
-
-    @Value("${erpnext.api.key}")
-    private String erpnextApiKey;
-
-    @Value("${erpnext.api.secret}")
-    private String erpnextApiSecret;
     @Autowired
     private RapportErreurService rapportErreurService;
 
+    @SuppressWarnings("null")
     public ResultatImport importGrilleSalaireFromCSV(ResultatImport resultatImport, MultipartFile file) throws IOException {
         if (!file.getContentType().equals("text/csv")) {
             throw new IllegalArgumentException("Seuls les fichiers CSV sont acceptés");
@@ -88,35 +83,33 @@ public class GrilleImportService {
 
     private List<RapportErreur> validateGrilleSalaire(GrilleSalaireData grille, int ligne) {
         List<RapportErreur> rapportErreurs = new ArrayList<>();
-        
+
         if (grille.getSalaryStructure() == null || grille.getSalaryStructure().isEmpty()) {
             rapportErreurs.add(rapportErreurService.createError(ligne, "Salary structure manquant", grille.getSalaryStructure()));
         }
-        
+
         if (grille.getName() == null || grille.getName().isEmpty()) {
             rapportErreurs.add(rapportErreurService.createError(ligne, "Name manquant", grille.getName()));
         }
-        
+
         if (grille.getAbbr() == null || grille.getAbbr().isEmpty()) {
             rapportErreurs.add(rapportErreurService.createError(ligne, "Abbr manquant", grille.getAbbr()));
         }
-        
+
         if (grille.getType() == null || grille.getType().isEmpty()) {
             rapportErreurs.add(rapportErreurService.createError(ligne, "Type manquant", grille.getType()));
         }
-        
+
         if (grille.getValeur() == null || grille.getValeur().isEmpty()) {
             rapportErreurs.add(rapportErreurService.createError(ligne, "Valeur manquante", grille.getValeur()));
         }
-        
+
         if (grille.getCompany() == null || grille.getCompany().isEmpty()) {
             rapportErreurs.add(rapportErreurService.createError(ligne, "Company manquante", grille.getCompany()));
         }
-        
+
         return rapportErreurs;
     }
-    
-    
 
     @SuppressWarnings({ "rawtypes", "unchecked", "null" })
     public Map<String, String> importGrilleSalaire(HttpSession session, List<GrilleSalaireData> grillesData) throws Exception {
@@ -125,7 +118,7 @@ public class GrilleImportService {
             throw new RuntimeException("Session not authenticated");
         }
 
-        String url = erpnextApiUrl + "/api/method/hrms.evalhr.structure_salariale.import_grille_salaire";
+        String url = erpnextProperties.getUrl() + "/api/method/hrms.evalhr.structure_salariale.import_grille_salaire";
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -157,15 +150,17 @@ public class GrilleImportService {
                 Map<String, Object> responseBody = (Map<String, Object>) rawBody.get("message");
 
                 if (responseBody != null && "success".equals(responseBody.get("status"))) {
-                    
                     return Collections.singletonMap("message", "Import réussi");
-                } else {
+                }
+                else {
                     throw new Exception("Failed to import grille salaire: " + responseBody.get("message"));
                 }
-            } else {
+            }
+            else {
                 throw new Exception("Failed to import grille salaire: HTTP " + response.getStatusCode());
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new Exception("Error while importing grille salaire: " + e.getMessage(), e);
         }
     }
