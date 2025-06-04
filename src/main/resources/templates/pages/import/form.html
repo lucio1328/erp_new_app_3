@@ -144,4 +144,88 @@
     </div>
     </div>
 </div>
+
+<!-- Données valides importées -->
+<div th:if="${employesValides != null or grillesValides != null or salairesValides != null}" class="valid-data-section">
+    <h2 class="report-title">Données valides importées</h2>
+
+    <!-- Employés valides -->
+    <div th:if="${employesValides != null}" class="file-report">
+        <h3>Employés valides</h3>
+        <table class="valid-table">
+            <thead>
+                <tr>
+                    <th>Référence</th>
+                    <th>Nom</th>
+                    <th>Prénom</th>
+                    <th>Genre</th>
+                    <th>Date embauche</th>
+                    <th>Date naissance</th>
+                    <th>Company</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="emp : ${employesValides}">
+                    <td th:text="${emp.ref}"></td>
+                    <td th:text="${emp.nom}"></td>
+                    <td th:text="${emp.prenom}"></td>
+                    <td th:text="${emp.genre}"></td>
+                    <td th:text="${emp.dateEmbauche}"></td>
+                    <td th:text="${emp.dateNaissance}"></td>
+                    <td th:text="${emp.company}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Grilles valides -->
+    <div th:if="${grillesValides != null}" class="file-report">
+        <h3>Grilles de salaire valides</h3>
+        <table class="valid-table">
+            <thead>
+                <tr>
+                    <th>Structure</th>
+                    <th>Nom</th>
+                    <th>Abbr</th>
+                    <th>Type</th>
+                    <th>Valeur</th>
+                    <th>Company</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="grille : ${grillesValides}">
+                    <td th:text="${grille.salaryStructure}"></td>
+                    <td th:text="${grille.name}"></td>
+                    <td th:text="${grille.abbr}"></td>
+                    <td th:text="${grille.type}"></td>
+                    <td th:text="${grille.valeur}"></td>
+                    <td th:text="${grille.company}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Salaires valides -->
+    <div th:if="${salairesValides != null}" class="file-report">
+        <h3>Salaires valides</h3>
+        <table class="valid-table">
+            <thead>
+                <tr>
+                    <th>Mois</th>
+                    <th>Réf Employé</th>
+                    <th>Salaire Base</th>
+                    <th>Salaire</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="salaire : ${salairesValides}">
+                    <td th:text="${salaire.mois}"></td>
+                    <td th:text="${salaire.refEmploye}"></td>
+                    <td th:text="${salaire.salaireBase}"></td>
+                    <td th:text="${salaire.salaryStructure}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
 </div>

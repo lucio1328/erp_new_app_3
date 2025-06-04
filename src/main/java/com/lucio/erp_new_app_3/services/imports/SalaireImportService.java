@@ -150,7 +150,8 @@ public class SalaireImportService {
         String jsonPayload;
         try {
             jsonPayload = new ObjectMapper().writeValueAsString(jsonBody);
-        } catch (JsonProcessingException e) {
+        }
+        catch (JsonProcessingException e) {
             throw new Exception("Erreur lors de la conversion JSON des salaires", e);
         }
 

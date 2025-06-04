@@ -17,9 +17,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.lucio.erp_new_app_3.dtos.salary.SalaryReportResponse;
 import com.lucio.erp_new_app_3.dtos.salary.SalarySlip;
 import com.lucio.erp_new_app_3.dtos.salary.SalarySummaryTotals;
 import com.lucio.erp_new_app_3.services.pdf.PdfGeneratorService;
+import com.lucio.erp_new_app_3.services.salary.SalaryRegisterService;
 import com.lucio.erp_new_app_3.services.salary.SalarySlipService;
 import com.lucio.erp_new_app_3.utils.EnvoyeInformation;
 
@@ -33,6 +35,9 @@ public class SalarySlipController {
 
     @Autowired
     private PdfGeneratorService pdfGeneratorService;
+
+    @Autowired
+    private SalaryRegisterService salaryRegisterService;
 
     @GetMapping("/fiche-paie/{abbrev}/{empName}/{numero}")
     public ModelAndView fichePaie(@PathVariable String abbrev, @PathVariable String empName, @PathVariable String numero, HttpSession session) {
@@ -82,10 +87,9 @@ public class SalarySlipController {
     }
 
     @GetMapping("/summary")
-    public ModelAndView getSalarySummary(@RequestParam(required = false) Integer month,
-                                    @RequestParam(required = false) Integer year,
-                                    HttpSession session) {
-
+    public ModelAndView getSalaryRegister(@RequestParam(required = false) Integer month,
+                                        @RequestParam(required = false) Integer year,
+                                        HttpSession session) {
         String sessionCookie = (String) session.getAttribute("sid");
         ModelAndView modelAndView = new ModelAndView("layout/modele");
 
@@ -97,21 +101,52 @@ public class SalarySlipController {
         if (month == null) month = LocalDate.now().getMonthValue();
         if (year == null) year = LocalDate.now().getYear();
 
-        List<SalarySlip> salarySlips = salarySlipService.getSalarySlipsByMonthYear(month, year, sessionCookie);
-        SalarySummaryTotals totals = calculateTotals(salarySlips);
+        SalaryReportResponse reportResponse = salaryRegisterService.getSalaryRegisterReport(sessionCookie);
 
-        modelAndView.addObject("salarySlips", salarySlips);
-        modelAndView.addObject("totals", totals);
-        modelAndView.addObject("months", List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12));
+        modelAndView.addObject("salaryRegisters", reportResponse.getSalaryRegisters());
+        modelAndView.addObject("totals", reportResponse.getTotals());
+        modelAndView.addObject("months", List.of(1,2,3,4,5,6,7,8,9,10,11,12));
         modelAndView.addObject("years", List.of(2023, 2024, 2025));
         modelAndView.addObject("selectedMonth", month);
         modelAndView.addObject("selectedYear", year);
 
         EnvoyeInformation.afficherName(session, modelAndView);
-        EnvoyeInformation.setInfo(modelAndView, "Fiche de paie", "pages/salary/summary");
+        EnvoyeInformation.setInfo(modelAndView, "Rapport Salary Register", "pages/salary/register");
 
         return modelAndView;
     }
+
+    // @GetMapping("/summary")
+    // public ModelAndView getSalarySummary(@RequestParam(required = false) Integer month,
+    //                                 @RequestParam(required = false) Integer year,
+    //                                 HttpSession session) {
+
+    //     String sessionCookie = (String) session.getAttribute("sid");
+    //     ModelAndView modelAndView = new ModelAndView("layout/modele");
+
+    //     if (sessionCookie == null) {
+    //         modelAndView.setViewName("redirect:/");
+    //         return modelAndView;
+    //     }
+
+    //     if (month == null) month = LocalDate.now().getMonthValue();
+    //     if (year == null) year = LocalDate.now().getYear();
+
+    //     List<SalarySlip> salarySlips = salarySlipService.getSalarySlipsByMonthYear(month, year, sessionCookie);
+    //     SalarySummaryTotals totals = calculateTotals(salarySlips);
+
+    //     modelAndView.addObject("salarySlips", salarySlips);
+    //     modelAndView.addObject("totals", totals);
+    //     modelAndView.addObject("months", List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12));
+    //     modelAndView.addObject("years", List.of(2023, 2024, 2025));
+    //     modelAndView.addObject("selectedMonth", month);
+    //     modelAndView.addObject("selectedYear", year);
+
+    //     EnvoyeInformation.afficherName(session, modelAndView);
+    //     EnvoyeInformation.setInfo(modelAndView, "Fiche de paie", "pages/salary/summary");
+
+    //     return modelAndView;
+    // }
 
     private SalarySummaryTotals calculateTotals(List<SalarySlip> salarySlips) {
         SalarySummaryTotals totals = new SalarySummaryTotals();
