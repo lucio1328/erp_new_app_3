@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import java.math.BigDecimal;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
@@ -15,22 +14,22 @@ public class SalaryRegisterTotal {
     private Double paymentDays;
 
     @JsonProperty("indemnite")
-    private BigDecimal indemnite;
+    private Double indemnite;
 
     @JsonProperty("salaire_base")
-    private BigDecimal salaireBase;
+    private Double salaireBase;
 
     @JsonProperty("gross_pay")
-    private BigDecimal grossPay;
+    private Double grossPay;
 
     @JsonProperty("taxe_sociale")
-    private BigDecimal taxeSociale;
+    private Double taxeSociale;
 
     @JsonProperty("total_deduction")
-    private BigDecimal totalDeduction;
+    private Double totalDeduction;
 
     @JsonProperty("net_pay")
-    private BigDecimal netPay;
+    private Double netPay;
 
 }
 
