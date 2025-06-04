@@ -7,6 +7,7 @@ import com.lucio.erp_new_app_3.dtos.imports.EmployeData;
 import com.lucio.erp_new_app_3.dtos.imports.RapportErreur;
 import com.lucio.erp_new_app_3.dtos.imports.ResultatImport;
 import com.lucio.erp_new_app_3.utils.DateValidator;
+import com.lucio.erp_new_app_3.utils.PreparationApi;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.bean.HeaderColumnNameMappingStrategy;
@@ -37,13 +38,17 @@ import java.util.Map;
 @Service
 public class EmployeeImportService {
 
-    private final RestTemplate restTemplate = new RestTemplate();
+    @Autowired
+    private RestTemplate restTemplate;
 
     @Autowired
     private ErpnextProperties erpnextProperties;
 
     @Autowired
     private RapportErreurService rapportErreurService;
+
+    @Autowired
+    private PreparationApi preparationApi;
 
     @SuppressWarnings("null")
     public ResultatImport importEmployesFromCSV(ResultatImport resultatImport, MultipartFile file) throws IOException {
@@ -73,7 +78,8 @@ public class EmployeeImportService {
                     validEmployes.add(employe);
                     employe.setDateEmbauche(DateValidator.normalizeToStandardFormat(employe.getDateEmbauche()).toString());
                     employe.setDateNaissance(DateValidator.normalizeToStandardFormat(employe.getDateNaissance()).toString());
-                } else {
+                }
+                else {
                     erreurs.addAll(raison);
                 }
                 ligne++;
@@ -121,7 +127,8 @@ public class EmployeeImportService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.add("Cookie", "sid=" + sid);
+        // headers.add("Cookie", "sid=" + sid);
+        headers = preparationApi.buildApiHeaders();
 
         Map<String, Object> jsonBody = new HashMap<>();
         jsonBody.put("employees", employeesData);
@@ -129,7 +136,10 @@ public class EmployeeImportService {
         String jsonPayload;
         try {
             jsonPayload = new ObjectMapper().writeValueAsString(jsonBody);
-        } catch (JsonProcessingException e) {
+            System.out.println("== JSON Payload envoyé à ERPNext ==");
+            System.out.println(jsonPayload);
+        }
+        catch (JsonProcessingException e) {
             throw new Exception("Error converting employees data to JSON", e);
         }
 
@@ -142,6 +152,9 @@ public class EmployeeImportService {
                 request,
                 Map.class
             );
+
+            System.out.println("== Corps brut de la réponse ERPNext ==");
+            System.out.println(response.getBody());
 
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
                 Map<String, Object> rawBody = response.getBody();
@@ -159,6 +172,5 @@ public class EmployeeImportService {
             throw new Exception("Error while creating employees: " + e.getMessage(), e);
         }
     }
-
 
 }

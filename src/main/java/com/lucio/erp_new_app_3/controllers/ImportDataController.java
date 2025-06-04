@@ -48,29 +48,30 @@ public class ImportDataController {
 
     @PostMapping
     public ModelAndView imports(HttpSession session,@RequestParam("file1") MultipartFile file1,@RequestParam("file2") MultipartFile file2,@RequestParam("file3") MultipartFile file3){
-        ModelAndView modelAndView=new ModelAndView("layout/modele");
-        modelAndView.addObject("page","pages/import/form");
+        ModelAndView modelAndView=new ModelAndView("template");
+        modelAndView.addObject("page","imports/form");
         ResultatImport resultatImport=new ResultatImport();
+
         try {
             importService.importEmployesFromCSV(resultatImport,file1);
             grilleImportService.importGrilleSalaireFromCSV(resultatImport, file2);
             salaireImportService.importSalairesFromCSV(resultatImport, file3);
 
-            List<EmployeData> employeDatas=resultatImport.getEmployesValides();
-            Map<String,String> refEmp=importService.createEmployees(session, employeDatas);
-
-            List<GrilleSalaireData> grilleSalaireDatas=resultatImport.getGrilleSalaireDatas();
-            grilleImportService.importGrilleSalaire(session, grilleSalaireDatas);
-
-            List<SalaireData> salaireDatas=salaireImportService.transformeEmploye(resultatImport.getSalaireDatas(), refEmp);
-
-            modelAndView.addObject("erreur1", resultatImport.getErreursEmploye());
-            modelAndView.addObject("erreur2", resultatImport.getErreursGrille());
-            modelAndView.addObject("erreur3", resultatImport.getErreursSalaire());
-
-            EnvoyeInformation.afficherName(session, modelAndView);
+            if(!resultatImport.getErreursEmploye().isEmpty() || !resultatImport.getErreursGrille().isEmpty() || !resultatImport.getErreursSalaire().isEmpty()){ 
+                modelAndView.addObject("erreur1", resultatImport.getErreursEmploye());
+                modelAndView.addObject("erreur2", resultatImport.getErreursGrille());
+                modelAndView.addObject("erreur3", resultatImport.getErreursSalaire());
+            }
 
             if(resultatImport.getErreursEmploye().isEmpty() && resultatImport.getErreursGrille().isEmpty() && resultatImport.getErreursSalaire().isEmpty()){ 
+                List<EmployeData> employeDatas=resultatImport.getEmployesValides();
+                Map<String,String> refEmp=importService.createEmployees(session, employeDatas);
+
+                List<GrilleSalaireData> grilleSalaireDatas=resultatImport.getGrilleSalaireDatas();
+                grilleImportService.importGrilleSalaire(session, grilleSalaireDatas);
+
+                List<SalaireData> salaireDatas=salaireImportService.transformeEmploye(resultatImport.getSalaireDatas(), refEmp);
+                salaireImportService.importSalaireData(session, salaireDatas);
                 modelAndView.addObject("successGlobal", "Importation réussi");
             }
 

@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lucio.erp_new_app_3.configs.ErpnextProperties;
 import com.lucio.erp_new_app_3.exceptions.ErpApiException;
 
+import java.util.Collections;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
@@ -54,6 +56,17 @@ public class PreparationApi {
         HttpHeaders headers = new HttpHeaders();
         headers.set("Cookie", sessionCookie);
         headers.setContentType(MediaType.APPLICATION_JSON);
+        return headers;
+    }
+
+    public HttpHeaders buildApiHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+
+        String token = "token " + erpnextProperties.getKey() + ":" + erpnextProperties.getSecret();
+        headers.set("Authorization", token);
+
         return headers;
     }
 

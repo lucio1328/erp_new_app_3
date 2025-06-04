@@ -6,6 +6,7 @@ import com.lucio.erp_new_app_3.configs.ErpnextProperties;
 import com.lucio.erp_new_app_3.dtos.imports.GrilleSalaireData;
 import com.lucio.erp_new_app_3.dtos.imports.RapportErreur;
 import com.lucio.erp_new_app_3.dtos.imports.ResultatImport;
+import com.lucio.erp_new_app_3.utils.PreparationApi;
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.bean.HeaderColumnNameMappingStrategy;
@@ -42,6 +43,9 @@ public class GrilleImportService {
 
     @Autowired
     private RapportErreurService rapportErreurService;
+
+    @Autowired
+    private PreparationApi preparationApi;
 
     @SuppressWarnings("null")
     public ResultatImport importGrilleSalaireFromCSV(ResultatImport resultatImport, MultipartFile file) throws IOException {
@@ -123,7 +127,8 @@ public class GrilleImportService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.add("Cookie", "sid=" + sid);
+        // headers.add("Cookie", "sid=" + sid);
+        headers = preparationApi.buildApiHeaders();
 
         Map<String, Object> jsonBody = new HashMap<>();
         jsonBody.put("grilles", grillesData);
@@ -131,7 +136,8 @@ public class GrilleImportService {
         String jsonPayload;
         try {
             jsonPayload = new ObjectMapper().writeValueAsString(jsonBody);
-        } catch (JsonProcessingException e) {
+        }
+        catch (JsonProcessingException e) {
             throw new Exception("Error converting grilles data to JSON", e);
         }
 
