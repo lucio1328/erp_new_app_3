@@ -50,6 +50,8 @@ public class ImportDataController {
     public ModelAndView imports(HttpSession session,@RequestParam("file1") MultipartFile file1,@RequestParam("file2") MultipartFile file2,@RequestParam("file3") MultipartFile file3){
         ModelAndView modelAndView=new ModelAndView("layout/modele");
         modelAndView.addObject("page","pages/import/form");
+        EnvoyeInformation.afficherName(session, modelAndView);
+
         ResultatImport resultatImport=new ResultatImport();
 
         try {
