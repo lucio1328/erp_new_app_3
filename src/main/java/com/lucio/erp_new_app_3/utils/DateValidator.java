@@ -23,27 +23,44 @@ public class DateValidator {
     public static LocalDate normalizeToStandardFormat(String dateStr) {
         try {
             if (PATTERN_DDMMYYYY_SLASH.matcher(dateStr).matches()) {
-                return validateAndParse(dateStr, FORMAT_DDMMYYYY_SLASH);
-            }
-            else if (PATTERN_DDMMYYYY_DASH.matcher(dateStr).matches()) {
-                return validateAndParse(dateStr, FORMAT_DDMMYYYY_DASH);
-            }
-            else if (PATTERN_YYYYMMDD_SLASH.matcher(dateStr).matches()) {
-                return validateAndParse(dateStr, FORMAT_YYYYMMDD_SLASH);
-            }
-            else if (PATTERN_YYYYMMDD_DASH.matcher(dateStr).matches()) {
-                return validateAndParse(dateStr, FORMAT_YYYYMMDD_DASH);
+                return validateAndParse(dateStr, FORMAT_DDMMYYYY_SLASH, "DMY", "/");
+            } else if (PATTERN_DDMMYYYY_DASH.matcher(dateStr).matches()) {
+                return validateAndParse(dateStr, FORMAT_DDMMYYYY_DASH, "DMY", "-");
+            } else if (PATTERN_YYYYMMDD_SLASH.matcher(dateStr).matches()) {
+                return validateAndParse(dateStr, FORMAT_YYYYMMDD_SLASH, "YMD", "/");
+            } else if (PATTERN_YYYYMMDD_DASH.matcher(dateStr).matches()) {
+                return validateAndParse(dateStr, FORMAT_YYYYMMDD_DASH, "YMD", "-");
             }
             return null;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             return null;
         }
     }
 
-    private static LocalDate validateAndParse(String dateStr, DateTimeFormatter formatter) {
-        LocalDate date = LocalDate.parse(dateStr, formatter);
-        return isValidDateComponents(date.getYear(), date.getMonthValue(), date.getDayOfMonth()) ? date : null;
+    private static LocalDate validateAndParse(String dateStr, DateTimeFormatter formatter, String order, String separator) {
+        String[] parts = dateStr.split(Pattern.quote(separator));
+        int day, month, year;
+
+        switch (order) {
+            case "DMY":
+                day = Integer.parseInt(parts[0]);
+                month = Integer.parseInt(parts[1]);
+                year = Integer.parseInt(parts[2]);
+                break;
+            case "YMD":
+                year = Integer.parseInt(parts[0]);
+                month = Integer.parseInt(parts[1]);
+                day = Integer.parseInt(parts[2]);
+                break;
+            default:
+                return null;
+        }
+
+        if (!isValidDateComponents(year, month, day)) {
+            return null;
+        }
+
+        return LocalDate.parse(dateStr, formatter);
     }
 
     private static boolean isValidDateComponents(int year, int month, int day) {
@@ -65,6 +82,6 @@ public class DateValidator {
 
     public static String normalizeToString(String dateStr) {
         LocalDate date = normalizeToStandardFormat(dateStr);
-        return (date != null) ? date.format(FORMAT_YYYYMMDD_SLASH) : null;
+        return date != null ? date.format(FORMAT_YYYYMMDD_SLASH) : null;
     }
 }
