@@ -12,25 +12,25 @@ import java.math.BigDecimal;
 public class SalaryRegisterTotal {
 
     @JsonProperty("payment_days")
-    private Double paymentDaysTest;
+    private Double paymentDays;
 
     @JsonProperty("indemnite")
-    private BigDecimal indemniteTest;
+    private BigDecimal indemnite;
 
     @JsonProperty("salaire_base")
-    private BigDecimal salaireBaseTest;
+    private BigDecimal salaireBase;
 
     @JsonProperty("gross_pay")
-    private BigDecimal grossPayTest;
+    private BigDecimal grossPay;
 
     @JsonProperty("taxe_sociale")
-    private BigDecimal taxeSocialeTest;
+    private BigDecimal taxeSociale;
 
     @JsonProperty("total_deduction")
-    private BigDecimal totalDeductionTest;
+    private BigDecimal totalDeduction;
 
     @JsonProperty("net_pay")
-    private BigDecimal netPayTest;
+    private BigDecimal netPay;
 
 }
 
