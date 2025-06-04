@@ -48,8 +48,8 @@ public class ImportDataController {
 
     @PostMapping
     public ModelAndView imports(HttpSession session,@RequestParam("file1") MultipartFile file1,@RequestParam("file2") MultipartFile file2,@RequestParam("file3") MultipartFile file3){
-        ModelAndView modelAndView=new ModelAndView("template");
-        modelAndView.addObject("page","imports/form");
+        ModelAndView modelAndView=new ModelAndView("layout/modele");
+        modelAndView.addObject("page","pages/import/form");
         ResultatImport resultatImport=new ResultatImport();
 
         try {
@@ -57,13 +57,13 @@ public class ImportDataController {
             grilleImportService.importGrilleSalaireFromCSV(resultatImport, file2);
             salaireImportService.importSalairesFromCSV(resultatImport, file3);
 
-            if(!resultatImport.getErreursEmploye().isEmpty() || !resultatImport.getErreursGrille().isEmpty() || !resultatImport.getErreursSalaire().isEmpty()){ 
+            if(!resultatImport.getErreursEmploye().isEmpty() || !resultatImport.getErreursGrille().isEmpty() || !resultatImport.getErreursSalaire().isEmpty()){
                 modelAndView.addObject("erreur1", resultatImport.getErreursEmploye());
                 modelAndView.addObject("erreur2", resultatImport.getErreursGrille());
                 modelAndView.addObject("erreur3", resultatImport.getErreursSalaire());
             }
 
-            if(resultatImport.getErreursEmploye().isEmpty() && resultatImport.getErreursGrille().isEmpty() && resultatImport.getErreursSalaire().isEmpty()){ 
+            if(resultatImport.getErreursEmploye().isEmpty() && resultatImport.getErreursGrille().isEmpty() && resultatImport.getErreursSalaire().isEmpty()){
                 List<EmployeData> employeDatas=resultatImport.getEmployesValides();
                 Map<String,String> refEmp=importService.createEmployees(session, employeDatas);
 
