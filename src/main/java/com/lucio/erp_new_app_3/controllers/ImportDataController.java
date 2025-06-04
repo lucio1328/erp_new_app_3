@@ -75,6 +75,10 @@ public class ImportDataController {
                 List<SalaireData> salaireDatas=salaireImportService.transformeEmploye(resultatImport.getSalaireDatas(), refEmp);
                 salaireImportService.importSalaireData(session, salaireDatas);
                 modelAndView.addObject("successGlobal", "Importation réussi");
+
+                modelAndView.addObject("employesValides", resultatImport.getEmployesValides());
+                modelAndView.addObject("grillesValides", resultatImport.getGrilleSalaireDatas());
+                modelAndView.addObject("salairesValides", resultatImport.getSalaireDatas());
             }
 
         }
