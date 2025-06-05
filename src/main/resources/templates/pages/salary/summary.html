@@ -1,135 +1,157 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <style>
-        .salary-summary {
-            margin: 20px;
-            font-family: Arial, sans-serif;
-        }
-        .filters {
-            background: #f5f5f5;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-        }
-        .filter-group {
-            display: inline-block;
-            margin-right: 15px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-            position: sticky;
-            top: 0;
-        }
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-        .total-row {
-            font-weight: bold;
-            background-color: #e6f7ff !important;
-        }
-        .currency {
-            text-align: right;
-        }
-    </style>
+    <meta charset="UTF-8"/>
+    <title>Rapport des salaires</title>
+    <link rel="stylesheet" th:href="@{/css/summary.css}">
 </head>
 <body>
-<div class="salary-summary">
-    <h2>Récapitulatif des Salaires</h2>
 
-    <!-- Filtres -->
-    <div class="filters">
-        <form method="get" th:action="@{/salary/summary}">
-            <div class="filter-group">
-                <label for="month">Mois:</label>
-                <select id="month" name="month">
-                    <option th:each="m : ${months}"
-                            th:value="${m}"
-                            th:text="${T(java.time.Month).of(m).toString()}"
-                            th:selected="${m == selectedMonth}"></option>
-                </select>
+<div class="page-header">
+    <div class="container">
+        <div class="header-content">
+            <div>
+                <h1 class="page-title">Tableau récapitulatif des paies</h1>
             </div>
+        </div>
 
-            <div class="filter-group">
-                <label for="year">Année:</label>
-                <select id="year" name="year">
-                    <option th:each="y : ${years}"
-                            th:value="${y}"
-                            th:text="${y}"
-                            th:selected="${y == selectedYear}"></option>
-                </select>
+        <div th:if="${error != null}" class="alert-error">
+            <div class="alert-content">
+                <div class="alert-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <p class="alert-message" th:text="${error}"></p>
             </div>
+        </div>
 
-            <button type="submit" class="btn btn-primary">Filtrer</button>
-        </form>
+        <div class="filter-form">
+            <form action="/salary/summary" method="get" class="flex justify-between gap-6">
+                <div class="form-group">
+                    <label for="month" class="form-label">Mois</label>
+                    <input type="month" name="month" id="month" class="form-input" />
+                </div>
+
+                <div class="flex items-center">
+                    <button type="submit" class="form-button">
+                        Filtrer
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
-
-    <!-- Tableau des salaires -->
-    <table>
-        <thead>
-            <tr>
-                <th>Employé</th>
-                <th>Matricule</th>
-                <th>Département</th>
-                <th class="currency">Salaire Brut</th>
-                <!-- <th class="currency">Heures Supp.</th> -->
-                <th class="currency">Déductions</th>
-                <th class="currency">Net à Payer</th>
-                <th class="currency">CTC</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="slip : ${salarySlips}">
-                <td th:text="${slip.employeeName}">Nom Employé</td>
-                <td th:text="${slip.employee}">EMP-001</td>
-                <td th:text="${slip.department}">Département</td>
-                <td class="currency" th:text="${#numbers.formatDecimal(slip.grossPay, 1, 2, 'COMMA')} + ' ' + ${slip.currency}">0,00 EURO</td>
-                <!-- <td class="currency" th:text="${#numbers.formatDecimal(slip.totalWorkingHours - (slip.paymentDays * 8), 1, 2, 'COMMA')} + ' ' + ${slip.currency}">0,00 EURO</td> -->
-                <td class="currency" th:text="${#numbers.formatDecimal(slip.totalDeduction, 1, 2, 'COMMA')} + ' ' + ${slip.currency}">0,00 EURO</td>
-                <td class="currency" th:text="${#numbers.formatDecimal(slip.netPay, 1, 2, 'COMMA')} + ' ' + ${slip.currency}">0,00 EURO</td>
-                <td class="currency" th:text="${#numbers.formatDecimal(slip.ctc, 1, 2, 'COMMA')} + ' ' + ${slip.currency}">0,00 EURO</td>
-            </tr>
-        </tbody>
-        <tfoot>
-            <tr class="total-row">
-                <td colspan="3"><center>Total</center></td>
-                <!-- Salaire Brut -->
-                <td class="currency"
-                    th:text="${not salarySlips.empty}
-                            ? ${#numbers.formatDecimal(totals.totalGrossPay, 1, 2, 'COMMA') + ' ' + salarySlips[0].currency}
-                            : '0,00 EURO'">
-                </td>
-                <!-- Déductions -->
-                <td class="currency"
-                    th:text="${not salarySlips.empty}
-                            ? ${#numbers.formatDecimal(totals.totalDeductions, 1, 2, 'COMMA') + ' ' + salarySlips[0].currency}
-                            : '0,00 EURO'">
-                </td>
-                <!-- Net à Payer -->
-                <td class="currency"
-                    th:text="${not salarySlips.empty}
-                            ? ${#numbers.formatDecimal(totals.totalNetPay, 1, 2, 'COMMA') + ' ' + salarySlips[0].currency}
-                            : '0,00 EURO'">
-                </td>
-                <!-- CTC -->
-                <td class="currency"
-                    th:text="${not salarySlips.empty}
-                            ? ${#numbers.formatDecimal(totals.totalCtc, 1, 2, 'COMMA') + ' ' + salarySlips[0].currency}
-                            : '0,00 EURO'">
-                </td>
-            </tr>
-        </tfoot>
-    </table>
 </div>
+
+<div class="container">
+    <div class="table-container">
+        <div style="overflow-x: auto;">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Employé</th>
+                        <th>Entreprise</th>
+                        <th>Période</th>
+                        <th th:each="component : ${salaryComponents}" th:text="${component.name}"></th>
+                        <th>Salaire Brut</th>
+                        <th>Deduction</th>
+                        <th>Net à Payer</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="slip : ${salarySlips}">
+                        <td>
+                            <div class="font-medium" th:text="${slip.employeeName}"></div>
+                            <div class="text-xs text-gray-500" th:text="${slip.department} + ' - ' + ${slip.designation}"></div>
+                        </td>
+                        <td class="whitespace-nowrap text-sm text-gray-500" th:text="${slip.company}"></td>
+                        <td class="whitespace-nowrap">
+                            <span class="text-sm" th:text="${slip.startDate} + ' - ' + ${slip.endDate}"></span>
+                            <div class="text-xs text-gray-500" th:text="${slip.payrollFrequency}"></div>
+                        </td>
+                        <td th:each="component : ${slip.componentsDef}"
+                            th:text="${#numbers.formatDecimal(component, 1, 'POINT', 2, 'COMMA')} + ' ' + ${slip.currency}">
+                        </td>
+                        <td class="whitespace-nowrap text-right font-medium" th:text="${#numbers.formatDecimal(slip.grossPay, 1, 'POINT', 2, 'COMMA')} + ' ' + ${slip.currency}"></td>
+                        <td class="whitespace-nowrap text-right font-semibold text-red" th:text="${#numbers.formatDecimal(slip.totalDeduction, 1, 'POINT', 2, 'COMMA')} + ' ' + ${slip.currency}"></td>
+                        <td class="whitespace-nowrap text-right font-semibold text-green" th:text="${#numbers.formatDecimal(slip.netPay, 1, 'POINT', 2, 'COMMA')} + ' ' + ${slip.currency}"></td>
+                        <td class="whitespace-nowrap text-sm text-gray-500" th:text="${slip.postingDate}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Section des totaux -->
+        <div class="summary-section">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h3 class="summary-title">Récapitulatif des totaux</h3>
+                </div>
+
+                <div class="summary-grid">
+                    <div th:each="component, stat : ${salaryComponents}" class="summary-card">
+                        <div class="summary-label" th:text="${component.name}"></div>
+                        <div class="summary-value"
+                            th:text="${#numbers.formatDecimal(totalSalarySlip.componentsSum[stat.index], 1, 'POINT', 2, 'COMMA')} + ' ' + ${totalSalarySlip.currency}">
+                        </div>
+                    </div>
+
+                    <!-- Total Brut -->
+                    <div class="summary-card">
+                        <div class="summary-label">Total Brut</div>
+                        <div class="summary-value"
+                            th:text="${#numbers.formatDecimal(totalSalarySlip.totalGrossPay, 1, 'POINT', 2, 'COMMA')} + ' ' + ${totalSalarySlip.currency}">
+                        </div>
+                    </div>
+
+                    <!-- Total Déductions -->
+                    <div class="summary-card">
+                        <div class="summary-label">Total Déductions</div>
+                        <div class="summary-value text-red"
+                            th:text="${#numbers.formatDecimal(totalSalarySlip.totalDeductions, 1, 'POINT', 2, 'COMMA')} + ' ' + ${totalSalarySlip.currency}">
+                        </div>
+                    </div>
+
+                    <!-- Total Net -->
+                    <div class="summary-card">
+                        <div class="summary-label">Net à Payer</div>
+                        <div class="summary-value text-green"
+                            th:text="${#numbers.formatDecimal(totalSalarySlip.totalNetPay, 1, 'POINT', 2, 'COMMA')} + ' ' + ${totalSalarySlip.currency}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="pagination">
+            <div>
+                <nav class="pagination-nav">
+                    <a th:if="${currentPage > 0}"
+                        th:href="@{/payrolls(page=${currentPage - 1}, size=${pageSize}, employee=${filter.employee}, startDate=${filter.startDate}, endDate=${filter.endDate})}"
+                        class="pagination-button">
+                        <svg class="pagination-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                        Précédent
+                    </a>
+
+                    <span class="pagination-page">
+                        Page <span th:text="${currentPage + 1}" style="font-weight: 600; margin-left: 4px;"></span>
+                    </span>
+
+                    <a th:href="@{/payrolls(page=${currentPage + 1}, size=${pageSize}, employee=${filter.employee}, startDate=${filter.startDate}, endDate=${filter.endDate})}"
+                        class="pagination-button">
+                        Suivant
+                        <svg class="pagination-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </a>
+                </nav>
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>

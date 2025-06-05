@@ -99,6 +99,9 @@ public class SalaireImportService {
             if (salaire.getMois() == null) {
                 rapportErreurs.add(rapportErreurService.createError(ligne, "Mois manquant ou invalide", null));
             }
+            if (!DateValidator.isValidDate(salaire.getMois())) {
+                rapportErreurs.add(rapportErreurService.createError(ligne, "Date invalide", salaire.getMois()));
+            }
         } catch (DateTimeParseException e) {
             rapportErreurs.add(rapportErreurService.createError(ligne, "Format de mois invalide", salaire.getMois() != null ? salaire.getMois().toString() : null));
         }

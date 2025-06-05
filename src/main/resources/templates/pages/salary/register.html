@@ -1,87 +1,146 @@
-<!-- pages/salary/summary.html -->
-<link rel="stylesheet" th:href="@{/css/import.css}" />
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Rapport des salaires</title>
+    <link rel="stylesheet" th:href="@{/css/import.css}"/>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 6px;
+            text-align: left;
+        }
+        thead {
+            background: #f5f5f5;
+        }
+        tfoot {
+            background: #eee;
+            font-weight: bold;
+        }
+        .sub {
+            background: #fafafa;
+        }
+        .sub-table {
+            width: auto;
+            margin: 10px 0;
+        }
+        .sub-table th, .sub-table td {
+            padding: 4px 8px;
+        }
+    </style>
+</head>
+<body>
 
-<section class="salary-register-container">
-
-<!-- ===== Filtres mois / année ===== -->
-<form method="get" class="filter-bar">
-    <label>Mois :
-    <select name="month" th:value="${selectedMonth}">
+<!-- ========= FILTRES =========== -->
+<form method="get">
+    Mois:
+    <select name="month">
         <option th:each="m : ${months}"
-                th:value="${m}"
+                th:value="${m}" 
                 th:text="${m}"
-                th:selected="${m == selectedMonth}">1</option>
+                th:selected="${m==selectedMonth}"></option>
     </select>
-    </label>
 
-    <label>Année :
-    <select name="year" th:value="${selectedYear}">
+    Année:
+    <select name="year">
         <option th:each="y : ${years}"
-                th:value="${y}"
+                th:value="${y}" 
                 th:text="${y}"
-                th:selected="${y == selectedYear}">2025</option>
+                th:selected="${y==selectedYear}"></option>
     </select>
-    </label>
 
-    <button type="submit" class="submit-button">Filtrer</button>
+    <button type="submit">Filtrer</button>
 </form>
 
-<!-- ===== Tableau Salary Register ===== -->
-<div th:if="${salaryRegisters != null}">
-    <table class="salary-table">
-    <thead>
-        <tr>
-        <th>ID Fiche</th>
-        <th>Employé</th>
-        <th>Nom</th>
-        <th>Société</th>
-        <th>Date début</th>
-        <th>Date fin</th>
-        <th>Jours payés</th>
-        <th>Salaire base</th>
-        <th>Indemnité</th>
-        <th>Salaire brut</th>
-        <th>Déductions</th>
-        <th>Salaire net</th>
-        </tr>
-    </thead>
+<!-- ========= TABLEAU PRINCIPAL =========== -->
+<div th:if="${salaryReport != null and not #lists.isEmpty(salaryReport.salaryRegisters)}">
+    <table>
+        <thead>
+            <tr>
+                <th>ID fiche</th>
+                <th>Employé</th>
+                <th>Nom</th>
+                <th>Société</th>
+                <th>Début</th>
+                <th>Fin</th>
+                <th>Jours</th>
+                <th>Salaire brut</th>
+                <th>Déductions</th>
+                <th>Net</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="reg,regStat : ${salaryReport.salaryRegisters}">
+                <td>
+                    <a th:href="@{|/salary/fiche-paie/${reg.salarySlipId}|}"
+                       th:text="${reg.salarySlipId}"></a>
+                </td>
+                <td th:text="${reg.employee}"></td>
+                <td th:text="${reg.employeeName}"></td>
+                <td th:text="${reg.company}"></td>
+                <td th:text="${reg.startDate}"></td>
+                <td th:text="${reg.endDate}"></td>
+                <td th:text="${reg.paymentDays}"></td>
+                <td th:text="${reg.grossPay}"></td>
+                <td th:text="${reg.totalDeduction}"></td>
+                <td th:text="${reg.netPay}"></td>
+            </tr>
 
-    <tbody>
-        <tr th:each="reg : ${salaryRegisters}">
-        <td><a th:href="@{/salary/fiche-paie/} + ${reg.salarySlipId}"
-            th:text="${reg.salarySlipId}"></a></td>
-        <td th:text="${reg.employee}"></td>
-        <td th:text="${reg.employeeName}"></td>
-        <td th:text="${reg.company}"></td>
-        <td th:text="${reg.startDate}"></td>
-        <td th:text="${reg.endDate}"></td>
-        <td th:text="${reg.paymentDays}"></td>
-        <td th:text="${#numbers.formatDecimal(reg.salaireBase, 0, 'COMMA', 0, 'POINT')}"></td>
-        <td th:text="${#numbers.formatDecimal(reg.indemnite, 0, 'COMMA', 0, 'POINT')}"></td>
-        <td th:text="${#numbers.formatDecimal(reg.grossPay, 0, 'COMMA', 0, 'POINT')}"></td>
-        <td th:text="${#numbers.formatDecimal(reg.totalDeduction, 0, 'COMMA', 0, 'POINT')}"></td>
-        <td th:text="${#numbers.formatDecimal(reg.netPay, 0, 'COMMA', 0, 'POINT')}"></td>
-        </tr>
-    </tbody>
+            <!-- ===== DÉTAIL GAINS / DÉDUCTIONS ===== -->
+            <tr class="sub" th:each="slip,slipStat : ${salaryReport.salarySlips}"
+                th:if="${slip.name == salaryReport.salaryRegisters[slipStat.index].salarySlipId}">
+                <td colspan="10">
+                    <div style="margin: 10px 0;">
+                        <strong>Gains</strong>
+                        <table class="sub-table">
+                            <tr>
+                                <th>Libellé</th>
+                                <th>Montant</th>
+                            </tr>
+                            <tr th:each="e : ${slip.earnings}">
+                                <td th:text="${e.salaryComponent}">Prime</td>
+                                <td th:text="${e.amount}">0</td>
+                            </tr>
+                        </table>
+                    </div>
 
-    <!-- ===== Ligne totaux ===== -->
-    <tfoot th:if="${totals != null}">
-        <tr class="table-total">
-        <td colspan="6">Totaux</td>
-        <td th:text="${#numbers.formatDecimal(totals.paymentDays, 0, 'COMMA', 0, 'POINT')}"></td>
-        <td th:text="${#numbers.formatDecimal(totals.salaireBase, 0, 'COMMA', 0, 'POINT')}"></td>
-        <td th:text="${#numbers.formatDecimal(totals.indemnite, 0, 'COMMA', 0, 'POINT')}"></td>
-        <td th:text="${#numbers.formatDecimal(totals.grossPay, 0, 'COMMA', 0, 'POINT')}"></td>
-        <td th:text="${#numbers.formatDecimal(totals.totalDeduction, 0, 'COMMA', 0, 'POINT')}"></td>
-        <td th:text="${#numbers.formatDecimal(totals.netPay, 0, 'COMMA', 0, 'POINT')}"></td>
-        </tr>
-    </tfoot>
+                    <div style="margin: 10px 0;">
+                        <strong>Déductions</strong>
+                        <table class="sub-table">
+                            <tr>
+                                <th>Libellé</th>
+                                <th>Montant</th>
+                            </tr>
+                            <tr th:each="d : ${slip.deductions}">
+                                <td th:text="${d.salaryComponent}">IRSA</td>
+                                <td th:text="${d.amount}">0</td>
+                            </tr>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+
+        <tfoot>
+            <tr>
+                <td colspan="6">TOTAL</td>
+                <td th:text="${salaryReport.totals.paymentDays}"></td>
+                <td th:text="${salaryReport.totals.grossPay}"></td>
+                <td th:text="${salaryReport.totals.totalDeduction}"></td>
+                <td th:text="${salaryReport.totals.netPay}"></td>
+            </tr>
+        </tfoot>
     </table>
 </div>
 
-<!-- Message si aucun résultat -->
-<p th:if="${salaryRegisters == null or #lists.isEmpty(salaryRegisters)}">
+<p th:if="${salaryReport == null or #lists.isEmpty(salaryReport.salaryRegisters)}">
     Aucune donnée pour la période sélectionnée.
 </p>
 
-</section>
+</body>
+</html>

@@ -47,12 +47,6 @@ public class SalaryRegister {
     @JsonProperty("payment_days")
     private Double paymentDays;
 
-    @JsonProperty("indemnite")
-    private BigDecimal indemnite;
-
-    @JsonProperty("salaire_base")
-    private BigDecimal salaireBase;
-
     @JsonProperty("gross_pay")
     private BigDecimal grossPay;
 
@@ -70,5 +64,7 @@ public class SalaryRegister {
 
     @JsonProperty("currency")
     private String currency;
+
+    private SalarySlip salarySlip;
 }
 

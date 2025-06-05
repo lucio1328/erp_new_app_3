@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Rapport des salaires</title>
+    <link rel="stylesheet" th:href="@{/css/summary.css}" />
+</head>
+<body>
+
+<div class="page-header">
+    <div class="container">
+        <div class="header-content">
+            <h1 class="page-title">Récapitulatif des paies par années</h1>
+        </div>
+
+        <div th:if="${error != null}" class="alert-error">
+            <div class="alert-content">
+                <div class="alert-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <p class="alert-message" th:text="${error}"></p>
+            </div>
+        </div>
+
+        <div th:if="${info != null}" class="alert-info">
+            <div class="alert-content">
+                <div class="alert-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" width="20" height="20">
+                        <path d="M18 10c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8 8 3.582 8 8zM9 7h2v6H9V7zM9 15h2v2H9v-2z" />
+                    </svg>
+                </div>
+                <p class="alert-message" th:text="${info}"></p>
+            </div>
+        </div>
+
+        <div class="filter-form">
+            <form action="/statistiques/stat" method="get" class="flex justify-start gap-3">
+                <label for="year" class="form-label">Année</label>
+                <input type="number" name="year" id="year" class="form-input" min="2000" max="2100" th:value="${selectedYear}" />
+                <button type="submit" class="form-button">Filtrer</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="table-container" style="overflow-x:auto;">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Mois</th>
+                    <th th:each="component : ${salaryComponents}" th:text="${component.name}"></th>
+                    <th>Salaire Brut</th>
+                    <th>Déduction</th>
+                    <th>Net à Payer</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="entry : ${groupedSalarySlips.entrySet()}">
+                    <td>
+                        <a th:href="@{/salary/summary(month=${entry.value.envoye})}" th:text="${entry.value.mois}"></a>
+                    </td>
+                    <td th:each="component : ${entry.value.componentsDef}"
+                        th:text="${#numbers.formatDecimal(component, 1, 'POINT', 2, 'COMMA')} + ' ' + ${entry.value.currency}">
+                    </td>
+                    <td th:text="${#numbers.formatDecimal(entry.value.grossPay, 1, 'POINT', 2, 'COMMA')} + ' ' + ${entry.value.currency}"></td>
+                    <td th:text="${#numbers.formatDecimal(entry.value.totalDeduction, 1, 'POINT', 2, 'COMMA')} + ' ' + ${entry.value.currency}"></td>
+                    <td th:text="${#numbers.formatDecimal(entry.value.netPay, 1, 'POINT', 2, 'COMMA')} + ' ' + ${entry.value.currency}" class="text-green font-semibold"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="summary-section" style="margin-top: 2rem;">
+        <h3 class="summary-title">Récapitulatif des totaux</h3>
+        <div class="summary-grid" style="display: flex; flex-wrap: wrap; gap: 1rem;">
+            <div th:each="component, stat : ${salaryComponents}" class="summary-card" style="flex: 1 1 150px; background:#f3f4f6; padding: 1rem; border-radius: 6px;">
+                <div class="summary-label font-semibold" th:text="${component.name}"></div>
+                <div class="summary-value" th:text="${#numbers.formatDecimal(totalSalarySlip.componentsSum[stat.index], 1, 'POINT', 2, 'COMMA')} + ' ' + ${totalSalarySlip.currency}"></div>
+            </div>
+
+            <div class="summary-card" style="flex: 1 1 150px; background:#e0e7ff; padding: 1rem; border-radius: 6px;">
+                <div class="summary-label font-semibold">Total Brut</div>
+                <div class="summary-value" th:text="${#numbers.formatDecimal(totalSalarySlip.totalGrossPay, 1, 'POINT', 2, 'COMMA')} + ' ' + ${totalSalarySlip.currency}"></div>
+            </div>
+
+            <div class="summary-card" style="flex: 1 1 150px; background:#fee2e2; padding: 1rem; border-radius: 6px;">
+                <div class="summary-label font-semibold">Total Déductions</div>
+                <div class="summary-value text-red-600" th:text="${#numbers.formatDecimal(totalSalarySlip.totalDeductions, 1, 'POINT', 2, 'COMMA')} + ' ' + ${totalSalarySlip.currency}"></div>
+            </div>
+
+            <div class="summary-card" style="flex: 1 1 150px; background:#d1fae5; padding: 1rem; border-radius: 6px;">
+                <div class="summary-label font-semibold">Net à Payer</div>
+                <div class="summary-value text-green-600" th:text="${#numbers.formatDecimal(totalSalarySlip.totalNetPay, 1, 'POINT', 2, 'COMMA')} + ' ' + ${totalSalarySlip.currency}"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

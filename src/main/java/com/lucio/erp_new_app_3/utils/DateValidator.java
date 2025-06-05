@@ -1,7 +1,10 @@
 package com.lucio.erp_new_app_3.utils;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
+import java.util.Locale;
 import java.util.regex.Pattern;
 
 public class DateValidator {
@@ -22,6 +25,9 @@ public class DateValidator {
 
     public static LocalDate normalizeToStandardFormat(String dateStr) {
         try {
+            if (dateStr == null) {
+                return null;
+            }
             if (PATTERN_DDMMYYYY_SLASH.matcher(dateStr).matches()) {
                 return validateAndParse(dateStr, FORMAT_DDMMYYYY_SLASH, "DMY", "/");
             } else if (PATTERN_DDMMYYYY_DASH.matcher(dateStr).matches()) {
@@ -83,5 +89,19 @@ public class DateValidator {
     public static String normalizeToString(String dateStr) {
         LocalDate date = normalizeToStandardFormat(dateStr);
         return date != null ? date.format(FORMAT_YYYYMMDD_SLASH) : null;
+    }
+
+    public static String getMonthName(String yearMonth) {
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
+            YearMonth date = YearMonth.parse(yearMonth, formatter);
+
+            return date.getMonth()
+                    .getDisplayName(TextStyle.FULL, Locale.FRENCH)
+                + " " + date.getYear();
+        }
+        catch (Exception e) {
+            return "Date invalide";
+        }
     }
 }
