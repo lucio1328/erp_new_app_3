@@ -19,7 +19,6 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.lucio.erp_new_app_3.dtos.salary.SalaryReportResponse;
 import com.lucio.erp_new_app_3.dtos.salary.SalarySlip;
-import com.lucio.erp_new_app_3.dtos.salary.SalarySummaryTotals;
 import com.lucio.erp_new_app_3.services.pdf.PdfGeneratorService;
 import com.lucio.erp_new_app_3.services.salary.SalaryRegisterService;
 import com.lucio.erp_new_app_3.services.salary.SalarySlipService;
@@ -148,17 +147,17 @@ public class SalarySlipController {
     //     return modelAndView;
     // }
 
-    private SalarySummaryTotals calculateTotals(List<SalarySlip> salarySlips) {
-        SalarySummaryTotals totals = new SalarySummaryTotals();
+    // private SalarySummaryTotals calculateTotals(List<SalarySlip> salarySlips) {
+    //     SalarySummaryTotals totals = new SalarySummaryTotals();
 
-        salarySlips.forEach(slip -> {
-            totals.setTotalGrossPay(totals.getTotalGrossPay() + slip.getGrossPay());
-            totals.setTotalDeductions(totals.getTotalDeductions() + slip.getTotalDeduction());
-            totals.setTotalNetPay(totals.getTotalNetPay() + slip.getNetPay());
-            totals.setTotalCtc(totals.getTotalCtc() + slip.getCtc());
-        });
+    //     salarySlips.forEach(slip -> {
+    //         totals.setTotalGrossPay(totals.getTotalGrossPay() + slip.getGrossPay());
+    //         totals.setTotalDeductions(totals.getTotalDeductions() + slip.getTotalDeduction());
+    //         totals.setTotalNetPay(totals.getTotalNetPay() + slip.getNetPay());
+    //         totals.setTotalCtc(totals.getTotalCtc() + slip.getCtc());
+    //     });
 
-        return totals;
-    }
+    //     return totals;
+    // }
 
 }
