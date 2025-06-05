@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Statistiques des salaires</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <h1>Statistiques des salaires</h1>
+
+    <form method="get" th:action="@{/statistiques}">
+        <label for="annee">Année :</label>
+        <input type="number" id="annee" name="annee" min="2000" max="2100"
+                th:value="${annee}" required>
+        <button type="submit">Filtrer</button>
+    </form>
+
+    <br/>
+
+    <table border="1" cellpadding="8" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Mois</th>
+                <th>Total Salaires</th>
+                <th th:if="elements != null" th:each="element : ${elements}" th:text="${element}"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:if="statistiques != null" th:each="ligne : ${statistiques}">
+                <td th:text="${ligne.mois}"></td>
+                <td th:text="${ligne.total}"></td>
+                <td th:each="element : ${elements}"
+                    th:text="${ligne.elements[element]}"></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
