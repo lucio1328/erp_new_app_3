@@ -1,22 +1,35 @@
 package com.lucio.erp_new_app_3.dtos.salary;
 
-import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
+import lombok.Data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 public class SalaryRegisterTotal {
-    private BigDecimal grossPay = BigDecimal.ZERO;
-    private BigDecimal totalDeduction = BigDecimal.ZERO;
-    private BigDecimal netPay = BigDecimal.ZERO;
-    private BigDecimal totalLoanRepayment = BigDecimal.ZERO;
 
-    private Map<String, BigDecimal> composantes = new HashMap<>();
+    @JsonProperty("payment_days")
+    private Double paymentDays;
+
+    @JsonProperty("indemnite")
+    private Double indemnite;
+
+    @JsonProperty("salaire_base")
+    private Double salaireBase;
+
+    @JsonProperty("gross_pay")
+    private Double grossPay;
+
+    @JsonProperty("taxe_sociale")
+    private Double taxeSociale;
+
+    @JsonProperty("total_deduction")
+    private Double totalDeduction;
+
+    @JsonProperty("net_pay")
+    private Double netPay;
+
 }
-
 

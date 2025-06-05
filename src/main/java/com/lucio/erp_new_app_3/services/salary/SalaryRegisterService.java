@@ -35,7 +35,7 @@ public class SalaryRegisterService {
 
             String jsonBody = objectMapper.writeValueAsString(requestBody);
             JsonNode response = preparationApi.postJsonDataToApiWithMessage(url, jsonBody, sessionCookie);
-            return SalaryReportResponse.fromJson(response, objectMapper);
+            return SalaryReportResponse.fromJson(response, objectMapper, sessionCookie);
         }
         catch (Exception e) {
             throw new ErpApiException("Erreur lors de la récupération du rapport Salary Register",

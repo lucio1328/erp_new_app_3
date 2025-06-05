@@ -22,6 +22,9 @@ public class DateValidator {
 
     public static LocalDate normalizeToStandardFormat(String dateStr) {
         try {
+            if (dateStr == null) {
+                return null;
+            }
             if (PATTERN_DDMMYYYY_SLASH.matcher(dateStr).matches()) {
                 return validateAndParse(dateStr, FORMAT_DDMMYYYY_SLASH, "DMY", "/");
             } else if (PATTERN_DDMMYYYY_DASH.matcher(dateStr).matches()) {
