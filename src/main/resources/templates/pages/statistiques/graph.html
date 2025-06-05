@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Récapitulatif des paies par mois</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Ton CSS existant */
+    </style>
+</head>
+<body>
+
+<h2>Récapitulatif des paies - Année <span th:text="${selectedYear}"></span></h2>
+
+<!-- Messages d'info ou d'erreur -->
+<div th:if="${info}" style="color: blue; font-weight: bold;" th:text="${info}"></div>
+<div th:if="${error}" style="color: red; font-weight: bold;" th:text="${error}"></div>
+
+<!-- Tableau mensuel (inchangé) -->
+<table>
+    <!-- ... ton tableau inchangé ... -->
+</table>
+
+<!-- Graphe 1: Salaire Brut, Déduction, Net à Payer -->
+<h3>Évolution Salaire Brut, Déduction et Net à Payer</h3>
+<canvas id="summaryChart" width="1000" height="400"></canvas>
+
+<!-- Graphe 2: Composantes salariales -->
+<h3>Évolution des composantes salariales</h3>
+<canvas id="componentsChart" width="1000" height="400"></canvas>
+
+<script th:inline="javascript">
+/*<![CDATA[*/
+const labels = /*[[${moisList}]]*/ [];
+const componentNames = /*[[${componentNames}]]*/ [];
+const groupedData = /*[[${groupedSalarySlips}]]*/ [];
+
+// --- Données pour le premier graphique ---
+const summaryDatasets = [
+    {
+        label: 'Salaire Brut',
+        data: groupedData.map(slip => slip.grossPay),
+        borderColor: 'blue',
+        backgroundColor: 'rgba(0,0,255,0.1)',
+        tension: 0.2
+    },
+    {
+        label: 'Déduction',
+        data: groupedData.map(slip => slip.totalDeduction),
+        borderColor: 'red',
+        backgroundColor: 'rgba(255,0,0,0.1)',
+        tension: 0.2
+    },
+    {
+        label: 'Net à Payer',
+        data: groupedData.map(slip => slip.netPay),
+        borderColor: 'green',
+        backgroundColor: 'rgba(0,128,0,0.1)',
+        tension: 0.2
+    }
+];
+
+console.log(summaryDatasets);
+
+// Création du premier graphique
+const ctxSummary = document.getElementById('summaryChart').getContext('2d');
+const summaryChart = new Chart(ctxSummary, {
+    type: 'line',
+    data: {
+        labels: labels,
+        datasets: summaryDatasets
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            title: {
+                display: true,
+                text: 'Évolution Salaire Brut, Déduction et Net à Payer'
+            }
+        },
+        interaction: {
+            mode: 'index',
+            intersect: false,
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    callback: function (value) {
+                        return new Intl.NumberFormat('fr-FR').format(value) + ' €';
+                    }
+                }
+            }
+        }
+    }
+});
+
+// --- Données pour le second graphique (composantes) ---
+const componentDatasets = [];
+
+for (let i = 0; i < componentNames.length; i++) {
+    componentDatasets.push({
+        label: componentNames[i],
+        data: groupedData.map(slip => slip.componentsDef[i]),
+        borderColor: getRandomColor(),
+        backgroundColor: 'rgba(0,0,0,0)',
+        tension: 0.2
+    });
+}
+
+// Création du second graphique
+const ctxComponents = document.getElementById('componentsChart').getContext('2d');
+const componentsChart = new Chart(ctxComponents, {
+    type: 'line',
+    data: {
+        labels: labels,
+        datasets: componentDatasets
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            title: {
+                display: true,
+                text: 'Évolution des composantes salariales'
+            }
+        },
+        interaction: {
+            mode: 'index',
+            intersect: false,
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    callback: function (value) {
+                        return new Intl.NumberFormat('fr-FR').format(value) + ' €';
+                    }
+                }
+            }
+        }
+    }
+});
+
+// Fonction pour générer des couleurs aléatoires HSL
+function getRandomColor() {
+    return 'hsl(' + Math.floor(Math.random() * 360) + ', 70%, 50%)';
+}
+/*]]>*/
+</script>
+
+</body>
+</html>

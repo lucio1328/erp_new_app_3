@@ -1,0 +1,215 @@
+/* Container principal */
+.summary-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem;
+  background-color: #fff;
+  border-bottom: 1px solid #e5e7eb; /* gris clair */
+  margin-bottom: 1.5rem;
+}
+
+/* Header */
+.summary-header h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #1f2937; /* gris foncé */
+  margin-bottom: 0.5rem;
+}
+
+/* Messages d'erreur et info */
+.message {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-left: 4px solid;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  border-radius: 0 0.25rem 0.25rem 0;
+}
+
+.message.error {
+  background-color: #fef2f2; /* rouge clair */
+  border-color: #ef4444; /* rouge vif */
+  color: #b91c1c;
+}
+
+.message.info {
+  background-color: #eff6ff; /* bleu clair */
+  border-color: #3b82f6; /* bleu */
+  color: #1e40af;
+}
+
+.icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+}
+
+.error-icon {
+  fill: #ef4444;
+}
+
+.info-icon {
+  fill: #3b82f6;
+}
+
+/* Formulaire de filtre */
+.filter-form form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+}
+
+.filter-form label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  margin-bottom: 0.25rem;
+  display: block;
+}
+
+.filter-form input[type="number"] {
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  width: 10rem;
+  outline: none;
+}
+
+.filter-form input[type="number"]:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59,130,246,0.5);
+}
+
+.filter-form button {
+  background-color: #2563eb;
+  color: #fff;
+  font-weight: 600;
+  padding: 0.5rem 1.5rem;
+  border-radius: 0.375rem;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.filter-form button:hover {
+  background-color: #1d4ed8;
+}
+
+/* Tableaux */
+.table-wrapper {
+  margin-top: 1.5rem;
+  overflow-x: auto;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
+  border-radius: 0.5rem;
+  background-color: white;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.875rem;
+  min-width: 600px;
+}
+
+thead {
+  background-color: #f9fafb;
+}
+
+th, td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+  color: #374151;
+  vertical-align: middle;
+}
+
+th {
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  color: #6b7280;
+  letter-spacing: 0.05em;
+}
+
+tbody tr:hover {
+  background-color: #f3f4f6;
+}
+
+a {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+a:hover {
+  color: #1d4ed8;
+  text-decoration: underline;
+}
+
+/* Mise en forme des totaux */
+.summary-totals {
+  background-color: #f9fafb;
+  padding: 1rem 1.5rem;
+  margin-top: 2rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+}
+
+.summary-totals h3 {
+  font-weight: 600;
+  font-size: 1.125rem;
+  color: #1f2937;
+  margin-bottom: 1rem;
+}
+
+.totals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.total-component, .total-summary {
+  background-color: white;
+  padding: 1rem;
+  border: 1px solid #f3f4f6;
+  border-radius: 0.375rem;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
+  text-align: center;
+}
+
+.component-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #6b7280;
+  margin-bottom: 0.5rem;
+}
+
+.component-value, .total-summary > div:nth-child(2) {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.total-summary:nth-child(3) {
+  color: #ef4444; /* rouge déduction */
+}
+
+.total-summary:nth-child(4) {
+  color: #10b981; /* vert net à payer */
+}
+
+.net-pay {
+  font-weight: 700;
+  color: #10b981;
+}
+
+.deductions {
+  color: #ef4444;
+}

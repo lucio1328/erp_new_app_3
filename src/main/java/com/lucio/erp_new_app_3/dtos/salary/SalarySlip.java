@@ -208,5 +208,7 @@ public class SalarySlip {
     List<SalaryDeduction> deductions;
 
     List<Double> componentsDef=new ArrayList<>();
+    String mois;
+    String envoye;
 }
 
