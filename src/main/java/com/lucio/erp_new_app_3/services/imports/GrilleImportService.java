@@ -127,7 +127,6 @@ public class GrilleImportService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        // headers.add("Cookie", "sid=" + sid);
         headers = preparationApi.buildApiHeaders();
 
         Map<String, Object> jsonBody = new HashMap<>();
