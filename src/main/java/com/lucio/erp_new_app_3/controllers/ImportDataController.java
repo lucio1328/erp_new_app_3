@@ -18,6 +18,7 @@ import com.lucio.erp_new_app_3.dtos.imports.ResultatImport;
 import com.lucio.erp_new_app_3.dtos.imports.SalaireData;
 import com.lucio.erp_new_app_3.services.imports.EmployeeImportService;
 import com.lucio.erp_new_app_3.services.imports.GrilleImportService;
+import com.lucio.erp_new_app_3.services.imports.ResetService;
 import com.lucio.erp_new_app_3.services.imports.SalaireImportService;
 import com.lucio.erp_new_app_3.utils.EnvoyeInformation;
 
@@ -35,6 +36,9 @@ public class ImportDataController {
 
     @Autowired
     private SalaireImportService salaireImportService;
+
+    @Autowired
+    private ResetService resetService;
 
     @GetMapping
     public ModelAndView form(HttpSession session){
@@ -83,7 +87,14 @@ public class ImportDataController {
 
         }
         catch (Exception e) {
-            modelAndView.addObject("errorGlobal",e.getMessage());
+            String erreur=e.getMessage();
+            try {
+                resetService.resetData(session);
+            } catch (Exception e1) {
+                erreur+="\n"+e1.getMessage();
+            }
+            e.printStackTrace();
+            modelAndView.addObject("errorGlobal",erreur);
         }
         return modelAndView;
     }
