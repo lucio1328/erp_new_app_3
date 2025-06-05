@@ -14,6 +14,7 @@ import org.springframework.web.client.RestTemplate;
 
 import com.lucio.erp_new_app_3.configs.ErpnextProperties;
 import com.lucio.erp_new_app_3.dtos.data.DataListReponse;
+import com.lucio.erp_new_app_3.utils.PreparationApi;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -24,6 +25,9 @@ public class DataService {
 
     @Autowired
     private ErpnextProperties erpnextProperties;
+
+    @Autowired
+    private PreparationApi preparationApi;
 
     @SuppressWarnings("null")
     public DataListReponse getAllData(HttpSession session,String type) {
@@ -47,8 +51,7 @@ public class DataService {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.add("Cookie", "sid=" + sid);
-        // headers.set("Authorization", "token " + erpnextApiKey + ":" + erpnextApiSecret);
+        headers = preparationApi.buildApiHeaders();
 
         HttpEntity<String> request = new HttpEntity<>(headers);
 

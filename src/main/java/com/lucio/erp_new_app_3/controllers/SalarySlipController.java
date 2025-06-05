@@ -99,6 +99,8 @@ public class SalarySlipController {
         ModelAndView modelAndView = new ModelAndView("layout/modele");
         SalarySlipListResponse response = null;
 
+        EnvoyeInformation.afficherName(session, modelAndView);
+
         try {
             modelAndView.addObject("page", "pages/salary/summary");
 
@@ -128,7 +130,6 @@ public class SalarySlipController {
             }
 
             List<DataDto> salaryComponents = dataService.getAllData(session,"Salary Component").getData();
-
             List<SalarySlip> salarySlips = salaryRegisterService.getComponents(response.getData(), salaryComponents);
 
             modelAndView.addObject("salaryComponents", salaryComponents);

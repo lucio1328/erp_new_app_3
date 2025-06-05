@@ -26,6 +26,11 @@ public class SalaryTotalsResponse {
             totalNetPay+=salarySlipDto.getNetPay();
             this.currency=salarySlipDto.getCurrency();
 
+            System.out.println();
+            System.out.println("Salary Slip: "+ salarySlipDto);
+            System.out.println("Total Gross Pay: "+ totalGrossPay);
+            System.out.println();
+
             List<Double> comps = salarySlipDto.getComponentsDef();
             if (comps != null && comps.size() == dataDtos.size()) {
                 for (int i = 0; i < comps.size(); i++) {

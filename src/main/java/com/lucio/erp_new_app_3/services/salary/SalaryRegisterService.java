@@ -106,7 +106,7 @@ public class SalaryRegisterService {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.add("Cookie", "sid=" + sid);
+        headers = preparationApi.buildApiHeaders();
 
         HttpEntity<String> request = new HttpEntity<>(headers);
 
@@ -223,7 +223,7 @@ public class SalaryRegisterService {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.add("Cookie", "sid=" + sid);
+        headers = preparationApi.buildApiHeaders();
 
         HttpEntity<String> request = new HttpEntity<>(headers);
 
