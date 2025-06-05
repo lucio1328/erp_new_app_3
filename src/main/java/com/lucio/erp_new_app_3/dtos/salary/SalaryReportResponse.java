@@ -1,10 +1,6 @@
 package com.lucio.erp_new_app_3.dtos.salary;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -19,42 +15,61 @@ public class SalaryReportResponse {
     private List<SalarySlip> salarySlips;
     private SalaryRegisterTotal totals;
 
-    @Autowired
-    private static SalarySlipService salarySlipService;
-
-    @SuppressWarnings("removal")
-    public static SalaryReportResponse fromJson(JsonNode root, ObjectMapper mapper,String sessionCookie) throws JsonProcessingException, IllegalArgumentException {
+    public static SalaryReportResponse fromJson(JsonNode root, ObjectMapper mapper, SalarySlipService salarySlipService,String sessionCookie) throws JsonProcessingException, IllegalArgumentException {
         SalaryReportResponse response = new SalaryReportResponse();
         JsonNode resultNode = root.get("result");
 
-        List<SalaryRegister> registers = Arrays.asList(mapper.treeToValue(resultNode.get(0), SalaryRegister.class));
-        response.salaryRegisters = registers;
+        List<SalaryRegister> registers = new java.util.ArrayList<>();
 
-        List<SalarySlip> slips = new ArrayList<>();
-        for (SalaryRegister register : registers) {
+        int size = resultNode.size();
+        System.out.println("Taille Node: "+ size);
+        for (int i = 0; i < size - 1; i++) {
+            JsonNode item = resultNode.get(i);
+            SalaryRegister register = mapper.treeToValue(item, SalaryRegister.class);
+
             String slipId = register.getSalarySlipId();
             if (slipId != null && !slipId.isEmpty()) {
                 try {
                     SalarySlip slip = salarySlipService.getSalarySlip(slipId, sessionCookie);
-                    slips.add(slip);
-                }
-                catch (Exception e) {
+                    register.setSalarySlip(slip);
+                } catch (Exception e) {
                     System.err.println("Erreur lors de la récupération de SalarySlip : " + e.getMessage());
                 }
             }
+
+            registers.add(register);
         }
-        response.salarySlips = slips;
 
-        JsonNode totalsArray = resultNode.get(1);
-        SalaryRegisterTotal total = new SalaryRegisterTotal();
-        total.setPaymentDays(totalsArray.get(12).asDouble());
-        total.setGrossPay(new Double(totalsArray.get(15).asText()));
-        total.setTaxeSociale(new Double(totalsArray.get(16).asText()));
-        total.setTotalDeduction(new Double(totalsArray.get(18).asText()));
-        total.setNetPay(new Double(totalsArray.get(19).asText()));
+        response.setSalaryRegisters(registers);
 
-        response.setTotals(total);
+        JsonNode totalsArray = resultNode.get(size - 1);
+        response.setTotals(parseTotals(totalsArray));
+        System.out.println("Totals: "+ response.getTotals());
+
         return response;
+    }
+
+    private static SalaryRegisterTotal parseTotals(JsonNode node) {
+        System.out.println("Champs disponibles dans le total : " + node.fieldNames().toString());
+        SalaryRegisterTotal total = new SalaryRegisterTotal();
+
+        if (node.has("payment_days")) {
+            total.setPaymentDays(node.get("payment_days").asDouble());
+        }
+        if (node.has("gross_pay")) {
+            total.setGrossPay(node.get("gross_pay").asDouble());
+        }
+        if (node.has("taxe_sociale")) {
+            total.setTaxeSociale(node.get("taxe_sociale").asDouble());
+        }
+        if (node.has("total_deduction")) {
+            total.setTotalDeduction(node.get("total_deduction").asDouble());
+        }
+        if (node.has("net_pay")) {
+            total.setNetPay(node.get("net_pay").asDouble());
+        }
+
+        return total;
     }
 }
 

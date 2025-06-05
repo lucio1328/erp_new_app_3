@@ -64,5 +64,7 @@ public class SalaryRegister {
 
     @JsonProperty("currency")
     private String currency;
+
+    private SalarySlip salarySlip;
 }
 
