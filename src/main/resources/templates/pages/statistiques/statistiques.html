@@ -67,7 +67,12 @@
                     </td>
                     <td th:text="${#numbers.formatDecimal(entry.value.grossPay, 1, 'POINT', 2, 'COMMA')} + ' ' + ${entry.value.currency}"></td>
                     <td th:text="${#numbers.formatDecimal(entry.value.totalDeduction, 1, 'POINT', 2, 'COMMA')} + ' ' + ${entry.value.currency}"></td>
-                    <td th:text="${#numbers.formatDecimal(entry.value.netPay, 1, 'POINT', 2, 'COMMA')} + ' ' + ${entry.value.currency}" class="text-green font-semibold"></td>
+                    <!-- <td th:text="${#numbers.formatDecimal(entry.value.netPay, 1, 'POINT', 2, 'COMMA')} + ' ' + ${entry.value.currency}" class="text-green font-semibold"></td> -->
+                    <td class="text-green font-semibold">
+                        <a th:href="@{/salary/details(year=${selectedYear}, month=${entry.value.envoye})}"
+                            th:text="${#numbers.formatDecimal(entry.value.netPay, 1, 'POINT', 2, 'COMMA')} + ' ' + ${entry.value.currency}">
+                        </a>
+                    </td>
                 </tr>
             </tbody>
         </table>
