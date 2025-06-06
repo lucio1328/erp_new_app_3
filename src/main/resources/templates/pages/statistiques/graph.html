@@ -15,18 +15,17 @@
 <div th:if="${info}" style="color: blue; font-weight: bold;" th:text="${info}"></div>
 <div th:if="${error}" style="color: red; font-weight: bold;" th:text="${error}"></div>
 
-<!-- Tableau mensuel (inchangé) -->
-<table>
-    <!-- ... ton tableau inchangé ... -->
-</table>
+<div>
+    <div>
+        <h3>Évolution Salaire Brut, Déduction et Net à Payer</h3>
+        <canvas id="summaryChart" width="1000" height="400"></canvas>
+    </div><br><br>
+    <div>
+        <h3>Évolution des composantes salariales</h3>
+        <canvas id="componentsChart" width="1000" height="400"></canvas>
+    </div>
+</div>
 
-<!-- Graphe 1: Salaire Brut, Déduction, Net à Payer -->
-<h3>Évolution Salaire Brut, Déduction et Net à Payer</h3>
-<canvas id="summaryChart" width="1000" height="400"></canvas>
-
-<!-- Graphe 2: Composantes salariales -->
-<h3>Évolution des composantes salariales</h3>
-<canvas id="componentsChart" width="1000" height="400"></canvas>
 
 <script th:inline="javascript">
 /*<![CDATA[*/
@@ -34,7 +33,6 @@ const labels = /*[[${moisList}]]*/ [];
 const componentNames = /*[[${componentNames}]]*/ [];
 const groupedData = /*[[${groupedSalarySlips}]]*/ [];
 
-// --- Données pour le premier graphique ---
 const summaryDatasets = [
     {
         label: 'Salaire Brut',
