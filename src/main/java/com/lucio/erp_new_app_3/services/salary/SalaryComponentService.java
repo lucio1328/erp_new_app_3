@@ -26,17 +26,13 @@ public class SalaryComponentService {
 
     public List<SalaryComponent> getByType(String sessionCookie, String type) {
         try {
-            String filters = String.format("[[\"Salary Component\",\"type\",\"=\",\"%s\"]]", type);
-            String encodedFilters = java.net.URLEncoder.encode(filters, java.nio.charset.StandardCharsets.UTF_8);
-
-            String endpoint = "/api/resource/Salary Component"
-                            + "?fields=[\"*\"]"
-                            + "&filters=" + encodedFilters;
+            String endpoint = "/api/resource/Salary Component?fields=[\"*\"]&filters=[[\"type\",\"=\",\""+ type +"\"]]";
 
             JsonNode data = preparationApi.getJsonDataFromApi(endpoint, sessionCookie);
 
             return objectMapper.readerForListOf(SalaryComponent.class).readValue(data);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new ErpApiException("Erreur de parsing des salary components", HttpStatus.INTERNAL_SERVER_ERROR.value(), e);
         }
     }
