@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.lucio.erp_new_app_3.dtos.data.DataDto;
-import com.lucio.erp_new_app_3.dtos.salary.SalarySlip;
-import com.lucio.erp_new_app_3.dtos.salary.SalarySlipModele;
 import com.lucio.erp_new_app_3.dtos.salary.SalaryTotalsResponse;
+import com.lucio.erp_new_app_3.dtos.salary.slip.SalarySlip;
+import com.lucio.erp_new_app_3.dtos.salary.slip.SalarySlipModele;
 import com.lucio.erp_new_app_3.services.data.DataService;
 import com.lucio.erp_new_app_3.services.statistiques.StatistiquesService;
 import com.lucio.erp_new_app_3.utils.EnvoyeInformation;

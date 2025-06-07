@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.lucio.erp_new_app_3.dtos.data.DataDto;
-import com.lucio.erp_new_app_3.dtos.salary.SalarySlip;
-import com.lucio.erp_new_app_3.dtos.salary.SalarySlipFilter;
-import com.lucio.erp_new_app_3.dtos.salary.SalarySlipListResponse;
 import com.lucio.erp_new_app_3.dtos.salary.SalaryTotalsResponse;
+import com.lucio.erp_new_app_3.dtos.salary.slip.SalarySlip;
+import com.lucio.erp_new_app_3.dtos.salary.slip.SalarySlipFilter;
+import com.lucio.erp_new_app_3.dtos.salary.slip.SalarySlipListResponse;
 import com.lucio.erp_new_app_3.services.data.DataService;
 import com.lucio.erp_new_app_3.services.pdf.PdfGeneratorService;
 import com.lucio.erp_new_app_3.services.salary.SalaryRegisterService;
@@ -130,6 +130,11 @@ public class SalarySlipController {
             modelAndView.addObject("salarySlips", salarySlips);
             modelAndView.addObject("currentPage", page);
             modelAndView.addObject("pageSize", size);
+
+            response = salaryRegisterService.getSalarySlips(session, 0, 0, filter);
+            response =  salaryRegisterService.getRapport(session, response);
+            salarySlips = salaryRegisterService.getComponents(response.getData(), salaryComponents);
+
             modelAndView.addObject("totalSalarySlip", new SalaryTotalsResponse(salarySlips,salaryComponents));
 
             modelAndView.addObject("filter", filter);

@@ -1,4 +1,4 @@
-package com.lucio.erp_new_app_3.dtos.component;
+package com.lucio.erp_new_app_3.dtos.salary.component;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;

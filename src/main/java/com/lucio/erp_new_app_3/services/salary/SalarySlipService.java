@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lucio.erp_new_app_3.dtos.salary.SalarySlip;
+import com.lucio.erp_new_app_3.dtos.salary.slip.SalarySlip;
 import com.lucio.erp_new_app_3.exceptions.ErpApiException;
 import com.lucio.erp_new_app_3.utils.PreparationApi;
 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.lucio.erp_new_app_3.dtos.data.DataDto;
+import com.lucio.erp_new_app_3.dtos.salary.slip.SalarySlip;
 
 import lombok.Data;
 

@@ -5,6 +5,9 @@ import java.util.List;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lucio.erp_new_app_3.dtos.salary.register.SalaryRegister;
+import com.lucio.erp_new_app_3.dtos.salary.register.SalaryRegisterTotal;
+import com.lucio.erp_new_app_3.dtos.salary.slip.SalarySlip;
 import com.lucio.erp_new_app_3.services.salary.SalarySlipService;
 
 import lombok.Data;
