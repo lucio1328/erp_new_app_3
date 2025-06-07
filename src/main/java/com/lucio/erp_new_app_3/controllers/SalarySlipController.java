@@ -94,7 +94,7 @@ public class SalarySlipController {
     @GetMapping("/summary")
     public ModelAndView summarySlip(HttpSession session,
                                     @RequestParam(defaultValue = "0") int page,
-                                    @RequestParam(defaultValue = "5") int size,
+                                    @RequestParam(defaultValue = "10") int size,
                                     @RequestParam(required = false) String month) {
         ModelAndView modelAndView = new ModelAndView("layout/modele");
         SalarySlipListResponse response = null;
@@ -120,14 +120,8 @@ public class SalarySlipController {
 
             int start = page * size;
 
-            if (startDate != null && !startDate.isEmpty() && endDate != null && !endDate.isEmpty()) {
-                response = salaryRegisterService.getSalarySlips(session, 0, 0, filter);
-                response =salaryRegisterService.getRapport(session, response);
-            }
-            else {
-                response = salaryRegisterService.getSalarySlips(session, start, size, filter);
-                response =  salaryRegisterService.getRapport(session, response);
-            }
+            response = salaryRegisterService.getSalarySlips(session, start, size, filter);
+            response =  salaryRegisterService.getRapport(session, response);
 
             List<DataDto> salaryComponents = dataService.getAllData(session,"Salary Component").getData();
             List<SalarySlip> salarySlips = salaryRegisterService.getComponents(response.getData(), salaryComponents);

@@ -24,7 +24,7 @@ public class ResetService {
     @Autowired
     private ErpnextProperties erpnextProperties;
 
-    @SuppressWarnings({ "rawtypes", "unchecked", "null" })
+    @SuppressWarnings("rawtypes")
     public Map<String, Object> resetData(HttpSession session) throws Exception {
         String sid = (String) session.getAttribute("sid");
         if (sid == null || sid.isEmpty()) {

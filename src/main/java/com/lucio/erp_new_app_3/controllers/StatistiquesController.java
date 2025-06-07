@@ -55,6 +55,25 @@ public class StatistiquesController {
             modelAndView.addObject("groupedSalarySlips", groupedSalarySlips);
             modelAndView.addObject("totalSalarySlip", new SalaryTotalsResponse(salarySlipDtos,salaryComponents));
 
+            modelAndView.addObject("componentNames", salaryComponents.stream().map(DataDto::getName).collect(Collectors.toList()));
+
+            List<String> moisList = groupedSalarySlips.values().stream()
+                                        .map(slip -> slip.getMois())
+                                        .collect(Collectors.toList());
+
+            modelAndView.addObject("moisList", moisList);
+
+            List<SalarySlipModele> salarySlipDTOs = groupedSalarySlips.values().stream()
+                    .map(slip -> new SalarySlipModele(
+                        slip.getMois(),
+                        slip.getGrossPay(),
+                        slip.getTotalDeduction(),
+                        slip.getNetPay(),
+                        slip.getComponentsDef()
+                    )).collect(Collectors.toList());
+
+            modelAndView.addObject("salarySlipsGraph", salarySlipDTOs);
+
             if (groupedSalarySlips.isEmpty()) {
                 modelAndView.addObject("info", "Aucune donnée disponible pour l'année " + year);
             }
@@ -86,7 +105,6 @@ public class StatistiquesController {
 
             }
             modelAndView.addObject("componentNames", salaryComponents.stream().map(DataDto::getName).collect(Collectors.toList()));
-            modelAndView.addObject("groupedSalarySlips", groupedSalarySlips);
 
             List<String> moisList = groupedSalarySlips.values().stream()
                                         .map(slip -> slip.getMois())
@@ -109,7 +127,8 @@ public class StatistiquesController {
             if (groupedSalarySlips.isEmpty()) {
                 modelAndView.addObject("info", "Aucune donnée disponible pour l'année " + year);
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
             modelAndView.addObject("error", "Erreur lors de la récupération des données: " + e.getMessage());
         }
