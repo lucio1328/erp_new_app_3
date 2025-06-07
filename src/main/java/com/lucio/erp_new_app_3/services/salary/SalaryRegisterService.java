@@ -4,13 +4,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lucio.erp_new_app_3.configs.ErpnextProperties;
 import com.lucio.erp_new_app_3.dtos.data.DataDto;
-import com.lucio.erp_new_app_3.dtos.salary.SalaryDeduction;
-import com.lucio.erp_new_app_3.dtos.salary.SalaryEarning;
 import com.lucio.erp_new_app_3.dtos.salary.SalaryReportResponse;
-import com.lucio.erp_new_app_3.dtos.salary.SalarySlip;
-import com.lucio.erp_new_app_3.dtos.salary.SalarySlipDetail;
-import com.lucio.erp_new_app_3.dtos.salary.SalarySlipFilter;
-import com.lucio.erp_new_app_3.dtos.salary.SalarySlipListResponse;
+import com.lucio.erp_new_app_3.dtos.salary.details_salary.SalaryDeduction;
+import com.lucio.erp_new_app_3.dtos.salary.details_salary.SalaryEarning;
+import com.lucio.erp_new_app_3.dtos.salary.slip.SalarySlip;
+import com.lucio.erp_new_app_3.dtos.salary.slip.SalarySlipDetail;
+import com.lucio.erp_new_app_3.dtos.salary.slip.SalarySlipFilter;
+import com.lucio.erp_new_app_3.dtos.salary.slip.SalarySlipListResponse;
 import com.lucio.erp_new_app_3.exceptions.ErpApiException;
 import com.lucio.erp_new_app_3.utils.PreparationApi;
 
@@ -93,9 +93,11 @@ public class SalaryRegisterService {
             && ( (filter.getStartDate() != null && !filter.getStartDate().isEmpty())
             || (filter.getEndDate() != null && !filter.getEndDate().isEmpty()) );
 
-        if (!hasDateFilter) {
+        boolean shouldLimit = !(start == 0 && pageLength == 0);
+
+        if (!hasDateFilter && shouldLimit) {
             urlBuilder.append("limit_start=").append(start)
-                        .append("&limit_page_length=").append(pageLength);
+                    .append("&limit_page_length=").append(pageLength);
         }
 
         urlBuilder.append("&fields=").append(fields);

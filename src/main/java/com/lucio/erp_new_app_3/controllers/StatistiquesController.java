@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.lucio.erp_new_app_3.dtos.data.DataDto;
-import com.lucio.erp_new_app_3.dtos.salary.SalarySlip;
-import com.lucio.erp_new_app_3.dtos.salary.SalarySlipModele;
 import com.lucio.erp_new_app_3.dtos.salary.SalaryTotalsResponse;
+import com.lucio.erp_new_app_3.dtos.salary.slip.SalarySlip;
+import com.lucio.erp_new_app_3.dtos.salary.slip.SalarySlipModele;
 import com.lucio.erp_new_app_3.services.data.DataService;
 import com.lucio.erp_new_app_3.services.statistiques.StatistiquesService;
 import com.lucio.erp_new_app_3.utils.EnvoyeInformation;
@@ -55,6 +55,25 @@ public class StatistiquesController {
             modelAndView.addObject("groupedSalarySlips", groupedSalarySlips);
             modelAndView.addObject("totalSalarySlip", new SalaryTotalsResponse(salarySlipDtos,salaryComponents));
 
+            modelAndView.addObject("componentNames", salaryComponents.stream().map(DataDto::getName).collect(Collectors.toList()));
+
+            List<String> moisList = groupedSalarySlips.values().stream()
+                                        .map(slip -> slip.getMois())
+                                        .collect(Collectors.toList());
+
+            modelAndView.addObject("moisList", moisList);
+
+            List<SalarySlipModele> salarySlipDTOs = groupedSalarySlips.values().stream()
+                    .map(slip -> new SalarySlipModele(
+                        slip.getMois(),
+                        slip.getGrossPay(),
+                        slip.getTotalDeduction(),
+                        slip.getNetPay(),
+                        slip.getComponentsDef()
+                    )).collect(Collectors.toList());
+
+            modelAndView.addObject("salarySlipsGraph", salarySlipDTOs);
+
             if (groupedSalarySlips.isEmpty()) {
                 modelAndView.addObject("info", "Aucune donnée disponible pour l'année " + year);
             }
@@ -86,7 +105,6 @@ public class StatistiquesController {
 
             }
             modelAndView.addObject("componentNames", salaryComponents.stream().map(DataDto::getName).collect(Collectors.toList()));
-            modelAndView.addObject("groupedSalarySlips", groupedSalarySlips);
 
             List<String> moisList = groupedSalarySlips.values().stream()
                                         .map(slip -> slip.getMois())
@@ -109,7 +127,8 @@ public class StatistiquesController {
             if (groupedSalarySlips.isEmpty()) {
                 modelAndView.addObject("info", "Aucune donnée disponible pour l'année " + year);
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
             modelAndView.addObject("error", "Erreur lors de la récupération des données: " + e.getMessage());
         }

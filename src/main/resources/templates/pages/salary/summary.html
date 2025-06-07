@@ -63,7 +63,7 @@
                     <tr th:each="slip : ${salarySlips}">
                         <td>
                             <div class="font-medium" th:text="${slip.employeeName}"></div>
-                            <div class="text-xs text-gray-500" th:text="${slip.department} + ' - ' + ${slip.designation}"></div>
+                            <div class="text-xs text-gray-500" th:text="${slip.designation}"></div>
                         </td>
                         <td class="whitespace-nowrap text-sm text-gray-500" th:text="${slip.company}"></td>
                         <td class="whitespace-nowrap">
@@ -128,7 +128,7 @@
             <div>
                 <nav class="pagination-nav">
                     <a th:if="${currentPage > 0}"
-                        th:href="@{/payrolls(page=${currentPage - 1}, size=${pageSize}, employee=${filter.employee}, startDate=${filter.startDate}, endDate=${filter.endDate})}"
+                        th:href="@{/salary/summary(page=${currentPage - 1}, size=${pageSize}, employee=${filter.employee}, startDate=${filter.startDate}, endDate=${filter.endDate})}"
                         class="pagination-button">
                         <svg class="pagination-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -140,7 +140,7 @@
                         Page <span th:text="${currentPage + 1}" style="font-weight: 600; margin-left: 4px;"></span>
                     </span>
 
-                    <a th:href="@{/payrolls(page=${currentPage + 1}, size=${pageSize}, employee=${filter.employee}, startDate=${filter.startDate}, endDate=${filter.endDate})}"
+                    <a th:href="@{/salary/summary(page=${currentPage + 1}, size=${pageSize}, employee=${filter.employee}, startDate=${filter.startDate}, endDate=${filter.endDate})}"
                         class="pagination-button">
                         Suivant
                         <svg class="pagination-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">

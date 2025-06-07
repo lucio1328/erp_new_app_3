@@ -1,4 +1,4 @@
-package com.lucio.erp_new_app_3.dtos.salary;
+package com.lucio.erp_new_app_3.dtos.salary.slip;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

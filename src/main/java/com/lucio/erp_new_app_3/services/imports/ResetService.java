@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.lucio.erp_new_app_3.configs.ErpnextProperties;
+import com.lucio.erp_new_app_3.utils.PreparationApi;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -24,7 +25,10 @@ public class ResetService {
     @Autowired
     private ErpnextProperties erpnextProperties;
 
-    @SuppressWarnings({ "rawtypes", "unchecked", "null" })
+    @Autowired
+    private PreparationApi preparationApi;
+
+    @SuppressWarnings("rawtypes")
     public Map<String, Object> resetData(HttpSession session) throws Exception {
         String sid = (String) session.getAttribute("sid");
         if (sid == null || sid.isEmpty()) {
@@ -36,8 +40,7 @@ public class ResetService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-        headers.add("Cookie", "sid=" + sid);
-        // headers.set("Authorization", "token " + apiKey + ":" + apiSecret); // si utilisé
+        headers = preparationApi.buildApiHeaders();
 
         HttpEntity<String> request = new HttpEntity<>(headers);
 

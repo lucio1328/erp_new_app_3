@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.lucio.erp_new_app_3.dtos.employee.Employee;
-import com.lucio.erp_new_app_3.dtos.salary.SalarySlip;
+import com.lucio.erp_new_app_3.dtos.salary.slip.SalarySlip;
 import com.lucio.erp_new_app_3.services.department.DepartmentService;
 import com.lucio.erp_new_app_3.services.employee.EmployeeService;
 import com.lucio.erp_new_app_3.services.employee.GenreService;

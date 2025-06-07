@@ -11,10 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.lucio.erp_new_app_3.dtos.data.DataDto;
-import com.lucio.erp_new_app_3.dtos.salary.SalarySlip;
-import com.lucio.erp_new_app_3.dtos.salary.SalarySlipFilter;
-import com.lucio.erp_new_app_3.dtos.salary.SalarySlipListResponse;
 import com.lucio.erp_new_app_3.dtos.salary.SalaryTotalsResponse;
+import com.lucio.erp_new_app_3.dtos.salary.slip.SalarySlip;
+import com.lucio.erp_new_app_3.dtos.salary.slip.SalarySlipFilter;
+import com.lucio.erp_new_app_3.dtos.salary.slip.SalarySlipListResponse;
 import com.lucio.erp_new_app_3.services.salary.SalaryRegisterService;
 import com.lucio.erp_new_app_3.utils.DateValidator;
 

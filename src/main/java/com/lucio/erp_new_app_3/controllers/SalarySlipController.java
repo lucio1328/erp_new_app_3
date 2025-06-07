@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.lucio.erp_new_app_3.dtos.data.DataDto;
-import com.lucio.erp_new_app_3.dtos.salary.SalarySlip;
-import com.lucio.erp_new_app_3.dtos.salary.SalarySlipFilter;
-import com.lucio.erp_new_app_3.dtos.salary.SalarySlipListResponse;
 import com.lucio.erp_new_app_3.dtos.salary.SalaryTotalsResponse;
+import com.lucio.erp_new_app_3.dtos.salary.slip.SalarySlip;
+import com.lucio.erp_new_app_3.dtos.salary.slip.SalarySlipFilter;
+import com.lucio.erp_new_app_3.dtos.salary.slip.SalarySlipListResponse;
 import com.lucio.erp_new_app_3.services.data.DataService;
 import com.lucio.erp_new_app_3.services.pdf.PdfGeneratorService;
 import com.lucio.erp_new_app_3.services.salary.SalaryRegisterService;
@@ -94,7 +94,7 @@ public class SalarySlipController {
     @GetMapping("/summary")
     public ModelAndView summarySlip(HttpSession session,
                                     @RequestParam(defaultValue = "0") int page,
-                                    @RequestParam(defaultValue = "5") int size,
+                                    @RequestParam(defaultValue = "10") int size,
                                     @RequestParam(required = false) String month) {
         ModelAndView modelAndView = new ModelAndView("layout/modele");
         SalarySlipListResponse response = null;
@@ -120,14 +120,8 @@ public class SalarySlipController {
 
             int start = page * size;
 
-            if (startDate != null && !startDate.isEmpty() && endDate != null && !endDate.isEmpty()) {
-                response = salaryRegisterService.getSalarySlips(session, 0, 0, filter);
-                response =salaryRegisterService.getRapport(session, response);
-            }
-            else {
-                response = salaryRegisterService.getSalarySlips(session, start, size, filter);
-                response =  salaryRegisterService.getRapport(session, response);
-            }
+            response = salaryRegisterService.getSalarySlips(session, start, size, filter);
+            response =  salaryRegisterService.getRapport(session, response);
 
             List<DataDto> salaryComponents = dataService.getAllData(session,"Salary Component").getData();
             List<SalarySlip> salarySlips = salaryRegisterService.getComponents(response.getData(), salaryComponents);
@@ -136,6 +130,11 @@ public class SalarySlipController {
             modelAndView.addObject("salarySlips", salarySlips);
             modelAndView.addObject("currentPage", page);
             modelAndView.addObject("pageSize", size);
+
+            response = salaryRegisterService.getSalarySlips(session, 0, 0, filter);
+            response =  salaryRegisterService.getRapport(session, response);
+            salarySlips = salaryRegisterService.getComponents(response.getData(), salaryComponents);
+
             modelAndView.addObject("totalSalarySlip", new SalaryTotalsResponse(salarySlips,salaryComponents));
 
             modelAndView.addObject("filter", filter);
