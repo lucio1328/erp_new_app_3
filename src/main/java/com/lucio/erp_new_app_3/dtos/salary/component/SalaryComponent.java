@@ -33,9 +33,6 @@ public class SalaryComponent {
     private String type;
     private String description;
 
-    @JsonProperty("depends_on_payment_days")
-    private int dependsOnPaymentDays;
-
     @JsonProperty("is_tax_applicable")
     private int isTaxApplicable;
 
@@ -67,8 +64,14 @@ public class SalaryComponent {
     private String condition;
     private double amount;
 
+    @JsonProperty("depends_on_payment_days")
+    private Boolean dependsOnPaymentDays;
+
+    @JsonProperty("is_tax_applicable")
+    private Boolean isTaxable;
+
     @JsonProperty("amount_based_on_formula")
-    private int amountBasedOnFormula;
+    private Boolean amountBasedOnFormula;
 
     private String formula;
 

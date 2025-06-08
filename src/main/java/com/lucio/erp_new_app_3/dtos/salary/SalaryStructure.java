@@ -39,6 +39,9 @@ public class SalaryStructure {
     @JsonProperty("is_based_on_timesheet")
     private boolean isBasedOnTimesheet;
 
+    @JsonProperty("is_active")
+    private String isActive;
+
     @JsonProperty("earnings")
     private List<SalaryComponent> earnings;
 
