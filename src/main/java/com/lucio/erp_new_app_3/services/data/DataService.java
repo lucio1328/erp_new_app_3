@@ -30,7 +30,7 @@ public class DataService {
     private PreparationApi preparationApi;
 
     @SuppressWarnings("null")
-    public DataListReponse getAllData(HttpSession session,String type) {
+    public DataListReponse getAllData(HttpSession session, String type, String param) {
         String sid = (String) session.getAttribute("sid");
         if (sid == null || sid.isEmpty()) {
             throw new RuntimeException("Session not authenticated");
@@ -47,6 +47,10 @@ public class DataService {
         }
         else if(type.equals("Salary Component")){
             url = erpnextProperties.getUrl() + "/api/resource/Salary Component";
+            if(param!=null )
+            {
+                url+="?filters=[[\"type\",\"=\",\""+param+"\"]]&fields=[\"*\"]";
+            }
         }
 
         HttpHeaders headers = new HttpHeaders();

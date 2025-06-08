@@ -33,4 +33,12 @@ public class SalaryStructure {
 
     @JsonProperty("deductions")
     private List<SalaryComponent> deductions;
+
+    public void addEarning(SalaryComponent earning) {
+        this.earnings.add(earning);
+    }
+
+    public void addDeduction(SalaryComponent deduction) {
+        this.deductions.add(deduction);
+    }
 }

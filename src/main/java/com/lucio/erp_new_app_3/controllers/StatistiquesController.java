@@ -43,7 +43,7 @@ public class StatistiquesController {
         modelAndView.addObject("selectedYear", year);
 
         try {
-            List<DataDto> salaryComponents = dataService.getAllData(session, "Salary Component").getData();
+            List<DataDto> salaryComponents = dataService.getAllData(session, "Salary Component", null).getData();
             Map<String, SalarySlip> groupedSalarySlips = statistiquesService.getSalarySlipsGroupedByMonth(session, year, salaryComponents);
             List<SalarySlip> salarySlipDtos=new ArrayList<>();
             for (Map.Entry<String, SalarySlip> entry : groupedSalarySlips.entrySet()) {
@@ -96,7 +96,7 @@ public class StatistiquesController {
         modelAndView.addObject("selectedYear", year);
 
         try {
-            List<DataDto> salaryComponents = dataService.getAllData(session, "Salary Component").getData();
+            List<DataDto> salaryComponents = dataService.getAllData(session, "Salary Component", null).getData();
             Map<String, SalarySlip> groupedSalarySlips = statistiquesService.getSalarySlipsGroupedByMonth(session, year, salaryComponents);
             List<SalarySlip> salarySlipDtos=new ArrayList<>();
             for (Map.Entry<String, SalarySlip> entry : groupedSalarySlips.entrySet()) {

@@ -123,7 +123,7 @@ public class SalarySlipController {
             response = salaryRegisterService.getSalarySlips(session, start, size, filter);
             response =  salaryRegisterService.getRapport(session, response);
 
-            List<DataDto> salaryComponents = dataService.getAllData(session,"Salary Component").getData();
+            List<DataDto> salaryComponents = dataService.getAllData(session,"Salary Component", null).getData();
             List<SalarySlip> salarySlips = salaryRegisterService.getComponents(response.getData(), salaryComponents);
 
             modelAndView.addObject("salaryComponents", salaryComponents);
