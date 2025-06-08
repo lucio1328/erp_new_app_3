@@ -50,9 +50,6 @@ public class SalaryComponent {
 
     private String description;
 
-    @JsonProperty("is_tax_applicable")
-    private int isTaxApplicable;
-
     @JsonProperty("deduct_full_tax_on_selected_payroll_date")
     private int deductFullTaxOnSelectedPayrollDate;
 
