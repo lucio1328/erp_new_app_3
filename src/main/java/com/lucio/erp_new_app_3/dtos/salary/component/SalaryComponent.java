@@ -25,19 +25,30 @@ public class SalaryComponent {
     private int idx;
 
     @JsonProperty("salary_component")
-    private String salaryComponent;
+    private String componentName;
 
-    @JsonProperty("salary_component_abbr")
-    private String salaryComponentAbbr;
+    @JsonProperty("abbr")
+    private String abbreviation;
 
-    private String type;
-    private String description;
+    @JsonProperty("amount")
+    private Double amount;
 
     @JsonProperty("depends_on_payment_days")
-    private int dependsOnPaymentDays;
+    private Boolean dependsOnPaymentDays;
 
     @JsonProperty("is_tax_applicable")
-    private int isTaxApplicable;
+    private Boolean isTaxable;
+
+    @JsonProperty("amount_based_on_formula")
+    private Boolean amountBasedOnFormula;
+
+    @JsonProperty("formula")
+    private String formula;
+
+    @JsonProperty("type")
+    private String type;
+
+    private String description;
 
     @JsonProperty("deduct_full_tax_on_selected_payroll_date")
     private int deductFullTaxOnSelectedPayrollDate;
@@ -65,12 +76,6 @@ public class SalaryComponent {
 
     private int disabled;
     private String condition;
-    private double amount;
-
-    @JsonProperty("amount_based_on_formula")
-    private int amountBasedOnFormula;
-
-    private String formula;
 
     @JsonProperty("is_flexible_benefit")
     private int isFlexibleBenefit;

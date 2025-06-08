@@ -9,15 +9,26 @@ import lombok.Data;
 
 @Data
 public class SalaryStructure {
+    @JsonProperty("name")
     private String name;
+
+    @JsonProperty("employee")
+    private String employee;
+
+    @JsonProperty("company")
     private String company;
 
-    @JsonProperty("is_active")
-    private String isActive;
+    @JsonProperty("currency")
     private String currency;
 
-    @JsonProperty("pay_frequency")
-    private String payFrequency;
+    @JsonProperty("from_date")
+    private String fromDate;
+
+    @JsonProperty("to_date")
+    private String toDate;
+
+    @JsonProperty("payment_frequency")
+    private String paymentFrequency;
 
     @JsonProperty("daily_leave_amount")
     private Double dailyLeaveAmount;
@@ -28,9 +39,20 @@ public class SalaryStructure {
     @JsonProperty("is_based_on_timesheet")
     private boolean isBasedOnTimesheet;
 
+    @JsonProperty("is_active")
+    private String isActive;
+
     @JsonProperty("earnings")
     private List<SalaryComponent> earnings;
 
     @JsonProperty("deductions")
     private List<SalaryComponent> deductions;
+
+    public void addEarning(SalaryComponent earning) {
+        this.earnings.add(earning);
+    }
+
+    public void addDeduction(SalaryComponent deduction) {
+        this.deductions.add(deduction);
+    }
 }
