@@ -16,6 +16,7 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lucio.erp_new_app_3.configs.ErpnextProperties;
 import com.lucio.erp_new_app_3.dtos.salary.SalaryStructure;
+import com.lucio.erp_new_app_3.utils.PreparationApi;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -29,6 +30,9 @@ public class SalaryStructureService {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private PreparationApi preparationApi;
 
     public ResponseEntity<Map<String, Object>> createSalaryGrid(HttpSession session, SalaryStructure salaryGridDTO) {
         String sid = (String) session.getAttribute("sid");
@@ -48,7 +52,7 @@ public class SalaryStructureService {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-            headers.add("Cookie", "sid=" + sid);
+            headers = preparationApi.buildApiHeaders();
 
             HttpEntity<SalaryStructure> request = new HttpEntity<>(salaryGridDTO, headers);
 
@@ -83,11 +87,10 @@ public class SalaryStructureService {
 
     public ResponseEntity<Map<String, Object>> submitSalaryGrid(HttpSession session,String docName) {
         try {
-            String sid = (String) session.getAttribute("sid");
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
-            headers.add("Cookie", "sid=" + sid);
+            headers = preparationApi.buildApiHeaders();
 
             Map<String, Object> body = Map.of(
                 "doc", Map.of(
