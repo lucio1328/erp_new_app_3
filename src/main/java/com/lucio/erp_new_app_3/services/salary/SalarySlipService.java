@@ -39,6 +39,18 @@ public class SalarySlipService {
         }
     }
 
+    public List<SalarySlip> getSalarySlips(String sessionCookie) {
+        String endpoint = "/api/resource/Salary Slip?fields=[\"*\"]";
+        JsonNode data = preparationApi.getJsonDataFromApi(endpoint, sessionCookie);
+        try {
+            return objectMapper.readerForListOf(SalarySlip.class).readValue(data);
+        }
+        catch (Exception e) {
+            throw new ErpApiException("Erreur de parsing des fiches de paie ",
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(), e);
+        }
+    }
+
     public SalarySlip getSalarySlip(String name, String sessionCookie) {
         try {
             String endpoint = "/api/resource/Salary Slip/" + name;

@@ -28,4 +28,5 @@ public class SalaireData {
     @JsonProperty("salary_structure")
     @CsvBindByName(column = "Salaire")
     private String salaryStructure;
+
 }

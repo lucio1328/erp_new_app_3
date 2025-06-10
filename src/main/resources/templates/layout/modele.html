@@ -15,15 +15,15 @@
     <a th:href="@{/salary/summary}"><i class="fas fa-table"></i> Tableau recapitulatif</a>
     <a th:href="@{/imports}"><i class="fas fa-upload"></i> Import</a>
     <a th:href="@{/grille/insert}"><i class="fas fa-file-invoice-dollar"></i> Insertion Grille</a>
-    <!-- <div class="menu-group">
+    <div class="menu-group">
       <div class="menu-toggle">
-        <i class="fas fa-file-invoice"></i> Factures <i class="fas fa-chevron-down arrow"></i>
+        <i class="fas fa-file-invoice"></i> Salaire <i class="fas fa-chevron-down arrow"></i>
       </div>
       <div class="submenu">
-        <a href="#"><i class="fas fa-user"></i> Facture client</a><br/>
-        <a href="#"><i class="fas fa-truck-loading"></i> Facture fournisseur</a>
+        <a th:href="@{/salaire/modification}"><i class="fas fa-pen-to-square"></i> Modification Salaire</a><br/>
+        <a th:href="@{/salaire/generer}"><i class="fas fa-gears"></i> Generer Salaire</a>
       </div>
-    </div> -->
+    </div>
 
   </aside>
 
