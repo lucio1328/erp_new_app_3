@@ -110,7 +110,7 @@ public class SalaireImportService {
             rapportErreurs.add(rapportErreurService.createError(ligne, "Référence employé manquante", salaire.getRefEmploye()));
         }
 
-        if (salaire.getSalaireBase() == null || salaire.getSalaireBase() <= 0) {
+        if (salaire.getSalaireBase() == null || salaire.getSalaireBase() < 0) {
             rapportErreurs.add(rapportErreurService.createError(ligne, "Salaire base invalide",
                 salaire.getSalaireBase() != null ? salaire.getSalaireBase().toString() : null));
         }
@@ -151,6 +151,7 @@ public class SalaireImportService {
         jsonBody.put("salaries", salairesData);
 
         String jsonPayload;
+
         try {
             jsonPayload = new ObjectMapper().writeValueAsString(jsonBody);
         }
