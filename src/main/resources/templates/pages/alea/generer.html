@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+</head>
+<body>
+    <h3>Generer Salaire</h3>
+    <!-- Error Message -->
+        <div th:if="${error != null}" class="alert error">
+            <div class="alert-icon">
+                <svg class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                </svg>
+            </div>
+            <div class="alert-content">
+                <p th:text="${error}"></p>
+            </div>
+        </div>
+
+        <!-- Success Message -->
+        <div th:if="${success != null}" class="alert success">
+            <div class="alert-icon">
+                <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.707a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414L9 13.414l4.707-4.707z" clip-rule="evenodd" />
+                </svg>
+            </div>
+            <div class="alert-content">
+                <p th:text="${success}"></p>
+            </div>
+        </div>
+    <form id="salaryGridForm" th:action="@{/salaire/generer}" th:object="${salaireData}" method="POST">
+        <div class="form-section">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="employe">Employé *</label>
+                    <select id="employe" th:field="*{employe}">
+                        <option th:each="emp : ${employes}"
+                                th:value="${emp.name}"
+                                th:text="${emp.employeeName}"></option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="moisDebut">Mois Debut *</label>
+                    <input type="month" id="moisDebut" th:field="*{moisDebut}">
+                </div>
+                <div class="form-group">
+                    <label for="moisFin">Mois Fin *</label>
+                    <input type="month" id="moisFin" th:field="*{moisFin}">
+                </div>
+
+                <div class="form-group">
+                    <label for="salaire">Salaire</label>
+                    <input type="text" id="salaire" th:field="*{salaire}">
+                </div>
+
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                    Enregistrer
+                </button>
+            </div>
+        </div>
+    </form>
+</body>
+</html>
+
+<style>
+/* Base Styles */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f5f5f5;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Card */
+.card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 24px;
+    margin-bottom: 20px;
+}
+
+.card h1 {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Alerts */
+.alert {
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    border-left: 4px solid;
+    display: flex;
+    align-items: flex-start;
+}
+
+.alert.error {
+    background-color: #fef2f2;
+    border-color: #ef4444;
+}
+
+.alert.success {
+    background-color: #f0fdf4;
+    border-color: #22c55e;
+}
+
+.alert-icon {
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.alert-icon .icon {
+    height: 20px;
+    width: 20px;
+}
+
+.alert.error .icon {
+    color: #ef4444;
+}
+
+.alert.success .icon {
+    color: #22c55e;
+}
+
+.alert-content p {
+    font-size: 14px;
+}
+
+.alert.error .alert-content p {
+    color: #b91c1c;
+}
+
+.alert.success .alert-content p {
+    color: #15803d;
+}
+
+/* Form Sections */
+.form-section {
+    margin-bottom: 32px;
+}
+
+.form-section h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+/* Form Grid */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+/* Form Groups */
+.form-group {
+    margin-bottom: 16px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 8px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group input[type="date"],
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="number"]:focus,
+.form-group input[type="date"]:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* Form Check */
+.form-check {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.form-check input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+.form-check label {
+    font-size: 14px;
+    color: #374151;
+    margin-bottom: 0;
+}
+
+/* Form Rows */
+.form-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    margin-bottom: 16px;
+}
+
+.form-row .form-group {
+    flex: 1;
+    min-width: 200px;
+}
+
+/* Form Container */
+.form-container {
+    background-color: #f9fafb;
+    padding: 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    margin-bottom: 20px;
+}
+
+/* Tables */
+.table-container {
+    overflow-x: auto;
+    margin-bottom: 20px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+table th {
+    background-color: #f9fafb;
+    text-align: left;
+    padding: 12px;
+    font-weight: 500;
+    color: #6b7280;
+    text-transform: uppercase;
+    font-size: 12px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+table td {
+    padding: 12px;
+    border-bottom: 1px solid #e5e7eb;
+    vertical-align: top;
+}
+
+table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Badges */
+.badge {
+    display: inline-block;
+    padding: 2px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 9999px;
+    margin-right: 4px;
+}
+
+.badge-success {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+.badge-danger {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+.badge-info {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+}
+
+.btn-primary {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: #2563eb;
+}
+
+.btn-secondary {
+    background-color: white;
+    color: #374151;
+    border-color: #d1d5db;
+}
+
+.btn-secondary:hover {
+    background-color: #f9fafb;
+}
+
+.btn-link {
+    background: none;
+    border: none;
+    color: #3b82f6;
+    padding: 0;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.btn-link:hover {
+    text-decoration: underline;
+}
+
+.text-danger {
+    color: #ef4444;
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding-top: 16px;
+    border-top: 1px solid #e5e7eb;
+    margin-top: 16px;
+}
+
+/* Text Center */
+.text-center {
+    text-align: center;
+}
+</style>

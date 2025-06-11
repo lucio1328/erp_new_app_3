@@ -90,7 +90,8 @@ public class ImportDataController {
             String erreur=e.getMessage();
             try {
                 resetService.resetData(session);
-            } catch (Exception e1) {
+            }
+            catch (Exception e1) {
                 erreur+="\n"+e1.getMessage();
             }
             e.printStackTrace();
