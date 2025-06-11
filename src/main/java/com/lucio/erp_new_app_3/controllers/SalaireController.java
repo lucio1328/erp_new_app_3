@@ -15,6 +15,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.lucio.erp_new_app_3.dtos.alea.GenereSalaire;
 import com.lucio.erp_new_app_3.dtos.alea.ModifSalaire;
 import com.lucio.erp_new_app_3.dtos.employee.Employee;
+import com.lucio.erp_new_app_3.services.alea.GenererService;
 import com.lucio.erp_new_app_3.services.alea.ModificationService;
 import com.lucio.erp_new_app_3.services.data.DataService;
 import com.lucio.erp_new_app_3.services.employee.EmployeeService;
@@ -35,6 +36,9 @@ public class SalaireController {
     @Autowired
     private ModificationService modificationService;
 
+    @Autowired
+    private GenererService genererService;
+
 
     @GetMapping("/generer")
     public ModelAndView generer(HttpSession session) {
@@ -54,6 +58,23 @@ public class SalaireController {
 
         return modelAndView;
     }
+
+    @PostMapping("/generer")
+    public ModelAndView genererSalaire(HttpSession session,
+                                        @ModelAttribute GenereSalaire genereSalaire,
+                                        RedirectAttributes redirectAttributes) {
+        try {
+            genererService.genererSalaire(session, genereSalaire);
+
+            redirectAttributes.addFlashAttribute("success", "Salaire generé avec succes");
+        }
+        catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Erreur : " + e.getMessage());
+        }
+
+        return new ModelAndView("redirect:/salaire/generer");
+    }
+
 
     @GetMapping("/modification")
     public ModelAndView modification(HttpSession session) {
