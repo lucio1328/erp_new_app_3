@@ -77,28 +77,28 @@
         </div>
     </form>
 
-    <!-- <table>
-        <thead>
-            <tr>
-                <th>Nom et Prénom</th>
-                <th>Genre</th>
-                <th>Date de naissance</th>
-                <th>Email</th>
-                <th>Département</th>
-                <th>Poste</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="employee : ${employes}">
-                <td th:text="${employee.employeeName}"></td>
-                <td th:text="${employee.gender}"></td>
-                <td th:text="${employee.dateOfBirth}"></td>
-                <td th:text="${employee.companyEmail}"></td>
-                <td th:text="${employee.department}"></td>
-                <td th:text="${employee.designation}"></td>
-            </tr>
-        </tbody>
-    </table> -->
+    <!-- Table des employés concernés -->
+    <div th:if="${employesConcernes != null and !employesConcernes.isEmpty()}" class="card">
+        <h2>Employés concernés</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Nom complet</th>
+                        <th>Poste</th>
+                        <th>Département</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="emp : ${employesConcernes}">
+                        <td th:text="${emp.employeeName}">Nom complet</td>
+                        <td th:text="${emp.designation}">Poste</td>
+                        <td th:text="${emp.department}">Département</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </body>
 </html>
 
