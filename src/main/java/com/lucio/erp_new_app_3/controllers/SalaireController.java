@@ -63,8 +63,12 @@ public class SalaireController {
     public ModelAndView genererSalaire(HttpSession session,
                                         @ModelAttribute GenereSalaire genereSalaire,
                                         RedirectAttributes redirectAttributes) {
+        String sessionCookie = (String) session.getAttribute("sid");
         try {
-            genererService.genererSalaire(session, genereSalaire);
+            if (sessionCookie == null) {
+                return new ModelAndView("redirect:/");
+            }
+            genererService.genererSalaire(sessionCookie, genereSalaire);
 
             redirectAttributes.addFlashAttribute("success", "Salaire generé avec succes");
         }

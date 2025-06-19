@@ -13,8 +13,6 @@ import com.lucio.erp_new_app_3.dtos.salary.assignment.StructureAssignement;
 import com.lucio.erp_new_app_3.services.imports.SalaireImportService;
 import com.lucio.erp_new_app_3.services.salary.SalaryAssignmentService;
 
-import jakarta.servlet.http.HttpSession;
-
 @Service
 public class GenererService {
     @Autowired
@@ -23,8 +21,8 @@ public class GenererService {
     @Autowired
     private SalaireImportService salaireImportService;
 
-    public void genererSalaire(HttpSession sessionCookie, GenereSalaire genereSalaire) throws Exception {
-        StructureAssignement structureAssignement = salaryAssignmentService.getLatestAssignmentBeforeDate(genereSalaire.getEmploye(), sessionCookie, genereSalaire.getMoisDebut());
+    public void genererSalaire(String sessionCookie, GenereSalaire genereSalaire) throws Exception {
+        StructureAssignement structureAssignement = salaryAssignmentService.getLatestAssignmentBeforeDate(genereSalaire.getEmploye(), sessionCookie, genereSalaire.getMoisDebut(), null);
         List<SalaireData> salaireDatas = construireSalaireData(structureAssignement, genereSalaire);
         salaireImportService.importSalaireData(sessionCookie, salaireDatas);
     }

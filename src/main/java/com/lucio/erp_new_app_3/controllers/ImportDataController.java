@@ -52,7 +52,14 @@ public class ImportDataController {
 
     @PostMapping
     public ModelAndView imports(HttpSession session,@RequestParam("file1") MultipartFile file1,@RequestParam("file2") MultipartFile file2,@RequestParam("file3") MultipartFile file3){
-        ModelAndView modelAndView=new ModelAndView("layout/modele");
+        String sessionCookie = (String) session.getAttribute("sid");
+        ModelAndView modelAndView = new ModelAndView("layout/modele");
+
+        if (sessionCookie == null) {
+            modelAndView.setViewName("redirect:/");
+            return modelAndView;
+        }
+
         modelAndView.addObject("page","pages/import/form");
         EnvoyeInformation.afficherName(session, modelAndView);
 
@@ -77,7 +84,7 @@ public class ImportDataController {
                 grilleImportService.importGrilleSalaire(session, grilleSalaireDatas);
 
                 List<SalaireData> salaireDatas=salaireImportService.transformeEmploye(resultatImport.getSalaireDatas(), refEmp);
-                salaireImportService.importSalaireData(session, salaireDatas);
+                salaireImportService.importSalaireData(sessionCookie, salaireDatas);
                 modelAndView.addObject("successGlobal", "Importation réussi");
 
                 modelAndView.addObject("employesValides", resultatImport.getEmployesValides());

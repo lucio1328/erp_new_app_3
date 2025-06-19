@@ -11,10 +11,14 @@ import org.springframework.stereotype.Service;
 import com.lucio.erp_new_app_3.dtos.alea.ModifCache;
 import com.lucio.erp_new_app_3.dtos.alea.ModifSalaire;
 import com.lucio.erp_new_app_3.dtos.employee.Employee;
+import com.lucio.erp_new_app_3.dtos.imports.SalaireData;
+import com.lucio.erp_new_app_3.dtos.salary.assignment.StructureAssignement;
 import com.lucio.erp_new_app_3.dtos.salary.details_salary.SalaryDeduction;
 import com.lucio.erp_new_app_3.dtos.salary.details_salary.SalaryEarning;
 import com.lucio.erp_new_app_3.dtos.salary.slip.SalarySlip;
 import com.lucio.erp_new_app_3.services.employee.EmployeeService;
+import com.lucio.erp_new_app_3.services.imports.SalaireImportService;
+import com.lucio.erp_new_app_3.services.salary.SalaryAssignmentService;
 import com.lucio.erp_new_app_3.services.salary.SalarySlipService;
 
 @Service
@@ -24,58 +28,76 @@ public class ModificationService {
     private SalarySlipService salarySlipService;
 
     @Autowired
+    private SalaryAssignmentService salaryAssignmentService;
+
+    @Autowired
     private EmployeeService employeeService;
+
+    @Autowired
+    private SalaireImportService salaireImportService;
 
     @Autowired
     private ModifCache modifCache;
 
-    public void recreerSalarySlips(String session, ModifSalaire modifSalaire) {
-        annulerSalarySlips(session);
-        System.out.println("Salary Slip Annule!!!!!!!!!!!!!!!");
+    public void recreerSalarySlips(String session, ModifSalaire modifSalaire) throws Exception {
+        // final String SALAIRE_BASE = "Salaire Base".trim();
 
         for (SalarySlip oldSlip : modifCache.getSalarySlips()) {
-            SalarySlip newSlip = new SalarySlip();
-            newSlip.setEmployee(oldSlip.getEmployee());
-            newSlip.setStartDate(oldSlip.getStartDate());
-            newSlip.setEndDate(oldSlip.getEndDate());
-            newSlip.setCompany(oldSlip.getCompany());
-            newSlip.setCurrency(oldSlip.getCurrency());
-            newSlip.setSalaryStructure(oldSlip.getSalaryStructure());
+            annulerSalarySlips(session, oldSlip);
 
-            List<SalaryEarning> newEarnings = new ArrayList<>();
-            for (SalaryEarning earning : oldSlip.getEarnings()) {
-                SalaryEarning newEarning = new SalaryEarning();
-                newEarning.setSalaryComponent(earning.getSalaryComponent());
+            StructureAssignement structureAssignement = salaryAssignmentService.annulerAttribution(session, oldSlip.getEmployee(), oldSlip.getStartDate());
+            SalaireData salaireData = salaryAssignmentService.creerSalaireData(structureAssignement, modifSalaire);
 
-                if (earning.getSalaryComponent().equals(modifSalaire.getComposante())) {
-                    double oldAmount = earning.getAmount();
-                    double percentage = Double.parseDouble(modifSalaire.getValPourcentage());
+            salaireImportService.importSalaireData(session, List.of(salaireData));
 
-                    double newAmount = modifSalaire.getPourcentage().equals("plus")
-                            ? oldAmount * (1 + percentage / 100)
-                            : oldAmount * (1 - percentage / 100);
+            // SalarySlip newSlip = new SalarySlip();
+            // newSlip.setEmployee(oldSlip.getEmployee());
+            // newSlip.setStartDate(oldSlip.getStartDate());
+            // newSlip.setEndDate(oldSlip.getEndDate());
+            // newSlip.setCompany(oldSlip.getCompany());
+            // newSlip.setCurrency(oldSlip.getCurrency());
+            // newSlip.setSalaryStructure(oldSlip.getSalaryStructure());
 
-                    newEarning.setAmount(newAmount);
-                }
-                else {
-                    newEarning.setAmount(earning.getAmount());
-                }
+            // List<SalaryEarning> newEarnings = new ArrayList<>();
+            // for (SalaryEarning earning : oldSlip.getEarnings()) {
+            //     SalaryEarning newEarning = new SalaryEarning();
+            //     String componentName = earning.getSalaryComponent().trim();
+            //     newEarning.setSalaryComponent(componentName);
 
-                newEarnings.add(newEarning);
-            }
+            //     if (componentName.equalsIgnoreCase(SALAIRE_BASE)) {
+            //         double oldAmount = earning.getAmount();
+            //         double percentage = Double.parseDouble(modifSalaire.getValPourcentage());
 
-            newSlip.setEarnings(newEarnings);
-            newSlip.setDeductions(oldSlip.getDeductions());
+            //         double newAmount = modifSalaire.getPourcentage().equals("plus")
+            //                 ? oldAmount * (1 + percentage / 100)
+            //                 : oldAmount * (1 - percentage / 100);
 
-            salarySlipService.createSalarySlip(newSlip, session);
+            //         newEarning.setAmount(newAmount);
+            //     }
+            //     else {
+            //         newEarning.setAmount(earning.getAmount());
+            //     }
+            //     newEarnings.add(newEarning);
+            // }
+
+            // newSlip.setEarnings(newEarnings);
+            // newSlip.setDeductions(oldSlip.getDeductions());
+
+            // SalarySlip createdSlip = salarySlipService.createSalarySlip(newSlip, session);
+            // if (createdSlip == null || createdSlip.getName() == null) {
+            //     throw new RuntimeException("Échec création Salary Slip");
+            // }
+
+            // salarySlipService.submitSalarySlip(createdSlip.getName());
         }
     }
 
-    public void annulerSalarySlips(String sessionCookie) {
-        for(SalarySlip salarySlip : modifCache.getSalarySlips()) {
+    public void annulerSalarySlips(String sessionCookie, SalarySlip salarySlip) {
+        if (salarySlip.getDocstatus() == 1) {
             salarySlipService.cancelSalarySlip(salarySlip.getName(), sessionCookie);
         }
     }
+
 
     public List<Employee> getEmpConcerne(String session, ModifSalaire modifSalaire) {
         List<SalarySlip> salarySlips = salarySlipService.getSalarySlips(session);
@@ -85,7 +107,6 @@ public class ModificationService {
             salarySlip = salarySlipService.getSalarySlip(salarySlip.getName(), session);
             sals.add(salarySlip);
         }
-
         salarySlips = filtrer(sals, modifSalaire);
         modifCache.setSalarySlips(salarySlips);
 
@@ -102,6 +123,7 @@ public class ModificationService {
 
         return employees;
     }
+
 
     public List<SalarySlip> filtrer(List<SalarySlip> salarySlips, ModifSalaire modifSalaire) {
         List<SalarySlip> salarySlips2 = new ArrayList<>();

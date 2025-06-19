@@ -23,6 +23,29 @@ public class PreparationApi {
     @Autowired
     private ObjectMapper objectMapper;
 
+    public void deleteDataFromApi(String endpoint, String sessionCookie) {
+        String url = erpnextProperties.getUrl() + endpoint;
+        HttpEntity<Void> request = new HttpEntity<>(createHeaders(sessionCookie));
+
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.DELETE,
+                    request,
+                    String.class
+            );
+
+            if (response.getStatusCode() != HttpStatus.OK && response.getStatusCode() != HttpStatus.NO_CONTENT) {
+                throw new ErpApiException("Erreur HTTP lors de la suppression : " + response.getStatusCode().value(),
+                        response.getStatusCode().value());
+            }
+        }
+        catch (Exception e) {
+            throw new ErpApiException("Erreur lors de la suppression depuis l'API ERPNext",
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(), e);
+        }
+    }
+
     public JsonNode getJsonDataFromApi(String endpoint, String sessionCookie) {
         String url = erpnextProperties.getUrl() + endpoint;
         HttpEntity<Void> request = new HttpEntity<>(createHeaders(sessionCookie));
