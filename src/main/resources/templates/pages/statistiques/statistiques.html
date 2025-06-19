@@ -114,27 +114,29 @@
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="entry : ${groupedSalarySlips.entrySet()}">
-                    <td>
-                        <a th:href="@{/salary/summary(month=${entry.value.envoye})}" th:text="${entry.value.mois}"></a>
-                    </td>
-                    <td th:each="component : ${entry.value.componentsDef}"
-                        th:text="${#numbers.formatDecimal(component, 1, 'POINT', 2, 'COMMA')} + ' ' + ${entry.value.currency}">
-                    </td>
-                    <td th:text="${#numbers.formatDecimal(entry.value.grossPay, 1, 'POINT', 2, 'COMMA')} + ' ' + ${entry.value.currency}"></td>
-                    <td th:text="${#numbers.formatDecimal(entry.value.totalDeduction, 1, 'POINT', 2, 'COMMA')} + ' ' + ${entry.value.currency}"></td>
-                    <!-- <td th:text="${#numbers.formatDecimal(entry.value.netPay, 1, 'POINT', 2, 'COMMA')} + ' ' + ${entry.value.currency}" class="text-green font-semibold"></td> -->
-                    <td class="text-green font-semibold">
-                        <a th:href="@{/salary/summary(month=${entry.value.envoye})}"
-                            th:text="${#numbers.formatDecimal(entry.value.netPay, 1, 'POINT', 2, 'COMMA')} + ' ' + ${entry.value.currency}">
-                        </a>
-                    </td>
-                </tr>
+                <div th:if="${groupedSalarySlips != null}">
+                    <tr th:each="entry : ${groupedSalarySlips.entrySet()}">
+                        <td>
+                            <a th:href="@{/salary/summary(month=${entry.value.envoye})}" th:text="${entry.value.mois}"></a>
+                        </td>
+                        <td th:each="component : ${entry.value.componentsDef}"
+                            th:text="${#numbers.formatDecimal(component, 1, 'POINT', 2, 'COMMA')} + ' ' + ${entry.value.currency}">
+                        </td>
+                        <td th:text="${#numbers.formatDecimal(entry.value.grossPay, 1, 'POINT', 2, 'COMMA')} + ' ' + ${entry.value.currency}"></td>
+                        <td th:text="${#numbers.formatDecimal(entry.value.totalDeduction, 1, 'POINT', 2, 'COMMA')} + ' ' + ${entry.value.currency}"></td>
+                        <!-- <td th:text="${#numbers.formatDecimal(entry.value.netPay, 1, 'POINT', 2, 'COMMA')} + ' ' + ${entry.value.currency}" class="text-green font-semibold"></td> -->
+                        <td class="text-green font-semibold">
+                            <a th:href="@{/salary/summary(month=${entry.value.envoye})}"
+                                th:text="${#numbers.formatDecimal(entry.value.netPay, 1, 'POINT', 2, 'COMMA')} + ' ' + ${entry.value.currency}">
+                            </a>
+                        </td>
+                    </tr>
+                </div>
             </tbody>
         </table>
     </div>
 
-    <div class="summary-section" style="margin-top: 2rem;">
+    <div th:if="${totalSalarySlip != null}" class="summary-section" style="margin-top: 2rem;">
         <h3 class="summary-title">Récapitulatif des totaux</h3>
         <div class="summary-grid" style="display: flex; flex-wrap: wrap; gap: 1rem;">
             <div th:each="component, stat : ${salaryComponents}" class="summary-card" style="flex: 1 1 150px; background:#f3f4f6; padding: 1rem; border-radius: 6px;">

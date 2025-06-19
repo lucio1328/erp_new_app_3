@@ -12,8 +12,6 @@ import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.bean.HeaderColumnNameMappingStrategy;
 
-import jakarta.servlet.http.HttpSession;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -134,11 +132,7 @@ public class SalaireImportService {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked", "null" })
-    public Map<String, String> importSalaireData(HttpSession session, List<SalaireData> salairesData) throws Exception {
-        String sid = (String) session.getAttribute("sid");
-        if (sid == null || sid.isEmpty()) {
-            throw new RuntimeException("Session non authentifiée");
-        }
+    public Map<String, String> importSalaireData(String session, List<SalaireData> salairesData) throws Exception {
 
         String url = erpnextProperties.getUrl() + "/api/method/hrms.evalhr.salary_slip.import_salary_data";
 

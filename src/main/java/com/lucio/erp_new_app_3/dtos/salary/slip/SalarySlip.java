@@ -62,10 +62,10 @@ public class SalarySlip {
     private String payrollFrequency;
 
     @JsonProperty("start_date")
-    private LocalDate startDate;
+    private String startDate;
 
     @JsonProperty("end_date")
-    private LocalDate endDate;
+    private String endDate;
 
     @JsonProperty("salary_structure")
     private String salaryStructure;
@@ -209,6 +209,9 @@ public class SalarySlip {
 
     @JsonProperty("deductions")
     List<SalaryDeduction> deductions;
+
+    @JsonProperty("parent")
+    String parent;
 
     List<Double> componentsDef=new ArrayList<>();
     String mois;

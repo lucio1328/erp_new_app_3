@@ -63,8 +63,12 @@ public class SalaireController {
     public ModelAndView genererSalaire(HttpSession session,
                                         @ModelAttribute GenereSalaire genereSalaire,
                                         RedirectAttributes redirectAttributes) {
+        String sessionCookie = (String) session.getAttribute("sid");
         try {
-            genererService.genererSalaire(session, genereSalaire);
+            if (sessionCookie == null) {
+                return new ModelAndView("redirect:/");
+            }
+            genererService.genererSalaire(sessionCookie, genereSalaire);
 
             redirectAttributes.addFlashAttribute("success", "Salaire generé avec succes");
         }
@@ -77,7 +81,7 @@ public class SalaireController {
 
 
     @GetMapping("/modification")
-    public ModelAndView modification(HttpSession session) {
+    public ModelAndView modification(HttpSession session, Model model) {
         String sessionCookie = (String) session.getAttribute("sid");
         ModelAndView modelAndView = new ModelAndView("layout/modele");
 
@@ -101,20 +105,29 @@ public class SalaireController {
                                         RedirectAttributes redirectAttributes,
                                         Model model) {
         String sessionCookie = (String) session.getAttribute("sid");
+        ModelAndView modelAndView = new ModelAndView("layout/modele");
         try {
-            List<Employee> employees = modificationService.getEmpConcerne(sessionCookie, modifSalaire);
-
-            for (Employee employee : employees) {
-                System.out.println("Employe Details: "+ employee);
+            if (sessionCookie == null) {
+                modelAndView.setViewName("redirect:/");
+                return modelAndView;
             }
 
-            // model.addAttribute("employes", employees);
-            redirectAttributes.addFlashAttribute("success", "Liste Employes Concernes: " + employees + "\n");
+            List<Employee> employees = modificationService.getEmpConcerne(sessionCookie, modifSalaire);
+            modificationService.recreerSalarySlips(sessionCookie, modifSalaire);
+
+            modelAndView.addObject("modifSalaire", new ModifSalaire());
+            modelAndView.addObject("composantes", dataService.getAllData(session, "Salary Component", null));
+
+            EnvoyeInformation.afficherName(session, modelAndView);
+            EnvoyeInformation.setInfo(modelAndView, "Modification Salaire", "pages/alea/modif");
+
+            modelAndView.addObject("employesConcernes", employees);
+            modelAndView.addObject("success", "Modification reussie!!");
         }
         catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Erreur : " + e.getMessage());
+            modelAndView.addObject("error", "Erreur : " + e.getMessage());
         }
 
-        return new ModelAndView("redirect:/salaire/modification");
+        return modelAndView;
     }
 }
