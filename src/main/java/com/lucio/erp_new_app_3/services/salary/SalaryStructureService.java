@@ -1,6 +1,7 @@
 package com.lucio.erp_new_app_3.services.salary;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +14,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lucio.erp_new_app_3.configs.ErpnextProperties;
 import com.lucio.erp_new_app_3.dtos.salary.SalaryStructure;
+import com.lucio.erp_new_app_3.exceptions.ErpApiException;
 import com.lucio.erp_new_app_3.utils.PreparationApi;
 
 import jakarta.servlet.http.HttpSession;
@@ -33,6 +36,17 @@ public class SalaryStructureService {
 
     @Autowired
     private PreparationApi preparationApi;
+
+    public List<SalaryStructure> getAllStructure(String sessionCookie) {
+        String endpoint = "/api/resource/Salary Structure?fields=[\"*\"]";
+        JsonNode data = preparationApi.getJsonDataFromApi(endpoint, sessionCookie);
+        try {
+            return objectMapper.readerForListOf(SalaryStructure.class).readValue(data);
+        }
+        catch (Exception e) {
+            throw new ErpApiException("Erreur de parsing des salary structure", HttpStatus.INTERNAL_SERVER_ERROR.value(), e);
+        }
+    }
 
     public ResponseEntity<Map<String, Object>> createSalaryGrid(HttpSession session, SalaryStructure salaryGridDTO) {
         String sid = (String) session.getAttribute("sid");
