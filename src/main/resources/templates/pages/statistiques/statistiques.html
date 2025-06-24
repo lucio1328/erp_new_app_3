@@ -6,37 +6,179 @@
     <link rel="stylesheet" th:href="@{/css/summary.css}" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            margin: 20px;
-            background-color: #f5f7fa;
-            color: #333;
-        }
 
         h2, h3 {
             color: #1f4e79;
             margin-bottom: 10px;
         }
 
+        :root {
+            --blue-navy: #0a192f;
+            --blue-air: #0077b6;
+            --gold: #f9a826;
+            --light-gray: #f1f5f9;
+            --white: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        h1.page-title {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: var(--blue-navy);
+            font-weight: 600;
+        }
+
+        /* Alertes */
+        .alert-error, .alert-info {
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .alert-error {
+            background-color: #ffe0e0;
+            color: #9b1c1c;
+        }
+
+        .alert-info {
+            background-color: #e0f4ff;
+            color: #1c4b9b;
+        }
+
+        /* Formulaire */
         .filter-form {
-            margin-bottom: 20px;
+            margin-bottom: 2rem;
+        }
+
+        .filter-form form {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
         }
 
         .form-label {
-            font-weight: bold;
+            font-weight: 600;
+        }
+
+        .form-input {
+            padding: 0.5rem;
+            border: 1px solid var(--blue-air);
+            border-radius: 0.5rem;
+            background-color: #fff;
         }
 
         .form-button {
-            padding: 6px 12px;
-            background-color: #1f4e79;
-            color: white;
+            background-color: var(--blue-air);
+            color: var(--white);
             border: none;
-            border-radius: 5px;
+            padding: 0.6rem 1rem;
+            border-radius: 0.5rem;
             cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
         }
 
         .form-button:hover {
-            background-color: #163b5c;
+            background-color: var(--blue-navy);
+        }
+
+        /* Table */
+        .table-container {
+            overflow-x: auto;
+            background-color: var(--white);
+            border-radius: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 700px;
+        }
+
+        thead {
+            background-color: var(--blue-air);
+            color: var(--white);
+        }
+
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        tbody tr:hover {
+            background-color: #f0f4f8;
+        }
+
+        /* Liens */
+        a {
+            color: var(--blue-air);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Résumé */
+        .summary-section {
+            margin-top: 3rem;
+        }
+
+        .summary-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .summary-card {
+            background-color: var(--white);
+            border-radius: 1rem;
+            padding: 1.2rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .summary-label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--blue-navy);
+        }
+
+        .summary-value {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .text-green-600 {
+            color: #059669;
+        }
+
+        .text-red-600 {
+            color: #dc2626;
         }
 
         .charts-container {

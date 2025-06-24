@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Assignation de structure salariale</title>
+
+<!-- Bootstrap & Icons -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- Modern Styling -->
+<style>
+    body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #f0f4f8, #ffffff);
+    padding: 40px 0;
+    }
+
+    .form-container {
+    max-width: 1000px;
+    margin: auto;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    padding: 40px;
+    }
+
+    h2 {
+    font-weight: 700;
+    color: #1f2d3d;
+    margin-bottom: 30px;
+    text-align: center;
+    }
+
+    .form-label {
+    font-weight: 500;
+    color: #2c3e50;
+    }
+
+    .form-select, .form-control {
+    border-radius: 10px;
+    border: 1px solid #ced4da;
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s;
+    }
+
+    .form-select:focus, .form-control:focus {
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 0.2rem rgba(74, 144, 226, 0.2);
+    }
+
+    .card {
+    border: none;
+    border-radius: 16px;
+    background: #f8f9fa;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.03);
+    }
+
+    .card-header {
+    background-color: #ffffff;
+    border-bottom: 1px solid #dee2e6;
+    border-radius: 16px 16px 0 0;
+    }
+
+    .btn {
+    border-radius: 10px;
+    font-weight: 600;
+    transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .employee-row {
+    background: #ffffff;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+    }
+
+    .alert-danger {
+    border-radius: 10px;
+    font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
+    .form-container {
+        padding: 20px;
+    }
+    }
+</style>
+</head>
+<body>
+<div class="container form-container">
+    <h2>Attribution de Salaire</h2>
+
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <!-- Infos Globales -->
+    <div class="card mb-4">
+    <div class="card-body">
+        <div class="row">
+        <div class="col-md-6 mb-3">
+            <label for="company" class="form-label">Entreprise</label>
+            <select class="form-select" id="company" required>
+            <option value="">Sélectionner une entreprise</option>
+            <option th:each="company : ${companies}" th:value="${company.name}" th:text="${company.name}"></option>
+            </select>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="salaryStructure" class="form-label">Structure salariale</label>
+            <select class="form-select" id="salaryStructure" required>
+            <option value="">Sélectionner une structure</option>
+            <option th:each="structure : ${structures}" th:value="${structure.name}" th:text="${structure.name}"></option>
+            </select>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="fromDate" class="form-label">Date d'effet</label>
+            <input type="date" class="form-control" id="fromDate" required />
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="currency" class="form-label">Devise</label>
+            <input type="text" class="form-control" id="currency" value="EURO" required />
+        </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- Section Employés -->
+    <div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Employés</h5>
+        <button type="button" class="btn btn-primary btn-sm" onclick="addEmployeeRow()">
+        <i class="bi bi-plus"></i> Ajouter un employé
+        </button>
+    </div>
+    <div class="card-body" id="employeesContainer"></div>
+    </div>
+
+    <!-- Bouton Envoyer -->
+    <div class="text-center">
+    <button class="btn btn-success px-4 py-2" type="button" onclick="submitAssignments()">
+        <i class="bi bi-check-circle"></i> Assigner les structures
+    </button>
+    </div>
+</div>
+
+<!-- Script JavaScript -->
+<script th:inline="javascript">
+    let employeeCounter = 0;
+    const employeesData = /*[[${employees}]]*/ [];
+
+    function addEmployeeRow() {
+    const container = document.getElementById('employeesContainer');
+    const rowId = 'employee-' + employeeCounter++;
+
+    const rowHtml = `
+        <div class="employee-row" id="${rowId}">
+        <div class="row align-items-end">
+            <div class="col-md-4 mb-3">
+            <label class="form-label" for="${rowId}-employee">Employé</label>
+            <select class="form-select employee-input" id="${rowId}-employee" required>
+                <option value="">Sélectionner un employé</option>
+                ${employeesData.map(emp =>
+                `<option value="${emp.name}">${emp.employee_name} (${emp.name})</option>`).join('')}
+            </select>
+            </div>
+            <div class="col-md-4 mb-3">
+            <label class="form-label" for="${rowId}-base">Salaire de base</label>
+            <input type="number" step="0.01" class="form-control base-input" id="${rowId}-base" required />
+            </div>
+            <div class="col-md-3 mb-3">
+            <label class="form-label" for="${rowId}-variable">Variable</label>
+            <input type="number" step="0.01" class="form-control variable-input" id="${rowId}-variable" required />
+            </div>
+            <div class="col-md-1 d-grid">
+            <button type="button" class="btn btn-danger btn-sm" onclick="removeEmployeeRow('${rowId}')">
+                <i class="bi bi-trash"></i>
+            </button>
+            </div>
+        </div>
+        </div>`;
+    
+    container.insertAdjacentHTML('beforeend', rowHtml);
+    }
+
+    function removeEmployeeRow(rowId) {
+    const row = document.getElementById(rowId);
+    if (row) row.remove();
+    }
+
+    function submitAssignments() {
+    const formData = new FormData();
+    formData.append('salaryStructure', document.getElementById('salaryStructure').value);
+    formData.append('company', document.getElementById('company').value);
+    formData.append('fromDate', document.getElementById('fromDate').value);
+    formData.append('currency', document.getElementById('currency').value);
+
+    const rows = document.querySelectorAll('.employee-row');
+    if (rows.length === 0) {
+        return Swal.fire({ icon: 'warning', title: 'Aucun employé', text: 'Ajoutez au moins un employé.' });
+    }
+
+    const structureDetails = [];
+    let hasError = false;
+
+    rows.forEach(row => {
+        const emp = row.querySelector('.employee-input').value;
+        const base = row.querySelector('.base-input').value;
+        const variable = row.querySelector('.variable-input').value;
+
+        if (!emp || !base || !variable) {
+        hasError = true;
+        } else {
+        structureDetails.push({ employee: emp, base: parseFloat(base), variable: parseFloat(variable) });
+        }
+    });
+
+    if (hasError) {
+        return Swal.fire({ icon: 'error', title: 'Champs manquants', text: 'Remplissez tous les champs.' });
+    }
+
+    formData.append('structureDetails', JSON.stringify(structureDetails));
+
+    fetch('/structures/assign', {
+        method: 'POST',
+        body: formData,
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.status === 'success') {
+        Swal.fire({ icon: 'success', title: 'Succès', text: 'Assignation réussie.' }).then(() => location.reload());
+        } else {
+        Swal.fire({ icon: 'error', title: 'Erreur', text: data.message || 'Erreur lors de l\'assignation' });
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        Swal.fire({ icon: 'error', title: 'Erreur serveur', text: 'Impossible de traiter la requête' });
+    });
+    }
+
+    document.addEventListener('DOMContentLoaded', addEmployeeRow);
+</script>
+</body>
+</html>

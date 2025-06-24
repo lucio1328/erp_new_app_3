@@ -1,17 +1,21 @@
 package com.lucio.erp_new_app_3.services.alea;
 
-import java.time.YearMonth;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.lucio.erp_new_app_3.dtos.alea.GenereSalaire;
 import com.lucio.erp_new_app_3.dtos.imports.SalaireData;
 import com.lucio.erp_new_app_3.dtos.salary.assignment.StructureAssignement;
+import com.lucio.erp_new_app_3.exceptions.ErpApiException;
 import com.lucio.erp_new_app_3.services.imports.SalaireImportService;
 import com.lucio.erp_new_app_3.services.salary.SalaryAssignmentService;
+import com.lucio.erp_new_app_3.services.salary.SalaryStructureService;
 
 @Service
 public class GenererService {
@@ -19,10 +23,41 @@ public class GenererService {
     private SalaryAssignmentService salaryAssignmentService;
 
     @Autowired
+    private SalaryStructureService salaryStructureService;
+
+    @Autowired
     private SalaireImportService salaireImportService;
 
     public void genererSalaire(String sessionCookie, GenereSalaire genereSalaire) throws Exception {
-        StructureAssignement structureAssignement = salaryAssignmentService.getLatestAssignmentBeforeDate(genereSalaire.getEmploye(), sessionCookie, genereSalaire.getMoisDebut(), null);
+        Optional<StructureAssignement> structureAssignementOpt =
+            salaryAssignmentService.getLatestAssignmentBeforeDate(
+                genereSalaire.getEmploye(),
+                sessionCookie,
+                genereSalaire.getMoisDebut()
+            );
+
+        // StructureAssignement structureAssignement = structureAssignementOpt.orElseGet(() -> {
+        //     if (genereSalaire.getSalaire() != null && !genereSalaire.getSalaire().isBlank()) {
+        //         StructureAssignement fallback = new StructureAssignement();
+        //         fallback.setBase(Double.valueOf(genereSalaire.getSalaire()));
+        //         fallback.setSalary_structure(salaryStructureService.getAllStructure(sessionCookie).get(0).getName());
+        //         return fallback;
+        //     }
+        //     else {
+        //         throw new ErpApiException(
+        //             "Aucune structure d'assignation trouvée et aucun salaire fourni.",
+        //             HttpStatus.NOT_FOUND.value()
+        //         );
+        //     }
+        // });
+
+        StructureAssignement structureAssignement = structureAssignementOpt.orElseThrow(() -> {
+                throw new ErpApiException(
+                    "Aucune structure d'assignation trouvée et aucun salaire fourni.",
+                    HttpStatus.NOT_FOUND.value()
+                );
+            });
+
         List<SalaireData> salaireDatas = construireSalaireData(structureAssignement, genereSalaire);
         salaireImportService.importSalaireData(sessionCookie, salaireDatas);
     }
@@ -30,8 +65,8 @@ public class GenererService {
     public List<SalaireData> construireSalaireData(StructureAssignement structureAssignement, GenereSalaire genereSalaire) {
         List<SalaireData> salaireDatas = new ArrayList<>();
 
-        YearMonth current = genereSalaire.getMoisDebut();
-        YearMonth end = genereSalaire.getMoisFin();
+        LocalDate dateDebut = genereSalaire.getMoisDebut();
+        LocalDate dateFin = genereSalaire.getMoisFin();
 
         boolean hasSalaire = genereSalaire.getSalaire() != null && !genereSalaire.getSalaire().isBlank();
         Double salaireFromRequest = null;
@@ -42,9 +77,9 @@ public class GenererService {
             salaireFromRequest = null;
         }
 
-        while (!current.isAfter(end)) {
+        while (!dateDebut.isAfter(dateFin)) {
             SalaireData data = new SalaireData();
-            data.setMois(current.toString());
+            data.setMois(dateDebut.toString());
             data.setRefEmploye(genereSalaire.getEmploye());
 
             if (salaireFromRequest != null && salaireFromRequest > 0) {
@@ -57,7 +92,7 @@ public class GenererService {
             data.setSalaryStructure(structureAssignement.getSalary_structure());
 
             salaireDatas.add(data);
-            current = current.plusMonths(1);
+            dateDebut = dateDebut.plusMonths(1);
         }
 
         return salaireDatas;

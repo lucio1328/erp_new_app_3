@@ -1,8 +1,8 @@
 package com.lucio.erp_new_app_3.services.salary;
 
 import java.time.LocalDate;
-import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +25,7 @@ import com.lucio.erp_new_app_3.configs.ErpnextProperties;
 import com.lucio.erp_new_app_3.dtos.alea.ModifSalaire;
 import com.lucio.erp_new_app_3.dtos.imports.SalaireData;
 import com.lucio.erp_new_app_3.dtos.salary.assignment.StructureAssignement;
+import com.lucio.erp_new_app_3.dtos.salary.assignment.StructureDetail;
 import com.lucio.erp_new_app_3.exceptions.ErpApiException;
 import com.lucio.erp_new_app_3.utils.PreparationApi;
 
@@ -68,16 +69,26 @@ public class SalaryAssignmentService {
     }
 
     public StructureAssignement annulerAttribution(String sessionCookie, String empId, String startDate) {
-        StructureAssignement structureAssignement = new StructureAssignement();
+        LocalDate date = LocalDate.parse(startDate);
 
-        LocalDate daty = LocalDate.parse(startDate);
-        StructureAssignement structureAssignement2 = getLatestAssignmentBeforeDate(empId, sessionCookie, null, daty);
-        structureAssignement = structureAssignement2;
-        if (structureAssignement2.getDocstatus() == 1) {
-            cancelSalaryAssignment(structureAssignement.getName(), sessionCookie);
+        Optional<StructureAssignement> optionalAssignment =
+            getLatestAssignmentBeforeDate(empId, sessionCookie, date);
+
+        if (optionalAssignment.isPresent()) {
+            StructureAssignement assignment = optionalAssignment.get();
+
+            if (assignment.getDocstatus() == 1) {
+                cancelSalaryAssignment(assignment.getName(), sessionCookie);
+            }
+
+            return assignment;
         }
-
-        return structureAssignement;
+        else {
+            throw new ErpApiException(
+                "Aucune assignation trouvée pour l'employé " + empId + " avant la date " + startDate,
+                HttpStatus.NOT_FOUND.value()
+            );
+        }
     }
 
     public void cancelSalaryAssignment(String name, String sessionCookie) {
@@ -110,28 +121,28 @@ public class SalaryAssignmentService {
         }
     }
 
-    public StructureAssignement getLatestAssignmentBeforeDate(String employeeId, String sid, YearMonth yearMonthLimit, LocalDate fallbackDate) {
+    public Optional<StructureAssignement> getLatestAssignmentBeforeDate(String employeeId, String sid, LocalDate fallbackDate) {
         List<StructureAssignement> assignments = getSalaryAssignmentsByEmployee(employeeId, sid);
 
-        LocalDate dateLimit = (yearMonthLimit != null) ? yearMonthLimit.atEndOfMonth() : fallbackDate;
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-        Optional<StructureAssignement> latest = assignments.stream()
+        return assignments.stream()
             .filter(assign -> {
                 try {
                     LocalDate fromDate = LocalDate.parse(assign.getFrom_date(), formatter);
-                    return !fromDate.isAfter(dateLimit);
-                }
-                catch (Exception e) {
+                    return !fromDate.isAfter(fallbackDate);
+                } catch (Exception e) {
                     return false;
                 }
             })
-            .max(Comparator.comparing(assign -> LocalDate.parse(assign.getFrom_date(), formatter)));
-
-        return latest.orElseThrow(() -> new ErpApiException(
-            "Aucune structure d'assignation trouvée pour l'employé " + employeeId + " avant le mois " + yearMonthLimit,
-            HttpStatus.NOT_FOUND.value()
-        ));
+            .max(Comparator.comparing(assign -> {
+                try {
+                    return LocalDate.parse(assign.getFrom_date(), formatter);
+                }
+                catch (Exception e) {
+                    return LocalDate.MIN;
+                }
+            }));
     }
 
     public List<StructureAssignement> getSalaryAssignmentsByEmployee(String employeeId, String sessionCookie) {
@@ -164,5 +175,20 @@ public class SalaryAssignmentService {
         if (!response.getStatusCode().is2xxSuccessful()) {
             throw new RuntimeException("Échec d’assignation pour " + request.getEmployee());
         }
+    }
+
+    public void assignSalaryStructureBloc(HttpSession session,List<StructureAssignement> structureAssignements){
+        for (StructureAssignement structureAssignement : structureAssignements) {
+            assignSalaryStructure(session, structureAssignement);
+        }
+    }
+
+
+    public void assignToSalaryStructures(HttpSession session,String salary_structure,String company,String from_date,String currency,List<StructureDetail> structureDetails){
+        List<StructureAssignement> structureAssignements=new ArrayList<>();
+        for (StructureDetail structureDetail : structureDetails) {
+            structureAssignements.add(new StructureAssignement(company, salary_structure, currency, structureDetail.getEmployee(), from_date, structureDetail.getBase(), structureDetail.getVariable()));
+        }
+        assignSalaryStructureBloc(session, structureAssignements);
     }
 }

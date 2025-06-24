@@ -175,7 +175,7 @@ public class SalarySlipService {
     }
 
     public List<SalarySlip> getSalarySlips(String sessionCookie) {
-        String endpoint = "/api/resource/Salary Slip?fields=[\"*\"]";
+        String endpoint = "/api/resource/Salary Slip?fields=[\"*\"]&limit_page_length=100&limit_start=0";
         JsonNode data = preparationApi.getJsonDataFromApi(endpoint, sessionCookie);
         try {
             return objectMapper.readerForListOf(SalarySlip.class).readValue(data);
