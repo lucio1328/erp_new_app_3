@@ -48,7 +48,7 @@ public class PreparationApi {
 
     public JsonNode getJsonDataFromApi(String endpoint, String sessionCookie) {
         String url = erpnextProperties.getUrl() + endpoint;
-        HttpEntity<Void> request = new HttpEntity<>(createHeaders(sessionCookie));
+        HttpEntity<Void> request = new HttpEntity<>(buildApiHeaders());
 
         try {
             ResponseEntity<String> response = restTemplate.exchange(

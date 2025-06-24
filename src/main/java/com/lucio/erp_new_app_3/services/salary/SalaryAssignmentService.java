@@ -2,6 +2,7 @@ package com.lucio.erp_new_app_3.services.salary;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +25,7 @@ import com.lucio.erp_new_app_3.configs.ErpnextProperties;
 import com.lucio.erp_new_app_3.dtos.alea.ModifSalaire;
 import com.lucio.erp_new_app_3.dtos.imports.SalaireData;
 import com.lucio.erp_new_app_3.dtos.salary.assignment.StructureAssignement;
+import com.lucio.erp_new_app_3.dtos.salary.assignment.StructureDetail;
 import com.lucio.erp_new_app_3.exceptions.ErpApiException;
 import com.lucio.erp_new_app_3.utils.PreparationApi;
 
@@ -173,5 +175,20 @@ public class SalaryAssignmentService {
         if (!response.getStatusCode().is2xxSuccessful()) {
             throw new RuntimeException("Échec d’assignation pour " + request.getEmployee());
         }
+    }
+
+    public void assignSalaryStructureBloc(HttpSession session,List<StructureAssignement> structureAssignements){
+        for (StructureAssignement structureAssignement : structureAssignements) {
+            assignSalaryStructure(session, structureAssignement);
+        }
+    }
+
+
+    public void assignToSalaryStructures(HttpSession session,String salary_structure,String company,String from_date,String currency,List<StructureDetail> structureDetails){
+        List<StructureAssignement> structureAssignements=new ArrayList<>();
+        for (StructureDetail structureDetail : structureDetails) {
+            structureAssignements.add(new StructureAssignement(company, salary_structure, currency, structureDetail.getEmployee(), from_date, structureDetail.getBase(), structureDetail.getVariable()));
+        }
+        assignSalaryStructureBloc(session, structureAssignements);
     }
 }
