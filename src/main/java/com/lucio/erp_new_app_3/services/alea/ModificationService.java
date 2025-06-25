@@ -99,7 +99,8 @@ public class ModificationService {
     }
 
 
-    public List<Employee> getEmpConcerne(String session, ModifSalaire modifSalaire) {
+    public ModifCache getEmpConcerne(String session, ModifSalaire modifSalaire) {
+        ModifCache modifCache2 = new ModifCache();
         List<SalarySlip> salarySlips = salarySlipService.getSalarySlips(session);
         List<SalarySlip> sals = new ArrayList<>();
 
@@ -108,7 +109,7 @@ public class ModificationService {
             sals.add(salarySlip);
         }
         salarySlips = filtrer(sals, modifSalaire);
-        modifCache.setSalarySlips(salarySlips);
+        modifCache2.setSalarySlips(salarySlips);
 
         employeeService.addEmployes(employeeService.getAllEmployees(session));
 
@@ -119,9 +120,9 @@ public class ModificationService {
         }
 
         List<Employee> employees = new ArrayList<>(employeesSet);
-        modifCache.setEmployees(employees);
+        modifCache2.setEmployees(employees);
 
-        return employees;
+        return modifCache2;
     }
 
 
@@ -160,8 +161,18 @@ public class ModificationService {
                 estVrai = true;
             }
         }
-        else {
+        if (modifSalaire.getCondition().equals("inf")) {
             if (composante.equals(modifSalaire.getComposante()) && valAComparer < Double.parseDouble(modifSalaire.getValeur())) {
+                estVrai = true;
+            }
+        }
+        if (modifSalaire.getCondition().equals("suppegal")) {
+            if (composante.equals(modifSalaire.getComposante()) && valAComparer >= Double.parseDouble(modifSalaire.getValeur())) {
+                estVrai = true;
+            }
+        }
+        if (modifSalaire.getCondition().equals("infegal")) {
+            if (composante.equals(modifSalaire.getComposante()) && valAComparer <= Double.parseDouble(modifSalaire.getValeur())) {
                 estVrai = true;
             }
         }

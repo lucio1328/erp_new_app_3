@@ -12,10 +12,12 @@ import org.springframework.stereotype.Service;
 import com.lucio.erp_new_app_3.dtos.alea.GenereSalaire;
 import com.lucio.erp_new_app_3.dtos.imports.SalaireData;
 import com.lucio.erp_new_app_3.dtos.salary.assignment.StructureAssignement;
+import com.lucio.erp_new_app_3.dtos.salary.details_salary.SalaryEarning;
+import com.lucio.erp_new_app_3.dtos.salary.slip.SalarySlip;
 import com.lucio.erp_new_app_3.exceptions.ErpApiException;
 import com.lucio.erp_new_app_3.services.imports.SalaireImportService;
 import com.lucio.erp_new_app_3.services.salary.SalaryAssignmentService;
-import com.lucio.erp_new_app_3.services.salary.SalaryStructureService;
+import com.lucio.erp_new_app_3.services.salary.SalarySlipService;
 
 @Service
 public class GenererService {
@@ -23,10 +25,34 @@ public class GenererService {
     private SalaryAssignmentService salaryAssignmentService;
 
     @Autowired
-    private SalaryStructureService salaryStructureService;
+    private SalarySlipService salarySlipService;
 
     @Autowired
     private SalaireImportService salaireImportService;
+
+    public List<SalarySlip> modifierSalarySlip(String sessioCookie) {
+        List<SalarySlip> salarySlips = salarySlipService.getSalarySlips(sessioCookie);
+        for (SalarySlip salarySlip : salarySlips) {
+            salarySlip = salarySlipService.getSalarySlip(salarySlip.getName(), sessioCookie);
+        }
+        return salarySlips;
+    }
+
+    public Double moyenneSalaire(String sessionCookie) {
+        List<SalarySlip> salarySlips = modifierSalarySlip(sessionCookie);
+        Double moyenne = 0.0;
+        Double somme = 0.0;
+        for (SalarySlip salarySlip : salarySlips) {
+            for (SalaryEarning salaryEarning : salarySlip.getEarnings()) {
+                if (salaryEarning.getSalaryComponent().equals("Salaire Base")) {
+                    somme += salaryEarning.getAmount();
+                    break;
+                }
+            }
+        }
+        moyenne = somme / salarySlips.size();
+        return moyenne;
+    }
 
     public void genererSalaire(String sessionCookie, GenereSalaire genereSalaire) throws Exception {
         Optional<StructureAssignement> structureAssignementOpt =
@@ -58,11 +84,11 @@ public class GenererService {
                 );
             });
 
-        List<SalaireData> salaireDatas = construireSalaireData(structureAssignement, genereSalaire);
+        List<SalaireData> salaireDatas = construireSalaireData(structureAssignement, genereSalaire, sessionCookie);
         salaireImportService.importSalaireData(sessionCookie, salaireDatas);
     }
 
-    public List<SalaireData> construireSalaireData(StructureAssignement structureAssignement, GenereSalaire genereSalaire) {
+    public List<SalaireData> construireSalaireData(StructureAssignement structureAssignement, GenereSalaire genereSalaire, String sessionCookie) {
         List<SalaireData> salaireDatas = new ArrayList<>();
 
         LocalDate dateDebut = genereSalaire.getMoisDebut();
@@ -87,6 +113,10 @@ public class GenererService {
             }
             else {
                 data.setSalaireBase(structureAssignement.getBase());
+            }
+
+            if (genereSalaire.getMoyenne() != null) {
+                data.setSalaireBase(moyenneSalaire(sessionCookie));
             }
 
             data.setSalaryStructure(structureAssignement.getSalary_structure());
