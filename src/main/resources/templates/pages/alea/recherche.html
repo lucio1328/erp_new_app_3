@@ -6,7 +6,7 @@
     <title></title>
 </head>
 <body>
-    <h3>Generer Salaire</h3>
+    <h3>Modification Salaire</h3>
     <!-- Error Message -->
         <div th:if="${error != null}" class="alert error">
             <div class="alert-icon">
@@ -30,38 +30,34 @@
                 <p th:text="${success}"></p>
             </div>
         </div>
-    <form id="salaryGridForm" th:action="@{/salaire/generer}" th:object="${salaireData}" method="POST">
+    <form id="salaryGridForm" th:action="@{/salaire/recherche}" th:object="${modifSalaire}" method="POST">
         <div class="form-section">
             <div class="form-grid">
                 <div class="form-group">
-                    <label for="employe">Employé *</label>
-                    <select id="employe" th:field="*{employe}">
-                        <option th:each="emp : ${employes}"
-                                th:value="${emp.name}"
-                                th:text="${emp.employeeName}"></option>
+                    <label for="composante">Composante</label>
+                    <select id="composante" th:field="*{composante}">
+                        <option th:each="comp : ${composantes.data}"
+                                th:value="${comp.name}"
+                                th:text="${comp.name}"></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="condition">Condition</label>
+                    <select id="condition" th:field="*{condition}">
+                        <option th:value="supp"
+                                th:text="Supperieur"></option>
+                        <option th:value="inf"
+                                th:text="Inferieur"></option>
+                        <option th:value="infegal"
+                                th:text="Inferieur ou egal"></option>
+                        <option th:value="suppegal"
+                                th:text="Supperieur ou egal"></option>
                     </select>
                 </div>
 
                 <div class="form-group">
-                    <label for="moisDebut">Mois Debut *</label>
-                    <input type="date" id="moisDebut" th:field="*{moisDebut}">
-                </div>
-                <div class="form-group">
-                    <label for="moisFin">Mois Fin *</label>
-                    <input type="date" id="moisFin" th:field="*{moisFin}">
-                </div>
-
-                <div class="form-group">
-                    <label for="salaire">Salaire</label>
-                    <input type="text" id="salaire" th:field="*{salaire}">
-                </div>
-                <div class="form-group">
-                    <label for="ecraser">Ecraser salaire</label>
-                    <input type="checkbox" id="ecraser" th:field="*{ecraser}">
-                </div>
-                <div class="form-group">
-                    <label for="moyenne">Moyenne salaire de base</label>
-                    <input type="checkbox" id="moyenne" th:field="*{moyenne}">
+                    <label for="valeur">Valeur</label>
+                    <input type="text" id="valeur" th:field="*{valeur}">
                 </div>
 
             </div>
@@ -72,6 +68,35 @@
             </div>
         </div>
     </form>
+
+    <!-- Table des salary slips concernés -->
+    <div th:if="${salarySlips != null and !salarySlips.isEmpty()}" class="card">
+        <h2>Salary Slips concernés</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Employe</th>
+                        <th>Salary Structure</th>
+                        <th>Posting Date</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Net Pay</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="emp : ${salarySlips}">
+                        <td th:text="${emp.employeeName}"></td>
+                        <td th:text="${emp.salaryStructure}"></td>
+                        <td th:text="${emp.postingDate}"></td>
+                        <td th:text="${emp.startDate}"></td>
+                        <td th:text="${emp.endDate}"></td>
+                        <td th:text="${emp.netPay}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </body>
 </html>
 

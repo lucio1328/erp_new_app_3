@@ -134,11 +134,24 @@
     <div class="card mb-4">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Employés</h5>
-        <button type="button" class="btn btn-primary btn-sm" onclick="addEmployeeRow()">
-        <i class="bi bi-plus"></i> Ajouter un employé
-        </button>
     </div>
-    <div class="card-body" id="employeesContainer"></div>
+    <div class="card-body">
+        <div class="col-md-6 mb-3">
+            <label for="employe" class="form-label">Employé</label>
+            <select class="form-select" id="employe" required>
+            <option value="">Sélectionner un employe</option>
+            <option th:each="employee : ${employees}" th:value="${employee.name}" th:text="${employee.employeeName}"></option>
+            </select>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="base" class="form-label">Base</label>
+            <input type="text" class="form-control" id="base" required />
+        </div>
+        <div class="col-md-6 mb-3">
+            <label for="variable" class="form-label">Variable</label>
+            <input type="text" class="form-control" id="variable" value="0" required />
+        </div>
+    </div>
     </div>
 
     <!-- Bouton Envoyer -->
@@ -151,98 +164,52 @@
 
 <!-- Script JavaScript -->
 <script th:inline="javascript">
-    let employeeCounter = 0;
-    const employeesData = /*[[${employees}]]*/ [];
-
-    function addEmployeeRow() {
-    const container = document.getElementById('employeesContainer');
-    const rowId = 'employee-' + employeeCounter++;
-
-    const rowHtml = `
-        <div class="employee-row" id="${rowId}">
-        <div class="row align-items-end">
-            <div class="col-md-4 mb-3">
-            <label class="form-label" for="${rowId}-employee">Employé</label>
-            <select class="form-select employee-input" id="${rowId}-employee" required>
-                <option value="">Sélectionner un employé</option>
-                ${employeesData.map(emp =>
-                `<option value="${emp.name}">${emp.employee_name} (${emp.name})</option>`).join('')}
-            </select>
-            </div>
-            <div class="col-md-4 mb-3">
-            <label class="form-label" for="${rowId}-base">Salaire de base</label>
-            <input type="number" step="0.01" class="form-control base-input" id="${rowId}-base" required />
-            </div>
-            <div class="col-md-3 mb-3">
-            <label class="form-label" for="${rowId}-variable">Variable</label>
-            <input type="number" step="0.01" class="form-control variable-input" id="${rowId}-variable" required />
-            </div>
-            <div class="col-md-1 d-grid">
-            <button type="button" class="btn btn-danger btn-sm" onclick="removeEmployeeRow('${rowId}')">
-                <i class="bi bi-trash"></i>
-            </button>
-            </div>
-        </div>
-        </div>`;
-
-    container.insertAdjacentHTML('beforeend', rowHtml);
-    }
-
-    function removeEmployeeRow(rowId) {
-    const row = document.getElementById(rowId);
-    if (row) row.remove();
-    }
 
     function submitAssignments() {
-    const formData = new FormData();
-    formData.append('salaryStructure', document.getElementById('salaryStructure').value);
-    formData.append('company', document.getElementById('company').value);
-    formData.append('fromDate', document.getElementById('fromDate').value);
-    formData.append('currency', document.getElementById('currency').value);
+        const formData = new FormData();
+        formData.append('salaryStructure', document.getElementById('salaryStructure').value);
+        formData.append('company', document.getElementById('company').value);
+        formData.append('fromDate', document.getElementById('fromDate').value);
+        formData.append('currency', document.getElementById('currency').value);
 
-    const rows = document.querySelectorAll('.employee-row');
-    if (rows.length === 0) {
-        return Swal.fire({ icon: 'warning', title: 'Aucun employé', text: 'Ajoutez au moins un employé.' });
-    }
+        const structureDetails = [];
+        let hasError = false;
 
-    const structureDetails = [];
-    let hasError = false;
-
-    rows.forEach(row => {
-        const emp = row.querySelector('.employee-input').value;
-        const base = row.querySelector('.base-input').value;
-        const variable = row.querySelector('.variable-input').value;
+        const emp = document.getElementById('employe').value;
+        const base = document.getElementById('base').value;
+        const variable = document.getElementById('variable').value;
 
         if (!emp || !base || !variable) {
-        hasError = true;
-        } else {
-        structureDetails.push({ employee: emp, base: parseFloat(base), variable: parseFloat(variable) });
+            hasError = true;
         }
-    });
-
-    if (hasError) {
-        return Swal.fire({ icon: 'error', title: 'Champs manquants', text: 'Remplissez tous les champs.' });
-    }
-
-    formData.append('structureDetails', JSON.stringify(structureDetails));
-
-    fetch('/structures/assign', {
-        method: 'POST',
-        body: formData,
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.status === 'success') {
-        Swal.fire({ icon: 'success', title: 'Succès', text: 'Assignation réussie.' }).then(() => location.reload());
-        } else {
-        Swal.fire({ icon: 'error', title: 'Erreur', text: data.message || 'Erreur lors de l\'assignation' });
+        else {
+            structureDetails.push({ employee: emp, base: parseFloat(base), variable: parseFloat(variable) });
         }
-    })
-    .catch(err => {
-        console.error(err);
-        Swal.fire({ icon: 'error', title: 'Erreur serveur', text: 'Impossible de traiter la requête' });
-    });
+
+        if (hasError) {
+            return Swal.fire({ icon: 'error', title: 'Champs manquants', text: 'Remplissez tous les champs.' });
+        }
+
+        formData.append('structureDetails', JSON.stringify(structureDetails));
+
+        fetch('/structures/assign', {
+            method: 'POST',
+            body: formData,
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                Swal.fire({ icon: 'success', title: 'Succès', text: 'Assignation réussie.' }).then(() => location.reload());
+            }
+            else {
+                Swal.fire({ icon: 'error', title: 'Erreur', text: data.message || 'Erreur lors de l\'assignation' });
+            }
+        })
+        .catch(err => {
+            console.error(err);
+            Swal.fire({ icon: 'error', title: 'Erreur serveur', text: 'Impossible de traiter la requête' });
+        });
     }
 
     document.addEventListener('DOMContentLoaded', addEmployeeRow);
