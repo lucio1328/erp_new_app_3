@@ -10,6 +10,6 @@ public class GenereSalaire {
     LocalDate moisDebut;
     LocalDate moisFin;
     String salaire;
-    String ecaser;
-    String moyenne;
+    // String ecraser;
+    // String moyenne;
 }

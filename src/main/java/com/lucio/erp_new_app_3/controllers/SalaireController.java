@@ -124,13 +124,16 @@ public class SalaireController {
     @PostMapping("/generer")
     public ModelAndView genererSalaire(HttpSession session,
                                         @ModelAttribute GenereSalaire genereSalaire,
+                                        @RequestParam(value = "ecraser",defaultValue = "false") boolean ecraser,
+                                        @RequestParam(value = "moyenne",defaultValue = "false") boolean moyenne,
                                         RedirectAttributes redirectAttributes) {
         String sessionCookie = (String) session.getAttribute("sid");
         try {
             if (sessionCookie == null) {
                 return new ModelAndView("redirect:/");
             }
-            genererService.genererSalaire(sessionCookie, genereSalaire);
+
+            genererService.genererSalaire(sessionCookie, genereSalaire, ecraser, moyenne);
 
             redirectAttributes.addFlashAttribute("success", "Salaire generé avec succes");
         }
