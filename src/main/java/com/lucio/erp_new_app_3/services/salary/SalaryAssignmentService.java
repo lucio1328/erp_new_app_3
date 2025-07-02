@@ -68,6 +68,37 @@ public class SalaryAssignmentService {
         return data;
     }
 
+    public StructureAssignement supprimerAttribution(String sessionCookie, String empId, String startDate) {
+        LocalDate date = LocalDate.parse(startDate);
+
+        Optional<StructureAssignement> optionalAssignment =
+            getLatestAssignmentBeforeDate(empId, sessionCookie, date);
+
+        if (optionalAssignment.isPresent()) {
+            StructureAssignement assignment = optionalAssignment.get();
+            deleteSalaryAssignment(assignment.getName(), sessionCookie);
+
+            return assignment;
+        }
+        else {
+            throw new ErpApiException(
+                "Aucune assignation trouvée pour l'employé " + empId + " avant la date " + startDate,
+                HttpStatus.NOT_FOUND.value()
+            );
+        }
+    }
+
+    public void deleteSalaryAssignment(String name, String sessionCookie) {
+        try {
+            String endpoint = "/api/resource/Salary Structure Assignment/" + name;
+            preparationApi.deleteDataFromApi(endpoint, sessionCookie);
+        }
+        catch (Exception e) {
+            throw new ErpApiException("Erreur lors de la suppression de l'attribution salariale pour " + name,
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(), e);
+        }
+    }
+
     public StructureAssignement annulerAttribution(String sessionCookie, String empId, String startDate) {
         LocalDate date = LocalDate.parse(startDate);
 

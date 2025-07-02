@@ -36,16 +36,15 @@ public class ModificationService {
     @Autowired
     private SalaireImportService salaireImportService;
 
-    @Autowired
-    private ModifCache modifCache;
-
     public void recreerSalarySlips(String session, ModifSalaire modifSalaire) throws Exception {
-        // final String SALAIRE_BASE = "Salaire Base".trim();
+        ModifCache modifCache = getEmpConcerne(session, modifSalaire);
 
         for (SalarySlip oldSlip : modifCache.getSalarySlips()) {
             annulerSalarySlips(session, oldSlip);
+            salarySlipService.deleteSalarySlip(oldSlip.getName(), session);
 
             StructureAssignement structureAssignement = salaryAssignmentService.annulerAttribution(session, oldSlip.getEmployee(), oldSlip.getStartDate());
+            salaryAssignmentService.supprimerAttribution(session, oldSlip.getEmployee(), oldSlip.getStartDate());
             SalaireData salaireData = salaryAssignmentService.creerSalaireData(structureAssignement, modifSalaire);
 
             salaireImportService.importSalaireData(session, List.of(salaireData));
