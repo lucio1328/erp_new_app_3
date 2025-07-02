@@ -35,7 +35,7 @@ public class PreparationApi {
                     String.class
             );
 
-            if (response.getStatusCode() != HttpStatus.OK && response.getStatusCode() != HttpStatus.NO_CONTENT) {
+            if (!response.getStatusCode().is2xxSuccessful()) {
                 throw new ErpApiException("Erreur HTTP lors de la suppression : " + response.getStatusCode().value(),
                         response.getStatusCode().value());
             }
@@ -58,7 +58,7 @@ public class PreparationApi {
                     String.class
             );
 
-            if (response.getStatusCode() == HttpStatus.OK) {
+            if (response.getStatusCode().is2xxSuccessful()) {
                 JsonNode root = objectMapper.readTree(response.getBody());
                 return root.get("data");
             }

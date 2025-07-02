@@ -1,7 +1,5 @@
 package com.lucio.erp_new_app_3.controllers;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,7 +22,6 @@ import com.lucio.erp_new_app_3.services.alea.GenererService;
 import com.lucio.erp_new_app_3.services.alea.ModificationService;
 import com.lucio.erp_new_app_3.services.data.DataService;
 import com.lucio.erp_new_app_3.services.employee.EmployeeService;
-import com.lucio.erp_new_app_3.services.salary.SalaryAssignmentService;
 import com.lucio.erp_new_app_3.services.salary.SalaryStructureService;
 import com.lucio.erp_new_app_3.utils.EnvoyeInformation;
 
@@ -33,9 +30,6 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 @RequestMapping("/salaire")
 public class SalaireController {
-
-    @Autowired
-    private SalaryAssignmentService salaryAssignmentService;
 
     @Autowired
     private DataService dataService;
@@ -77,6 +71,7 @@ public class SalaireController {
         return modelAndView;
     }
 
+    @SuppressWarnings("unused")
     @PostMapping("/generer-direct")
     @ResponseBody
     public String assignSalaryStructures(
@@ -124,13 +119,16 @@ public class SalaireController {
     @PostMapping("/generer")
     public ModelAndView genererSalaire(HttpSession session,
                                         @ModelAttribute GenereSalaire genereSalaire,
+                                        @RequestParam(value = "ecraser",defaultValue = "false") boolean ecraser,
+                                        @RequestParam(value = "moyenne",defaultValue = "false") boolean moyenne,
                                         RedirectAttributes redirectAttributes) {
         String sessionCookie = (String) session.getAttribute("sid");
         try {
             if (sessionCookie == null) {
                 return new ModelAndView("redirect:/");
             }
-            genererService.genererSalaire(sessionCookie, genereSalaire);
+
+            genererService.genererSalaire(sessionCookie, genereSalaire, ecraser, moyenne);
 
             redirectAttributes.addFlashAttribute("success", "Salaire generé avec succes");
         }
@@ -168,22 +166,20 @@ public class SalaireController {
                                         Model model) {
         String sessionCookie = (String) session.getAttribute("sid");
         ModelAndView modelAndView = new ModelAndView("layout/modele");
+        EnvoyeInformation.afficherName(session, modelAndView);
+        EnvoyeInformation.setInfo(modelAndView, "Modification Salaire", "pages/alea/modif");
+
+        modelAndView.addObject("modifSalaire", modifSalaire);
+        modelAndView.addObject("composantes", dataService.getAllData(session, "Salary Component", null));
         try {
             if (sessionCookie == null) {
                 modelAndView.setViewName("redirect:/");
                 return modelAndView;
             }
 
-            // List<Employee> employees = modificationService.getEmpConcerne(sessionCookie, modifSalaire);
+            modificationService.getEmpConcerne(sessionCookie, modifSalaire);
             modificationService.recreerSalarySlips(sessionCookie, modifSalaire);
 
-            modelAndView.addObject("modifSalaire", new ModifSalaire());
-            modelAndView.addObject("composantes", dataService.getAllData(session, "Salary Component", null));
-
-            EnvoyeInformation.afficherName(session, modelAndView);
-            EnvoyeInformation.setInfo(modelAndView, "Modification Salaire", "pages/alea/modif");
-
-            // modelAndView.addObject("employesConcernes", employees);
             modelAndView.addObject("success", "Modification reussie!!");
         }
         catch (Exception e) {
@@ -193,7 +189,7 @@ public class SalaireController {
         return modelAndView;
     }
 
-    @GetMapping("/recherche-salaire")
+    @GetMapping("/recherche")
     public ModelAndView recherche(HttpSession session, Model model) {
         String sessionCookie = (String) session.getAttribute("sid");
         ModelAndView modelAndView = new ModelAndView("layout/modele");
@@ -227,7 +223,7 @@ public class SalaireController {
 
             ModifCache modifCache = modificationService.getEmpConcerne(sessionCookie, modifSalaire);
 
-            modelAndView.addObject("modifSalaire", new ModifSalaire());
+            modelAndView.addObject("modifSalaire", modifSalaire);
             modelAndView.addObject("composantes", dataService.getAllData(session, "Salary Component", null));
 
             EnvoyeInformation.afficherName(session, modelAndView);
@@ -235,7 +231,7 @@ public class SalaireController {
 
             modelAndView.addObject("employesConcernes", modifCache.getEmployees());
             modelAndView.addObject("salarySlips", modifCache.getSalarySlips());
-            modelAndView.addObject("success", "Modification reussie!!");
+            modelAndView.addObject("success", "Recherche reussie!!");
         }
         catch (Exception e) {
             modelAndView.addObject("error", "Erreur : " + e.getMessage());

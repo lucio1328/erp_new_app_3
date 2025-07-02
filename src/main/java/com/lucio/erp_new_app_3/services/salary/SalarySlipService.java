@@ -20,11 +20,14 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lucio.erp_new_app_3.configs.ErpnextProperties;
+import com.lucio.erp_new_app_3.dtos.alea.GenereSalaire;
 import com.lucio.erp_new_app_3.dtos.salary.details_salary.SalaryDeduction;
 import com.lucio.erp_new_app_3.dtos.salary.details_salary.SalaryEarning;
 import com.lucio.erp_new_app_3.dtos.salary.slip.SalarySlip;
 import com.lucio.erp_new_app_3.exceptions.ErpApiException;
 import com.lucio.erp_new_app_3.utils.PreparationApi;
+
+import jakarta.servlet.http.HttpSession;
 
 @Service
 public class SalarySlipService {
@@ -208,6 +211,44 @@ public class SalarySlipService {
         catch (Exception e) {
             throw new ErpApiException("Erreur de parsing de la fiche de paie pour " + name,
                     HttpStatus.INTERNAL_SERVER_ERROR.value(), e);
+        }
+    }
+
+    public SalarySlip isSalarySlipExiste(String session, String employeeId, LocalDate forDate) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        List<SalarySlip> salarySlips = getSalarySlips(session);
+
+        for (SalarySlip slip : salarySlips) {
+            if (!slip.getEmployee().equals(employeeId)) {
+                continue;
+            }
+
+            LocalDate startDate = LocalDate.parse(slip.getStartDate(), formatter);
+            LocalDate endDate = LocalDate.parse(slip.getEndDate(), formatter);
+
+            if ((forDate.isEqual(startDate) || forDate.isAfter(startDate)) &&
+                (forDate.isEqual(endDate) || forDate.isBefore(endDate))) {
+                return slip;
+            }
+        }
+
+        return null;
+    }
+
+    public SalarySlip verifierSalarySlips(GenereSalaire genereSalaire, LocalDate startDate, LocalDate endDate, String sessionCookie) {
+        try {
+            String endpoint = "/api/resource/Salary Slip?fields=[\"*\"]&filters=[[\"posting_date\",\">=\",\"" + startDate + "\"],[\"posting_date\",\"<=\",\"" + endDate + "\"],[\"employee\",\"=\",\"" + genereSalaire.getEmploye() + "\"]]";
+            JsonNode response = preparationApi.getJsonDataFromApi(endpoint, sessionCookie);
+
+            return objectMapper.readerForListOf(SalarySlip.class).readValue(response);
+
+        }
+        catch (Exception e) {
+            throw new ErpApiException(
+                String.format("Erreur lors de la récupération des fiches de paie entre %s et %s", startDate, endDate),
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                e
+            );
         }
     }
 
