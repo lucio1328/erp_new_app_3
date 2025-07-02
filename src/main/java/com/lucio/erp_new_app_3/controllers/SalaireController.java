@@ -193,7 +193,7 @@ public class SalaireController {
         return modelAndView;
     }
 
-    @GetMapping("/recherche-salaire")
+    @GetMapping("/recherche")
     public ModelAndView recherche(HttpSession session, Model model) {
         String sessionCookie = (String) session.getAttribute("sid");
         ModelAndView modelAndView = new ModelAndView("layout/modele");
@@ -227,7 +227,7 @@ public class SalaireController {
 
             ModifCache modifCache = modificationService.getEmpConcerne(sessionCookie, modifSalaire);
 
-            modelAndView.addObject("modifSalaire", new ModifSalaire());
+            modelAndView.addObject("modifSalaire", modifSalaire);
             modelAndView.addObject("composantes", dataService.getAllData(session, "Salary Component", null));
 
             EnvoyeInformation.afficherName(session, modelAndView);
@@ -235,7 +235,7 @@ public class SalaireController {
 
             modelAndView.addObject("employesConcernes", modifCache.getEmployees());
             modelAndView.addObject("salarySlips", modifCache.getSalarySlips());
-            modelAndView.addObject("success", "Modification reussie!!");
+            modelAndView.addObject("success", "Recherche reussie!!");
         }
         catch (Exception e) {
             modelAndView.addObject("error", "Erreur : " + e.getMessage());
