@@ -87,7 +87,9 @@ public class GenererService {
             });
 
         List<SalaireData> salaireDatas = construireSalaireData(structureAssignement, genereSalaire, sessionCookie, ecraser, moyenne);
-        salaireImportService.importSalaireData(sessionCookie, salaireDatas);
+        if (salaireDatas.size() > 0) {
+            salaireImportService.importSalaireData(sessionCookie, salaireDatas);
+        }
     }
 
     public List<SalaireData> construireSalaireData(StructureAssignement structureAssignement, GenereSalaire genereSalaire, String sessionCookie, Boolean ecraser, Boolean moyenne) {
@@ -109,19 +111,17 @@ public class GenererService {
             SalaireData data = new SalaireData();
             data.setMois(dateDebut.toString());
             data.setRefEmploye(genereSalaire.getEmploye());
+            data.setSalaireBase(structureAssignement.getBase());
+            data.setSalaryStructure(structureAssignement.getSalary_structure());
 
             if (salaireFromRequest != null && salaireFromRequest > 0) {
                 data.setSalaireBase(salaireFromRequest);
             }
-            else {
-                data.setSalaireBase(structureAssignement.getBase());
-            }
 
-            if (moyenne) {
-                data.setSalaireBase(moyenneSalaire(sessionCookie));
-            }
+            // if (moyenne) {
+            //     data.setSalaireBase(moyenneSalaire(sessionCookie));
+            // }
 
-            data.setSalaryStructure(structureAssignement.getSalary_structure());
             SalarySlip salarySlip = salarySlipService.isSalarySlipExiste(sessionCookie, genereSalaire.getEmploye(), dateDebut);
 
             if (salarySlip == null) {
@@ -130,6 +130,7 @@ public class GenererService {
             else if (salarySlip != null && ecraser) {
                 salarySlipService.cancelSalarySlip(salarySlip.getName(), sessionCookie);
                 salarySlipService.deleteSalarySlip(salarySlip.getName(), sessionCookie);
+                salaryAssignmentService.annulerAttribution(sessionCookie, salarySlip.getEmployee(), salarySlip.getStartDate());
                 salaireDatas.add(data);
             }
             dateDebut = dateDebut.plusMonths(1);
